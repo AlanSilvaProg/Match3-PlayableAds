@@ -1,0 +1,43 @@
+{
+  "__version__": "1.0.1",
+  "builder": {
+    "common": {
+      "binGroupConfig": {
+        "threshold": 16,
+        "enable": false
+      },
+      "polyfills": {
+        "asyncFunctions": true
+      },
+      "useSplashScreen": false,
+      "overwriteProjectSettings": {
+        "includeModules": {
+          "physics": "physics-builtin",
+          "physics-2d": "physics-2d-builtin",
+          "gfx-webgl2": "off"
+        }
+      }
+    },
+    "taskOptionsMap": {
+      "1769178769423": {
+        "useWebGPU": false,
+        "resolution": {
+          "designWidth": 640,
+          "designHeight": 360
+        },
+        "__version__": "1.0.1"
+      }
+    },
+    "__version__": "1.3.9",
+    "options": {
+      "web-desktop": {
+        "useWebGPU": false,
+        "resolution": {
+          "designWidth": 640,
+          "designHeight": 360
+        },
+        "__version__": "1.0.1"
+      }
+    }
+  }
+}

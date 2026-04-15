@@ -1,0 +1,90 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "timegreen",
+    "atlas": "",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 149,
+      "height": 14
+    },
+    "offset": {
+      "x": 0,
+      "y": 0
+    },
+    "originalSize": {
+      "width": 149,
+      "height": 14
+    },
+    "rotated": false,
+    "capInsets": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertices": {
+      "rawPosition": [
+        -74.5,
+        -7,
+        0,
+        74.5,
+        -7,
+        0,
+        -74.5,
+        7,
+        0,
+        74.5,
+        7,
+        0
+      ],
+      "indexes": [
+        0,
+        1,
+        2,
+        2,
+        1,
+        3
+      ],
+      "uv": [
+        0,
+        14,
+        149,
+        14,
+        0,
+        0,
+        149,
+        0
+      ],
+      "nuv": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        1,
+        1
+      ],
+      "minPos": {
+        "x": -74.5,
+        "y": -7,
+        "z": 0
+      },
+      "maxPos": {
+        "x": 74.5,
+        "y": 7,
+        "z": 0
+      }
+    },
+    "texture": "57310439-2f6b-45eb-8dab-fceee42a61e6@6c48a",
+    "packable": true,
+    "pixelsToUnit": 100,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "meshType": 0
+  }
+}

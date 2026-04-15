@@ -1,0 +1,90 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "fail",
+    "atlas": "",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 384,
+      "height": 178
+    },
+    "offset": {
+      "x": 0,
+      "y": 0
+    },
+    "originalSize": {
+      "width": 384,
+      "height": 178
+    },
+    "rotated": false,
+    "capInsets": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertices": {
+      "rawPosition": [
+        -192,
+        -89,
+        0,
+        192,
+        -89,
+        0,
+        -192,
+        89,
+        0,
+        192,
+        89,
+        0
+      ],
+      "indexes": [
+        0,
+        1,
+        2,
+        2,
+        1,
+        3
+      ],
+      "uv": [
+        0,
+        178,
+        384,
+        178,
+        0,
+        0,
+        384,
+        0
+      ],
+      "nuv": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        1,
+        1
+      ],
+      "minPos": {
+        "x": -192,
+        "y": -89,
+        "z": 0
+      },
+      "maxPos": {
+        "x": 192,
+        "y": 89,
+        "z": 0
+      }
+    },
+    "texture": "05526288-f5d5-4bac-a657-9fac5dbb00a3@6c48a",
+    "packable": true,
+    "pixelsToUnit": 100,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "meshType": 0
+  }
+}
