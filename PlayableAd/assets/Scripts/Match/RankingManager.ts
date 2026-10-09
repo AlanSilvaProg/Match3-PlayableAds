@@ -319,7 +319,7 @@ export class RankingManager extends Component {
 
         node.on(Node.EventType.TOUCH_START, () => node.setScale(0.92, 0.92, 1));
         node.on(Node.EventType.TOUCH_CANCEL, () => node.setScale(1, 1, 1));
-        node.on(Node.EventType.TOUCH_END, () => { node.setScale(1, 1, 1); this.openWindow(); });
+        node.on(Node.EventType.TOUCH_END, () => { node.setScale(1, 1, 1); SoundManager.playMenuClick(); this.openWindow(); });
         return node;
     }
 
@@ -368,7 +368,7 @@ export class RankingManager extends Component {
         const close = this.makeNode('Close', win, W / 2 - 78, H / 2 - 62, 64, 56);
         this.makeSprite(close, pm.buttonFrame, base + 3, true).color = new Color(255, 120, 120, 255);
         this.makeLabel(close, 'X', 26, 50, 40, 0, 3, base + 4);
-        close.on(Node.EventType.TOUCH_END, () => this.closeWindow());
+        close.on(Node.EventType.TOUCH_END, () => { SoundManager.playMenuClick(); this.closeWindow(); });
 
         const prof = this.makeNode('Profile', win, -W / 2 + 120, H / 2 - 62, 150, 52);
         this.makeSprite(prof, pm.buttonFrame, base + 3, true);

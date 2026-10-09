@@ -505,7 +505,7 @@ export class AchievementManager extends Component {
 
         node.on(Node.EventType.TOUCH_START, () => node.setScale(0.92, 0.92, 1));
         node.on(Node.EventType.TOUCH_CANCEL, () => node.setScale(1, 1, 1));
-        node.on(Node.EventType.TOUCH_END, () => { node.setScale(1, 1, 1); this.openWindow(); });
+        node.on(Node.EventType.TOUCH_END, () => { node.setScale(1, 1, 1); SoundManager.playMenuClick(); this.openWindow(); });
         return node;
     }
 
@@ -556,7 +556,7 @@ export class AchievementManager extends Component {
         this.makeSprite(win, pm.windowFrame, base + 1, true);
         this.makeLabel(win, 'ACHIEVEMENTS', 46, 480, 60, 0, H / 2 - 62, base + 3, Color.WHITE, new Color(20, 70, 120, 255));
         this.windowBadge = pm.createPointsBadgeView(win, -W / 2 + 190, H / 2 - 62, base + 3, false);
-        this.makeButton(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, new Color(255, 120, 120, 255), () => this.closeWindow(), true);
+        this.makeButton(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, new Color(255, 120, 120, 255), () => this.closeWindow());
 
         // Area visivel (com mascara): a lista rola dentro dela.
         const vw = this.viewportWidth, vh = this.viewportHeight;

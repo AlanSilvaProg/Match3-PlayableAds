@@ -421,7 +421,7 @@ export class PowerupManager extends Component {
 
         node.on(Node.EventType.TOUCH_START, () => node.setScale(0.92, 0.92, 1));
         node.on(Node.EventType.TOUCH_CANCEL, () => node.setScale(1, 1, 1));
-        node.on(Node.EventType.TOUCH_END, () => { node.setScale(1, 1, 1); this.openWindow(); });
+        node.on(Node.EventType.TOUCH_END, () => { node.setScale(1, 1, 1); SoundManager.playMenuClick(); this.openWindow(); });
         return node;
     }
 
@@ -599,7 +599,7 @@ export class PowerupManager extends Component {
         // Na janela de power-ups o fundo (holder) fica escondido: so a moeda e o numero.
         this.createPointsBadge(win, -W / 2 + 190, H / 2 - 62, base + 3, false);
 
-        this.makeButton(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, new Color(255, 120, 120, 255), () => this.closeWindow(), this.buttonFrame, true);
+        this.makeButton(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, new Color(255, 120, 120, 255), () => this.closeWindow());
 
 
         const cellW = 215, cellH = 205;
