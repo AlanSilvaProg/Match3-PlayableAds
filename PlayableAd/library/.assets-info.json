@@ -2,459 +2,774 @@
   "version": "1.0.1",
   "map": {
     "GameImage.meta": {
-      "time": 1769170924332.23
+      "time": 1791206513728.4614
     },
     "Sounds.meta": {
-      "time": 1769170924332.3374
+      "time": 1791206513734.5105
     },
     "UI.meta": {
-      "time": 1769170924332.409
+      "time": 1791206513738.6184
     },
     "extra_assets.meta": {
-      "time": 1769170924332.4805
+      "time": 1791206513739.84
     },
     "GameImage": {
-      "time": 1769170924333.0574,
+      "time": 1791502423621.1736,
       "uuid": "fddeb92d-097c-4299-ba88-970f7721873c"
     },
     "Sounds": {
-      "time": 1769170924333.8896,
+      "time": 1791206513738.524,
       "uuid": "8bb2ebca-6ac1-483e-a977-06eeaa496d79"
     },
     "UI": {
-      "time": 1769172302292.7666,
+      "time": 1791514337246.2307,
       "uuid": "422b06ed-a41e-4bf6-9453-a6e69a59d850"
     },
     "extra_assets": {
-      "time": 1769546574056.821,
+      "time": 1791514337207.6619,
       "uuid": "97d238bb-3a2a-47d4-be4f-8be109e1af2b"
     },
-    "GameImage/frenchFries.png.meta": {
-      "time": 1769192835331.0024
-    },
-    "GameImage/hamburger.png.meta": {
-      "time": 1769192835332.358
-    },
-    "GameImage/iceCreamCone2.png.meta": {
-      "time": 1769192835331.5918
-    },
     "Sounds/AlarmLoop.mp3.meta": {
-      "time": 1769170924345.7905
+      "time": 1791206513735.245
     },
     "Sounds/AttachItem1.mp3.meta": {
-      "time": 1769170924345.0977
+      "time": 1791206513736.506
     },
     "Sounds/CollectMatch1.mp3.meta": {
-      "time": 1769170924347.778
+      "time": 1791206513736.7524
     },
     "Sounds/GrabItem.mp3.meta": {
-      "time": 1769170924348.374
+      "time": 1791206513737.2048
     },
     "Sounds/LevelComplete.mp3.meta": {
-      "time": 1769170924348.9578
+      "time": 1791206513737.7012
     },
     "Sounds/LevelFailed.mp3.meta": {
-      "time": 1769170924352.442
+      "time": 1791206513738.149
     },
     "Sounds/MusicLoop5s.mp3.meta": {
-      "time": 1769170924352.792
+      "time": 1791206513738.5564
     },
     "UI/energybar.png.meta": {
-      "time": 1769176783503.6792
+      "time": 1791206513738.9504
     },
     "UI/energycontainer.png.meta": {
-      "time": 1769176783504.2668
+      "time": 1791206513739.0823
     },
     "UI/gameplay_collect_area.png.meta": {
-      "time": 1769176783464.0024
+      "time": 1791206513739.2202
     },
     "UI/splash_logo.png.meta": {
-      "time": 1769176783505.235
+      "time": 1791223935665.1226
     },
     "UI/target_bkg.png.meta": {
-      "time": 1769176783500.022
+      "time": 1791206513739.656
     },
     "UI/targets_area.png.meta": {
-      "time": 1769176783559.851
+      "time": 1791206513739.7808
     },
     "extra_assets/explosion.png.meta": {
-      "time": 1769371249149.3867
+      "time": 1791206513740.1921
     },
     "extra_assets/fail.png.meta": {
-      "time": 1769371249158.401
+      "time": 1791206513740.5579
     },
     "extra_assets/hand_pointer.png.meta": {
-      "time": 1769371249150.9858
+      "time": 1791206513740.7688
     },
     "extra_assets/play_now_btn.png.meta": {
-      "time": 1769371249160.1184
+      "time": 1791206513748.372
     },
     "extra_assets/rounded_24.png.meta": {
-      "time": 1769371249155.9067
-    },
-    "extra_assets/star_color.png.meta": {
-      "time": 1769371249215.5427
+      "time": 1791206513748.5063
     },
     "extra_assets/timegreen.png.meta": {
-      "time": 1769371249216.964
+      "time": 1791206513748.7566
     },
     "extra_assets/warning_border.png.meta": {
-      "time": 1769371249217.3357
+      "time": 1791206513749.0933
     },
     "extra_assets/win.png.meta": {
-      "time": 1769371249220.9827
+      "time": 1791206513750.9814
     },
     "extra_assets/win_border.png.meta": {
-      "time": 1769371249217.6807
-    },
-    "GameImage/hamburger.png": {
-      "time": 1769110332000,
-      "uuid": "65b38ab6-113f-49d7-876d-c87acd77d1e9"
-    },
-    "GameImage/iceCreamCone2.png": {
-      "time": 1769110332000,
-      "uuid": "a5d53d10-d537-446f-ad12-33168222679d"
-    },
-    "GameImage/frenchFries.png": {
-      "time": 1769110332000,
-      "uuid": "5b62746f-2816-4c43-8243-247d8309a5d8"
+      "time": 1791206513751.1382
     },
     "Sounds/AttachItem1.mp3": {
-      "time": 1769110332000,
+      "time": 1791206513736.39,
       "uuid": "ceb3f865-972d-4aec-947a-ccd1b1ce311c"
     },
     "Sounds/AlarmLoop.mp3": {
-      "time": 1769110332000,
+      "time": 1791206513735.1719,
       "uuid": "f2bbfe54-467d-4646-a59e-8c61c10cc21a"
     },
     "Sounds/CollectMatch1.mp3": {
-      "time": 1769110332000,
+      "time": 1791206513736.6316,
       "uuid": "5da64fda-4ae0-493a-8d44-7b9c3b45a6ad"
     },
     "Sounds/GrabItem.mp3": {
-      "time": 1769110332000,
+      "time": 1791206513737.1335,
       "uuid": "8254c4f1-fa99-4936-9559-268f88f98908"
     },
     "Sounds/LevelComplete.mp3": {
-      "time": 1769110332000,
+      "time": 1791206513737.62,
       "uuid": "6f7bc02c-1d6f-40a3-8880-9e3b25a7cc48"
     },
     "UI/energybar.png": {
-      "time": 1769110332000,
+      "time": 1791206513738.8857,
       "uuid": "bf89e619-eb3c-46be-b89f-d0d618e6d05e"
     },
     "UI/energycontainer.png": {
-      "time": 1769110332000,
+      "time": 1791206513739.0212,
       "uuid": "10404a0e-017b-4c9a-81a1-dc07d1fc80f6"
     },
     "Sounds/LevelFailed.mp3": {
-      "time": 1769110332000,
+      "time": 1791206513738.0713,
       "uuid": "1653f5f2-8003-45a8-b468-8f2a008f3c80"
     },
     "Sounds/MusicLoop5s.mp3": {
-      "time": 1769110332000,
+      "time": 1791206513738.4841,
       "uuid": "3ac87572-4ee1-4542-a7a7-a2a662cfc447"
     },
     "UI/gameplay_collect_area.png": {
-      "time": 1769110332000,
+      "time": 1791206513739.1545,
       "uuid": "1584ad8b-6473-4a13-a6c1-d9ec39d463e1"
     },
     "UI/splash_logo.png": {
-      "time": 1769110332000,
+      "time": 1791223908961.716,
       "uuid": "8258bf71-387b-48fe-9418-5981de4885b9"
     },
     "extra_assets/explosion.png": {
-      "time": 1769110332000,
+      "time": 1791206513740.118,
       "uuid": "fc7d89f3-d7d3-439a-821f-041889578d18"
     },
     "UI/target_bkg.png": {
-      "time": 1769110332000,
+      "time": 1791206513739.5942,
       "uuid": "2cd97e8d-a9c7-454c-a5a5-ee38376852ac"
     },
     "extra_assets/fail.png": {
-      "time": 1769110332000,
+      "time": 1791248194127.66,
       "uuid": "05526288-f5d5-4bac-a657-9fac5dbb00a3"
     },
     "UI/targets_area.png": {
-      "time": 1769110332000,
+      "time": 1791206513739.7168,
       "uuid": "002d8685-dbe7-4fff-a8e5-ac080ec35277"
     },
     "extra_assets/hand_pointer.png": {
-      "time": 1769110332000,
+      "time": 1791206513740.7026,
       "uuid": "5271621c-cd0b-45fb-8f17-785c44f0618e"
     },
     "extra_assets/rounded_24.png": {
-      "time": 1769110332000,
+      "time": 1791206513748.4456,
       "uuid": "90e5b496-a0df-4fb9-ba4b-d587cdc5c863"
     },
     "extra_assets/play_now_btn.png": {
-      "time": 1769110332000,
+      "time": 1791206513748.3066,
       "uuid": "c8b8dc50-6d6f-4c92-86de-c5d99ca9a5fb"
     },
-    "extra_assets/star_color.png": {
-      "time": 1769110332000,
-      "uuid": "bb529a1e-a1df-43ba-abc9-83c70fd315c6"
-    },
     "extra_assets/timegreen.png": {
-      "time": 1769110332000,
+      "time": 1791206513748.6873,
       "uuid": "57310439-2f6b-45eb-8dab-fceee42a61e6"
     },
     "extra_assets/warning_border.png": {
-      "time": 1769110332000,
+      "time": 1791206513748.8564,
       "uuid": "3cba3c82-1266-4e93-92a2-7140f5d616f9"
     },
     "extra_assets/win.png": {
-      "time": 1769110332000,
+      "time": 1791206513750.9026,
       "uuid": "994aebfe-eec2-4f12-b76d-13423b517e19"
     },
     "extra_assets/win_border.png": {
-      "time": 1769110332000,
+      "time": 1791206513751.0696,
       "uuid": "77689eb8-98fb-4251-9913-cf095e2ea9d8"
     },
     "Scripts.meta": {
-      "time": 1769172299585.7085
+      "time": 1791206513731.9692
     },
     "Scripts": {
-      "time": 1770207762069.2932,
+      "time": 1791206513732.2869,
       "uuid": "0bd92960-bfed-4507-9705-405781aad021"
     },
     "Scripts/GameManager.ts.meta": {
-      "time": 1769172370415.202
+      "time": 1791206513732.1843
     },
     "Scripts/GameManager.ts": {
-      "time": 1769172370410.8274,
+      "time": 1791206513732.0845,
       "uuid": "3ca91766-3f60-4e01-9218-8e1446a2062b"
     },
     "Scripts/Match.meta": {
-      "time": 1769172400362.9666
+      "time": 1791206513732.255
     },
     "Scripts/Match": {
-      "time": 1769623261007.1538,
+      "time": 1791514232338.6487,
       "uuid": "e3c2ab47-56e3-45b6-a059-8f621df9046e"
     },
     "Scripts/Match/MatchElement.ts.meta": {
-      "time": 1769172340657.9126
+      "time": 1791206513733.2612
     },
     "Scripts/Match/MatchElement.ts": {
-      "time": 1769694386581.2563,
+      "time": 1791503170746.6694,
       "uuid": "63fc03d9-c22e-4d18-850b-8e6fc39bf560"
     },
     "Scripts/Match/MatchSlots.ts.meta": {
-      "time": 1769172359135.332
+      "time": 1791206513733.6562
     },
     "Scripts/Match/MatchSlots.ts": {
-      "time": 1769635422786.722,
+      "time": 1791248689680.4446,
       "uuid": "38af9b55-b6e0-4600-a305-7f16f772b343"
     },
     "Scripts/Match/MatchInitializer.ts.meta": {
-      "time": 1769172329536.315
+      "time": 1791206513733.526
     },
     "Scripts/Match/MatchInitializer.ts": {
-      "time": 1769694607527.7764,
+      "time": 1791406710323.6904,
       "uuid": "97789766-243d-41d6-ae70-b499872b4622"
     },
     "Scripts/Match/MatchController.ts.meta": {
-      "time": 1769172429529.5408
+      "time": 1791206513732.98
     },
     "Scripts/Match/MatchController.ts": {
-      "time": 1769693843571.764,
+      "time": 1791507094828.4573,
       "uuid": "ef137c72-8446-49a0-90d6-bf3455356caa"
     },
     "Scenes.meta": {
-      "time": 1769178500451.9917
+      "time": 1791206513731.5586
     },
     "Scenes": {
-      "time": 1769548568226.453,
+      "time": 1791513744952.8518,
       "uuid": "ac9f008f-fa0d-4f9c-a22d-ac2fa8a1adaf"
     },
     "Prefabs.meta": {
-      "time": 1769195730862.2322
+      "time": 1791206513729.2856
     },
     "Prefabs": {
-      "time": 1769547903143.9983,
+      "time": 1791513744962.5251,
       "uuid": "a50380f2-de60-4099-82c7-5932f7e3de29"
     },
     "Scripts/Match/ElementType.ts.meta": {
-      "time": 1769367001906.655
+      "time": 1791206513732.5574
     },
     "Scripts/Match/ElementType.ts": {
-      "time": 1769198361885.8855,
+      "time": 1791403980893.6592,
       "uuid": "f9e3ff15-5f84-4907-af83-3b6450ea4f9f"
     },
-    "Prefabs/HamburguerElement.prefab.meta": {
-      "time": 1769368201733.9568
-    },
-    "Prefabs/HamburguerElement.prefab": {
-      "time": 1769548394288.8179,
-      "uuid": "583380ff-4536-4c7b-9a03-221587272e4b"
-    },
-    "Scripts/Match/MatchCounterUI.ts.meta": {
-      "time": 1769368733467.0947
-    },
-    "Scripts/Match/MatchElementCount.ts.meta": {
-      "time": 1769368733467.345
-    },
-    "Scripts/Match/MatchCounterUI.ts": {
-      "time": 1769547322891.6216,
-      "uuid": "fca370d5-6ab4-49fd-9559-b478af523739"
-    },
-    "Scripts/Match/MatchElementCount.ts": {
-      "time": 1769695141507.8342,
-      "uuid": "738db3fc-5801-4e9b-a853-7a24ce80f0ea"
-    },
-    "Prefabs/HamburguerElementCount.prefab.meta": {
-      "time": 1769368844004.7969
-    },
-    "Prefabs/HamburguerElementCount.prefab": {
-      "time": 1769547402097.4836,
-      "uuid": "6eac0062-3ecc-440f-8818-2f2421332e57"
-    },
-    "Prefabs/IceCreamElementCount.prefab.meta": {
-      "time": 1769368934256.3555
-    },
-    "Prefabs/IceCreamElementCount.prefab": {
-      "time": 1769547442562.9539,
-      "uuid": "1167fa96-0b9e-4861-b2de-5df32fa39226"
-    },
-    "Prefabs/FriesElementCount.prefab.meta": {
-      "time": 1769368980526.0627
-    },
-    "Prefabs/FriesElementCount.prefab": {
-      "time": 1769547339403.8577,
-      "uuid": "73437213-ab5d-4492-b05a-dbe0afe2afa2"
-    },
-    "Prefabs/FriesElement.prefab.meta": {
-      "time": 1769369143136.935
-    },
-    "Prefabs/FriesElement.prefab": {
-      "time": 1769548368030.7224,
-      "uuid": "c216cd1e-f620-4cd5-b31b-fca5566fa0dc"
-    },
-    "Prefabs/IceCreamElement.prefab.meta": {
-      "time": 1769369205296.3608
-    },
-    "Prefabs/IceCreamElement.prefab": {
-      "time": 1769548403382.837,
-      "uuid": "6f4f1d3b-a7a7-4b0d-85fd-ca4858726dea"
-    },
     "Scripts/Match/GameManager.ts.meta": {
-      "time": 1769370852449.8892
+      "time": 1791206513732.7039
     },
     "Scripts/Match/GameState.ts.meta": {
-      "time": 1769370852450.0483
+      "time": 1791206513732.8464
     },
     "Scripts/Match/RestartGame.ts.meta": {
-      "time": 1769370852450.131
+      "time": 1791206513734.03
     },
     "Scripts/Match/GameManager.ts": {
-      "time": 1769694224029.2976,
+      "time": 1791514922319.6572,
       "uuid": "7066c457-7c2b-417b-8779-338dab7721ee"
     },
     "Scripts/Match/GameState.ts": {
-      "time": 1769370588489.9546,
+      "time": 1791244501505.3706,
       "uuid": "ab0f4b0a-633f-4e33-b9b5-63fef39dc9d2"
     },
     "Scripts/Match/RestartGame.ts": {
-      "time": 1769370590512.0164,
+      "time": 1791500430802.3342,
       "uuid": "c9c4b8b3-5ed2-4ddc-94d0-1de5c8f13462"
     },
     "Prefabs/MergeEffect.prefab.meta": {
-      "time": 1769435617044.6191
+      "time": 1791206513731.0034
     },
     "Prefabs/MergeEffect.prefab": {
-      "time": 1769624861798.6455,
+      "time": 1791408064552.4514,
       "uuid": "0eb34eca-beb2-49fe-a6a6-7466c8920495"
     },
     "Prefabs/FailScreen.prefab.meta": {
-      "time": 1769439439335.2852
+      "time": 1791206513729.6812
     },
     "Prefabs/FailScreen.prefab": {
-      "time": 1769608720259.2734,
+      "time": 1791514232415.9534,
       "uuid": "d49c5b5f-4aa5-432f-b100-30cc895ec194"
     },
     "Prefabs/WinnerScreen.prefab.meta": {
-      "time": 1769439448084.1047
+      "time": 1791206513731.4795
     },
     "Prefabs/WinnerScreen.prefab": {
-      "time": 1769608703342.1853,
+      "time": 1791513744958.6006,
       "uuid": "6584e6d4-14e2-4cd0-9204-bbc880fb3d18"
     },
     "Animations.meta": {
-      "time": 1769439855246.9219
+      "time": 1791206513727.7625
     },
     "Animations": {
-      "time": 1769608819265.5024,
+      "time": 1791206513728.3464,
       "uuid": "df0585ed-0298-44cc-b3c6-82bd7db64c5a"
     },
     "Animations/WarningAnimation.anim.meta": {
-      "time": 1769439871941.3203
+      "time": 1791206513728.3848
     },
     "Animations/WarningAnimation.anim": {
-      "time": 1769440053968.9585,
+      "time": 1791206513728.3044,
       "uuid": "f79ad02f-9071-4b3d-8087-96ff9e496e76"
     },
-    "Scripts/Match/OpenURL.ts.meta": {
-      "time": 1769441213732.5503
-    },
-    "Scripts/Match/OpenURL.ts": {
-      "time": 1769441211896.2344,
-      "uuid": "a7f6fba0-3115-4674-8598-0672d4d65274"
-    },
     "Scripts/Match/ScaleSequence.ts.meta": {
-      "time": 1769444612473.3906
+      "time": 1791206513734.1624
     },
     "Scripts/Match/ScaleSequence.ts": {
-      "time": 1769631947905.0461,
+      "time": 1791206513734.0955,
       "uuid": "031381fc-b2e2-4e31-a027-c172cb01d518"
     },
     "extra_assets/heart.png.meta": {
-      "time": 1769445250684.5374
+      "time": 1791514348817.3464
     },
     "extra_assets/heart.png": {
-      "time": 1769445239490.3826,
+      "time": 1791514337206.2463,
       "uuid": "67957730-67cc-488c-a721-76ec928842b7"
     },
     "Scripts/Match/TutorialManager.ts.meta": {
-      "time": 1769546296980.7634
+      "time": 1791206513734.441
     },
     "Scripts/Match/TutorialManager.ts": {
-      "time": 1769694083463.7783,
+      "time": 1791514585021.6414,
       "uuid": "fdb05417-a2c0-4ac9-83f0-aaa156c58ec0"
     },
     "extra_assets/white_rect.jpg.meta": {
-      "time": 1769546579577.469
+      "time": 1791206513750.3208
     },
     "extra_assets/white_rect.jpg": {
-      "time": 1769546552593.4502,
+      "time": 1791206513749.5596,
       "uuid": "bee3f1e5-626c-4395-b253-be2fbfefb5dc"
     },
     "Scenes/PlayableAdMatch.scene.meta": {
-      "time": 1769548550023.664
+      "time": 1791206513731.8757
     },
     "Scenes/PlayableAdMatch.scene": {
-      "time": 1769695178003.794,
+      "time": 1791514233133.7944,
       "uuid": "e04ca93c-f472-474b-bec4-ef3ccf980601"
     },
     "Animations/HandAnimation.anim.meta": {
-      "time": 1769608819283.026
+      "time": 1791206513728.2043
     },
     "Animations/HandAnimation.anim": {
-      "time": 1769610437658.8186,
+      "time": 1791206513728.055,
       "uuid": "9cd6d6b3-ef76-411d-9357-d7e642757d1b"
     },
     "Scripts/Match/ParticleTrigger.ts.meta": {
-      "time": 1769610397431.7866
+      "time": 1791206513733.9045
     },
     "Scripts/Match/ParticleTrigger.ts": {
-      "time": 1769631943796.4988,
+      "time": 1791206513733.8423,
       "uuid": "95b9fc3f-9663-4c9c-b080-a495d04b78ad"
     },
     "Scripts/Match/TimedAutoDestroy.ts.meta": {
-      "time": 1769623261024.196
+      "time": 1791206513734.29
     },
     "Scripts/Match/TimedAutoDestroy.ts": {
-      "time": 1769631945859.1191,
+      "time": 1791206513734.2285,
       "uuid": "0445ef0d-2f61-4e9b-b66e-c5b775182aa2"
+    },
+    "extra_assets/video-game-star (2).png.meta": {
+      "time": 1791220694255.503
+    },
+    "extra_assets/video-game-star (2).png": {
+      "time": 1791220685470.455,
+      "uuid": "fd4507e6-03f5-40af-b957-ac0e09ad2511"
+    },
+    "extra_assets/star_color.png.meta": {
+      "time": 1791223478061.3833
+    },
+    "extra_assets/star_color.png": {
+      "time": 1791206513748.5708,
+      "uuid": "bb529a1e-a1df-43ba-abc9-83c70fd315c6"
+    },
+    "UI/Combo.meta": {
+      "time": 1791228794371.112
+    },
+    "Scripts/Match/ComboManager.ts.meta": {
+      "time": 1791228794424.9858
+    },
+    "UI/Combo/combo_2x.png.meta": {
+      "time": 1791229284531.0356
+    },
+    "UI/Combo/combo_4x.png.meta": {
+      "time": 1791243538288.2478
+    },
+    "UI/Combo/combo_6x.png.meta": {
+      "time": 1791243538288.529
+    },
+    "UI/Combo/combo_8x.png.meta": {
+      "time": 1791382815672.6643
+    },
+    "UI/Combo": {
+      "time": 1791382813147.4207,
+      "uuid": "8e2ab00e-7fad-47dc-b43f-33d690ede0ac"
+    },
+    "Scripts/Match/ComboManager.ts": {
+      "time": 1791507094829.9758,
+      "uuid": "7f157597-9213-4a48-842c-722380101aa3"
+    },
+    "UI/Combo/combo_2x.png": {
+      "time": 1791229248404.7363,
+      "uuid": "45759e52-9113-4f15-89e3-52f6306015ba"
+    },
+    "UI/Combo/combo_8x.png": {
+      "time": 1791382743582.977,
+      "uuid": "0a177ca1-6420-4e1e-a0cd-c226a8f19ad1"
+    },
+    "UI/Combo/combo_6x.png": {
+      "time": 1791243517693.6533,
+      "uuid": "c450dbe1-6cb1-4a68-bf1a-e116ecf771f9"
+    },
+    "UI/Combo/combo_4x.png": {
+      "time": 1791243495157.6382,
+      "uuid": "ac2472d3-64dc-4ca6-987a-7fc0524795de"
+    },
+    "UI/Combo/without_combo.png.meta": {
+      "time": 1791382815670.4446
+    },
+    "UI/Combo/without_combo.png": {
+      "time": 1791382806134.9866,
+      "uuid": "743399d8-74a1-42e3-b2a5-6c8db6e2f05c"
+    },
+    "Scripts/Match/StartScreen.ts.meta": {
+      "time": 1791244514646.6853
+    },
+    "Scripts/Match/StartScreen.ts": {
+      "time": 1791503550066.4905,
+      "uuid": "8eafd6ba-3593-471c-a694-c4534adaeb40"
+    },
+    "UI/splash_logo_merge.png.meta": {
+      "time": 1791249596952.9573
+    },
+    "UI/splash_logo_merge.png": {
+      "time": 1791249577882.8496,
+      "uuid": "a6601604-e134-4432-a5a8-376ed789a8ef"
+    },
+    "extra_assets/background.png.meta": {
+      "time": 1791514646486.9521
+    },
+    "extra_assets/background.png": {
+      "time": 1791514602726.4565,
+      "uuid": "cb66dd6e-9bdd-4db6-9fa9-3f40df397156"
+    },
+    "Scripts/Match/AttentionShake.ts.meta": {
+      "time": 1791250840755.6946
+    },
+    "Scripts/Match/LogoAnimation.ts.meta": {
+      "time": 1791250840755.9146
+    },
+    "Scripts/Match/AttentionShake.ts": {
+      "time": 1791250840562.6978,
+      "uuid": "8042363e-37b2-4f04-a2d1-a3b1f45cd610"
+    },
+    "Scripts/Match/LogoAnimation.ts": {
+      "time": 1791250840565.0994,
+      "uuid": "384c7804-779d-4753-b75c-d3e75d9f53b1"
+    },
+    "extra_assets/World_Selection.meta": {
+      "time": 1791292306614.8633
+    },
+    "extra_assets/World_Selection": {
+      "time": 1791404923084.6277,
+      "uuid": "aeeb3020-497c-4fab-a3ae-d33ef4eeeb46"
+    },
+    "Font.meta": {
+      "time": 1791293270071.8213
+    },
+    "Font": {
+      "time": 1791513737899.7664,
+      "uuid": "3e2c6a05-f529-4df4-9895-7035f0e125b4"
+    },
+    "Font/Candyshop.otf.meta": {
+      "time": 1791293270167.168
+    },
+    "Font/Candyshop.ttf.meta": {
+      "time": 1791293270169.779
+    },
+    "extra_assets/World_Selection/disabled-button-level.png.meta": {
+      "time": 1791305979474.079
+    },
+    "extra_assets/World_Selection/enabled-button-level.png.meta": {
+      "time": 1791305979473.6147
+    },
+    "extra_assets/World_Selection/locked-icon.png.meta": {
+      "time": 1791305979482.138
+    },
+    "Font/Candyshop.otf": {
+      "time": 1544703998000,
+      "uuid": "68460922-b4fd-4da6-8e5c-bd68ae05f95c"
+    },
+    "Font/Candyshop.ttf": {
+      "time": 1544704878000,
+      "uuid": "11bd4aae-5698-4167-8788-a2ae21fc562d"
+    },
+    "extra_assets/World_Selection/disabled-button-level.png": {
+      "time": 1791292889826.5757,
+      "uuid": "ef6aebe0-ef8b-4d71-93e7-51c483271a6b"
+    },
+    "extra_assets/World_Selection/locked-icon.png": {
+      "time": 1791292994814.532,
+      "uuid": "b41b224a-1890-44ef-86c0-758a9be434b7"
+    },
+    "extra_assets/World_Selection/enabled-button-level.png": {
+      "time": 1791293100306.8513,
+      "uuid": "7d1500d8-5578-4d8e-8571-356feb3f148f"
+    },
+    "Scripts/Match/LevelProgress.ts.meta": {
+      "time": 1791305978762.4287
+    },
+    "Scripts/Match/LevelSelector.ts.meta": {
+      "time": 1791305978764.9832
+    },
+    "extra_assets/points-holder.png.meta": {
+      "time": 1791503069813.322
+    },
+    "Scripts/Match/LevelProgress.ts": {
+      "time": 1791511375838.7542,
+      "uuid": "04de0ceb-77af-4e8b-a3ec-a3ad355f5426"
+    },
+    "Scripts/Match/LevelSelector.ts": {
+      "time": 1791511046842.169,
+      "uuid": "7c408ce4-5b86-4809-9bca-26080cda20f3"
+    },
+    "extra_assets/points-holder.png": {
+      "time": 1791503069822.594,
+      "uuid": "8de13d00-acd8-4178-8c37-d8f876c458d7"
+    },
+    "Scripts/Match/ReturnToLevels.ts.meta": {
+      "time": 1791306754945.5142
+    },
+    "Scripts/Match/ReturnToLevels.ts": {
+      "time": 1791514217816.1145,
+      "uuid": "8511e72e-99c1-4e7b-8ea6-96cdd8d6dcd4"
+    },
+    "Scripts/Match/WinStars.ts.meta": {
+      "time": 1791307827522.9553
+    },
+    "Scripts/Match/WinStars.ts": {
+      "time": 1791307827373.6484,
+      "uuid": "4d01ad16-fe22-4703-a8e3-79ad83b6257d"
+    },
+    "GameImage/food-elements-sheet.png.meta": {
+      "time": 1791512157778.186
+    },
+    "GameImage/food-elements-sheet.png": {
+      "time": 1791403909190.586,
+      "uuid": "8b9f04d1-6745-4f0f-904d-5b601000b164"
+    },
+    "extra_assets/World_Selection/enabled-button-level-special.png.meta": {
+      "time": 1791404927125.3977
+    },
+    "extra_assets/World_Selection/enabled-button-level-special.png": {
+      "time": 1791404914524.709,
+      "uuid": "74dd47d8-1bae-422b-a9b8-5a0bd5cc52ea"
+    },
+    "Scripts/Match/ElementCatalog.ts.meta": {
+      "time": 1791404030005.85
+    },
+    "Scripts/Match/LevelConfig.ts.meta": {
+      "time": 1791404030007.4736
+    },
+    "Scripts/Match/ElementCatalog.ts": {
+      "time": 1791406710323.0151,
+      "uuid": "4ba7881f-4d11-4400-97b5-cf05f1fa6296"
+    },
+    "Scripts/Match/LevelConfig.ts": {
+      "time": 1791409045470.9463,
+      "uuid": "77d6091a-81f7-4b61-a1f3-d881d0d1d244"
+    },
+    "Prefabs/FoodElement.prefab.meta": {
+      "time": 1791404050063.1714
+    },
+    "Prefabs/FoodElement.prefab": {
+      "time": 1791408064553.3442,
+      "uuid": "75c38933-bbfa-49a2-ab56-923ebe40f4a6"
+    },
+    "extra_assets/World_Selection/disabled-button-level-special.png.meta": {
+      "time": 1791404864854.9548
+    },
+    "extra_assets/World_Selection/disabled-button-level-special.png": {
+      "time": 1791404811730.3179,
+      "uuid": "3bb34f55-4248-4272-80b6-a4e33267a42a"
+    },
+    "Scripts/Match/OrderManager.ts.meta": {
+      "time": 1791405604863.5935
+    },
+    "Scripts/Match/OrderManager.ts": {
+      "time": 1791507094828.916,
+      "uuid": "6e105072-af44-4db7-86a0-e934805b3005"
+    },
+    "Scripts/Match/PokiService.ts.meta": {
+      "time": 1791500443793.5754
+    },
+    "Scripts/Match/PokiService.ts": {
+      "time": 1791514232335.104,
+      "uuid": "1c6e3506-3083-430b-8d33-161153c7eab2"
+    },
+    "GameImage/powerups-sheet.png.meta": {
+      "time": 1791503051429.2449
+    },
+    "GameImage/powerups-sheet.png": {
+      "time": 1791502153525.86,
+      "uuid": "417ccaa3-21f5-4e76-82a3-c5e79a11cd91"
+    },
+    "UI/power-ups-window.png.meta": {
+      "time": 1791503069812.6218
+    },
+    "UI/powerup-button-holder.png.meta": {
+      "time": 1791503051470.2666
+    },
+    "UI/power-ups-window.png": {
+      "time": 1791503069822.547,
+      "uuid": "465d0b26-6709-45cd-809c-11c57990436a"
+    },
+    "UI/powerup-button-holder.png": {
+      "time": 1791502488316.3293,
+      "uuid": "87a5a1c0-f9d9-45b0-b603-0dad9dac1700"
+    },
+    "Scripts/Match/PlayerInventory.ts.meta": {
+      "time": 1791503252206.434
+    },
+    "Scripts/Match/PowerupCatalog.ts.meta": {
+      "time": 1791503252206.8503
+    },
+    "Scripts/Match/PowerupManager.ts.meta": {
+      "time": 1791503252206.992
+    },
+    "Scripts/Match/ReviveButton.ts.meta": {
+      "time": 1791503252207.0947
+    },
+    "Scripts/Match/PlayerInventory.ts": {
+      "time": 1791511375843.408,
+      "uuid": "70e6e791-7798-4a8b-8be6-76068c52d927"
+    },
+    "Scripts/Match/PowerupCatalog.ts": {
+      "time": 1791507066524.7,
+      "uuid": "33ca32cb-8fc0-47b2-80de-686e8d7396cb"
+    },
+    "Scripts/Match/PowerupManager.ts": {
+      "time": 1791514217815.1726,
+      "uuid": "39f5cacb-184b-4a99-94dd-51497df88dd6"
+    },
+    "Scripts/Match/ReviveButton.ts": {
+      "time": 1791505015205.553,
+      "uuid": "0e3e8ab1-deb7-44ad-a881-e5e774e01d7b"
+    },
+    "UI/points-holder.png.meta": {
+      "time": 1791504069658.1826
+    },
+    "UI/points-holder.png": {
+      "time": 1791504069665.839,
+      "uuid": "a95e903c-cd5e-4da0-ac16-830485b636ff"
+    },
+    "UI/moeda-de-dolar.png.meta": {
+      "time": 1791509862228.1304
+    },
+    "UI/moeda-de-dolar.png": {
+      "time": 1791509796780.2512,
+      "uuid": "8815ebbb-8f6b-4138-b460-53a14d07ce8c"
+    },
+    "UI/play.png.meta": {
+      "time": 1791504666135.3245
+    },
+    "UI/play.png": {
+      "time": 1791504605044.2146,
+      "uuid": "4d5fda1b-6cf1-4f77-b88f-e3cdc944c72f"
+    },
+    "UI/powerup-icon.png.meta": {
+      "time": 1791505071160.4392
+    },
+    "UI/powerup-icon.png": {
+      "time": 1791504981402.1465,
+      "uuid": "3c410085-a95a-4240-aaac-53a215759650"
+    },
+    "Scripts/Match/CoinsHolderView.ts.meta": {
+      "time": 1791505094698.3813
+    },
+    "Prefabs/CoinsHolder.prefab.meta": {
+      "time": 1791505094656.9106
+    },
+    "Scripts/Match/CoinsHolderView.ts": {
+      "time": 1791506191236.5488,
+      "uuid": "a479f5e8-631f-4a94-8474-98d3458b0529"
+    },
+    "Prefabs/CoinsHolder.prefab": {
+      "time": 1791513744962.1711,
+      "uuid": "feddbd93-0a87-41d6-8046-1865dea53494"
+    },
+    "Scripts/Match/AchievementManager.ts.meta": {
+      "time": 1791507100706.0881
+    },
+    "Scripts/Match/PlayerStats.ts.meta": {
+      "time": 1791507100706.3894
+    },
+    "Scripts/Match/AchievementManager.ts": {
+      "time": 1791514337339.209,
+      "uuid": "451e3fb0-9d42-467e-a4a1-e06f23084125"
+    },
+    "Scripts/Match/PlayerStats.ts": {
+      "time": 1791511375842.652,
+      "uuid": "347877b4-cbfc-4086-90cf-8a30dfa189a9"
+    },
+    "UI/achivements-icon-sheet.png.meta": {
+      "time": 1791514348825.904
+    },
+    "UI/achivements-icon-sheet.png": {
+      "time": 1791514337244.8833,
+      "uuid": "9a918a94-bd23-4080-918a-de266d7e2f63"
+    },
+    "UI/moeda-de-dolar-group.png.meta": {
+      "time": 1791509882943.4917
+    },
+    "UI/moeda-de-dolar-group.png": {
+      "time": 1791509478030.707,
+      "uuid": "5c0029b2-4dff-445d-8a4e-84964f8524c4"
+    },
+    "Scripts/Match/RankingManager.ts.meta": {
+      "time": 1791511046886.3008
+    },
+    "Scripts/Match/RankingManager.ts": {
+      "time": 1791514086537.237,
+      "uuid": "ed373575-27ac-4644-92aa-d9096f8ee670"
+    },
+    "Scripts/Match/PlayerData.ts.meta": {
+      "time": 1791511403711.4934
+    },
+    "Scripts/Match/PlayerData.ts": {
+      "time": 1791511375843.567,
+      "uuid": "cf32cbff-60f7-45dc-b085-c7d8a4d00b48"
+    },
+    "UI/ranking-icon.png.meta": {
+      "time": 1791511443674.7876
+    },
+    "UI/ranking-icon.png": {
+      "time": 1791511405088.225,
+      "uuid": "04999d73-ac2a-4a19-ae9c-3e6725094cad"
+    },
+    "UI/achievements-icon.png.meta": {
+      "time": 1791511545320.9116
+    },
+    "UI/achievements-icon.png": {
+      "time": 1791511514427.162,
+      "uuid": "03daf477-202f-436a-9e58-e3cb66a0b936"
+    },
+    "Font/FoxBubbleRegular.eot.meta": {
+      "time": 1791513737991.3894
+    },
+    "Font/FoxBubbleRegular.ttf.meta": {
+      "time": 1791513737999.5015
+    },
+    "Font/FoxBubbleRegular.eot": {
+      "time": 1791513641713.153,
+      "uuid": "076fe60d-8a17-4fbe-981c-9f55e9026782"
+    },
+    "Font/FoxBubbleRegular.ttf": {
+      "time": 1791513599907.932,
+      "uuid": "d3920345-785a-45ea-92ca-1db5c48be785"
+    },
+    "Scripts/Match/BadWords.ts.meta": {
+      "time": 1791513985789.289
+    },
+    "Scripts/Match/BadWords.ts": {
+      "time": 1791514148555.3389,
+      "uuid": "6bfb5cd2-6c4c-4efa-a257-dd896abcbdd5"
     }
   },
   "missing": {}

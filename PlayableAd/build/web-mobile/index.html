@@ -34,10 +34,109 @@
   <!--<link rel="apple-touch-icon" href=".png" />-->
   <!--<link rel="apple-touch-icon-precomposed" href=".png" />-->
 
+  <!-- Poki SDK: deve vir da CDN oficial da Poki (nao empacotar). Carrega antes do jogo. -->
+  <script src="https://game-cdn.poki.com/scripts/v2/poki-sdk.js"></script>
+
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <!-- Tela de carregamento propria (aparece antes do motor carregar e some quando o jogo esta pronto). -->
+  <style>
+    html, body { background: #1a0f0a; }
+    .letterbox { position: fixed; background: #1a0f0a; z-index: 100; pointer-events: none; display: none; }
+    #rotate-hint { display: none; position: fixed; inset: 0; z-index: 9500; background: #1a0f0a; color: #ffd633;
+      font-family: 'LoadingFont', sans-serif; font-size: 7vw; text-align: center; align-items: center; justify-content: center;
+      flex-direction: column; gap: 4vw; padding: 0 8vw; text-shadow: 0 3px 0 #3c2800; }
+    #rotate-hint .icon { font-size: 22vw; animation: rot 1.6s ease-in-out infinite; }
+    @keyframes rot { 0%, 20% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
+    @media (orientation: portrait) and (max-width: 820px) { #rotate-hint { display: flex; } }
+    @font-face { font-family: 'LoadingFont'; src: url('loading-font.ttf') format('truetype'); font-display: swap; }
+    #loading-screen { position: fixed; inset: 0; z-index: 9000; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; background: #2a1a14 url('loading-bg.jpg') center / cover no-repeat; transition: opacity .45s ease; }
+    #loading-screen.hide { opacity: 0; pointer-events: none; }
+    #loading-screen .shade { position: absolute; inset: 0; background: rgba(0,0,0,.28); }
+    #loading-screen img { position: relative; width: min(60vw, 52vh, 360px); height: auto; margin-bottom: 4vh;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.5)); animation: loadingBob 1.8s ease-in-out infinite; }
+    #loading-screen .bar { position: relative; width: min(70vw, 420px); height: 26px; border-radius: 16px; padding: 4px;
+      background: #1a1840; border: 3px solid #e0a030; box-shadow: 0 4px 12px rgba(0,0,0,.5); box-sizing: border-box; }
+    #loading-screen .fill { height: 100%; width: 0%; border-radius: 10px;
+      background: linear-gradient(#7dff5a, #22c03a); transition: width .12s linear; }
+    #loading-screen .label { position: relative; margin-top: 12px; color: #fff; font: 22px 'LoadingFont', Helvetica, Arial, sans-serif;
+      letter-spacing: 1px; text-shadow: 0 2px 0 #1a1840, 0 0 6px #1a1840; }
+    @keyframes loadingBob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-8px) } }
+  </style>
+
   <link rel="stylesheet" type="text/css" href="style.css"/>
 
 </head>
 <body>
+  <div id="loading-screen">
+    <div class="shade"></div>
+    <img src="loading-title.png" alt="Merge Merge Merge!"/>
+    <div class="bar"><div class="fill" id="loading-fill"></div></div>
+    <div class="label" id="loading-label">Loading... 0%</div>
+  </div>
+  <script>
+    // Progresso: o navegador nao expoe a porcentagem total, entao a barra avanca pelas etapas reais de download
+    // (scripts -> motor -> configuracao -> assets da cena, contados) e termina quando o jogo avisa que esta pronto
+    // (window.__gameReady, definido pelo GameManager).
+    (function () {
+      var fill = document.getElementById('loading-fill'), label = document.getElementById('loading-label'), screen = document.getElementById('loading-screen');
+      var shown = 0, cap = 12, start = Date.now(), done = false;
+      var timer = setInterval(function () {
+        var stage = 12, assets = 0, names = '';
+        try {
+          performance.getEntriesByType('resource').forEach(function (r) {
+            var n = r.name;
+            if (n.indexOf('/assets/main/import/') > -1 || n.indexOf('/assets/main/native/') > -1) assets++;
+            else names += n + '|';
+          });
+        } catch (e) { }
+        if (names.indexOf('polyfills.bundle') > -1) stage = 16;
+        if (names.indexOf('cocos-js/cc.js') > -1) stage = 40;      // motor baixado
+        if (names.indexOf('src/settings.json') > -1) stage = 46;
+        if (names.indexOf('assets/internal/') > -1) stage = 52;
+        if (names.indexOf('assets/main/config.json') > -1) stage = 58 + Math.min(34, assets * 0.7); // assets da cena
+        cap = Math.max(cap, stage);
+        if (window.__gameReady) {
+          shown += (100 - shown) * 0.35;
+          if (shown > 99.4) shown = 100;
+        } else {
+          // Sobe suavemente ate a etapa atual e continua devagar dentro dela (a barra nunca parece travada).
+          var goal = Math.min(95, cap + Math.min(6, (Date.now() - start) / 1000 * 0.4));
+          if (shown < goal) shown = Math.min(goal, shown + Math.max(0.3, (goal - shown) * 0.08));
+        }
+        fill.style.width = shown.toFixed(1) + '%';
+        label.textContent = 'Loading... ' + Math.floor(shown) + '%';
+        if (shown >= 100 && !done) {
+          done = true; clearInterval(timer);
+          setTimeout(function () { screen.classList.add('hide'); setTimeout(function () { screen.parentNode && screen.parentNode.removeChild(screen); }, 600); }, 150);
+        }
+      }, 50);
+      // Seguranca: se o jogo nunca avisar (erro), a tela some depois de 40s para nao esconder mensagens de erro.
+      setTimeout(function () { window.__gameReady = true; }, 40000);
+    })();
+  </script>
+  <div id="lb-a" class="letterbox"></div><div id="lb-b" class="letterbox"></div>
+  <script>
+    // Barras do letterbox (SHOW_ALL 1280x720): cobrem o que o jogo desenha fora da area util (ex.: itens da selecao de fases).
+    (function () {
+      var a = document.getElementById('lb-a'), b = document.getElementById('lb-b');
+      function fit() {
+        var w = window.innerWidth, h = window.innerHeight, k = Math.min(w / 1280, h / 720);
+        var padX = Math.max(0, Math.round((w - 1280 * k) / 2)), padY = Math.max(0, Math.round((h - 720 * k) / 2));
+        a.style.cssText = b.style.cssText = '';
+        if (padX > 0) {
+          a.style.cssText = 'display:block;left:0;top:0;bottom:0;width:' + padX + 'px';
+          b.style.cssText = 'display:block;right:0;top:0;bottom:0;width:' + padX + 'px';
+        } else if (padY > 0) {
+          a.style.cssText = 'display:block;left:0;right:0;top:0;height:' + padY + 'px';
+          b.style.cssText = 'display:block;left:0;right:0;bottom:0;height:' + padY + 'px';
+        }
+      }
+      window.addEventListener('resize', fit); window.addEventListener('orientationchange', fit); fit();
+    })();
+  </script>
+  <div id="rotate-hint"><div class="icon">&#128241;</div><div>Rotate your device to play</div></div>
   <div id="GameDiv" cc_exact_fit_screen="true">
       <div id="Cocos3dGameContainer">
         <canvas id="GameCanvas" oncontextmenu="event.preventDefault()" tabindex="99"></canvas>

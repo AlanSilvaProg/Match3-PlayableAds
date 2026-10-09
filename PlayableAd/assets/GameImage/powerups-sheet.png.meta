@@ -1,0 +1,134 @@
+{
+  "ver": "1.0.27",
+  "importer": "image",
+  "imported": true,
+  "uuid": "417ccaa3-21f5-4e76-82a3-c5e79a11cd91",
+  "files": [
+    ".json",
+    ".png"
+  ],
+  "subMetas": {
+    "6c48a": {
+      "importer": "texture",
+      "uuid": "417ccaa3-21f5-4e76-82a3-c5e79a11cd91@6c48a",
+      "displayName": "powerups-sheet",
+      "id": "6c48a",
+      "name": "texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0,
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "417ccaa3-21f5-4e76-82a3-c5e79a11cd91",
+        "visible": false
+      },
+      "ver": "1.0.22",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "f9941": {
+      "importer": "sprite-frame",
+      "uuid": "417ccaa3-21f5-4e76-82a3-c5e79a11cd91@f9941",
+      "displayName": "powerups-sheet",
+      "id": "f9941",
+      "name": "spriteFrame",
+      "userData": {
+        "trimThreshold": 1,
+        "rotated": false,
+        "offsetX": 2,
+        "offsetY": 7.5,
+        "trimX": 14,
+        "trimY": 36,
+        "width": 476,
+        "height": 287,
+        "rawWidth": 500,
+        "rawHeight": 374,
+        "borderTop": 0,
+        "borderBottom": 0,
+        "borderLeft": 0,
+        "borderRight": 0,
+        "packable": true,
+        "pixelsToUnit": 100,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "meshType": 0,
+        "vertices": {
+          "rawPosition": [
+            -238,
+            -143.5,
+            0,
+            238,
+            -143.5,
+            0,
+            -238,
+            143.5,
+            0,
+            238,
+            143.5,
+            0
+          ],
+          "indexes": [
+            0,
+            1,
+            2,
+            2,
+            1,
+            3
+          ],
+          "uv": [
+            14,
+            338,
+            490,
+            338,
+            14,
+            51,
+            490,
+            51
+          ],
+          "nuv": [
+            0.028,
+            0.13636363636363635,
+            0.98,
+            0.13636363636363635,
+            0.028,
+            0.9037433155080213,
+            0.98,
+            0.9037433155080213
+          ],
+          "minPos": [
+            -238,
+            -143.5,
+            0
+          ],
+          "maxPos": [
+            238,
+            143.5,
+            0
+          ]
+        },
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "417ccaa3-21f5-4e76-82a3-c5e79a11cd91@6c48a",
+        "atlasUuid": "",
+        "trimType": "auto"
+      },
+      "ver": "1.0.12",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    }
+  },
+  "userData": {
+    "type": "sprite-frame",
+    "fixAlphaTransparencyArtifacts": false,
+    "hasAlpha": true,
+    "redirect": "417ccaa3-21f5-4e76-82a3-c5e79a11cd91@6c48a"
+  }
+}

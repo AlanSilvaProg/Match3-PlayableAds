@@ -1,0 +1,90 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "moeda-de-dolar-group",
+    "atlas": "",
+    "rect": {
+      "x": 25,
+      "y": 40,
+      "width": 143,
+      "height": 116
+    },
+    "offset": {
+      "x": -3.5,
+      "y": 2
+    },
+    "originalSize": {
+      "width": 200,
+      "height": 200
+    },
+    "rotated": false,
+    "capInsets": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertices": {
+      "rawPosition": [
+        -71.5,
+        -58,
+        0,
+        71.5,
+        -58,
+        0,
+        -71.5,
+        58,
+        0,
+        71.5,
+        58,
+        0
+      ],
+      "indexes": [
+        0,
+        1,
+        2,
+        2,
+        1,
+        3
+      ],
+      "uv": [
+        25,
+        160,
+        168,
+        160,
+        25,
+        44,
+        168,
+        44
+      ],
+      "nuv": [
+        0.125,
+        0.22,
+        0.84,
+        0.22,
+        0.125,
+        0.8,
+        0.84,
+        0.8
+      ],
+      "minPos": {
+        "x": -71.5,
+        "y": -58,
+        "z": 0
+      },
+      "maxPos": {
+        "x": 71.5,
+        "y": 58,
+        "z": 0
+      }
+    },
+    "texture": "5c0029b2-4dff-445d-8a4e-84964f8524c4@6c48a",
+    "packable": true,
+    "pixelsToUnit": 100,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "meshType": 0
+  }
+}

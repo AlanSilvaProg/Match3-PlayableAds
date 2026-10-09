@@ -35,23 +35,17 @@
   },
   "5b62746f-2816-4c43-8243-247d8309a5d8": {
     "url": "db://assets/GameImage/frenchFries.png",
-    "value": {
-      "depends": []
-    },
+    "value": {},
     "versionCode": 1
   },
   "65b38ab6-113f-49d7-876d-c87acd77d1e9": {
     "url": "db://assets/GameImage/hamburger.png",
-    "value": {
-      "depends": []
-    },
+    "value": {},
     "versionCode": 1
   },
   "a5d53d10-d537-446f-ad12-33168222679d": {
     "url": "db://assets/GameImage/iceCreamCone2.png",
-    "value": {
-      "depends": []
-    },
+    "value": {},
     "versionCode": 1
   },
   "65b38ab6-113f-49d7-876d-c87acd77d1e9@6c48a": {
@@ -525,15 +519,7 @@
   },
   "583380ff-4536-4c7b-9a03-221587272e4b": {
     "url": "db://assets/Prefabs/HamburguerElement.prefab",
-    "value": {
-      "depends": [
-        "8254c4f1-fa99-4936-9559-268f88f98908",
-        "65b38ab6-113f-49d7-876d-c87acd77d1e9@f9941"
-      ],
-      "dependScripts": [
-        "63fc03d9-c22e-4d18-850b-8e6fc39bf560"
-      ]
-    },
+    "value": {},
     "versionCode": 2
   },
   "fca370d5-6ab4-49fd-9559-b478af523739": {
@@ -548,67 +534,27 @@
   },
   "6eac0062-3ecc-440f-8818-2f2421332e57": {
     "url": "db://assets/Prefabs/HamburguerElementCount.prefab",
-    "value": {
-      "depends": [
-        "65b38ab6-113f-49d7-876d-c87acd77d1e9@f9941",
-        "2cd97e8d-a9c7-454c-a5a5-ee38376852ac@f9941"
-      ],
-      "dependScripts": [
-        "fca370d5-6ab4-49fd-9559-b478af523739"
-      ]
-    },
+    "value": {},
     "versionCode": 2
   },
   "1167fa96-0b9e-4861-b2de-5df32fa39226": {
     "url": "db://assets/Prefabs/IceCreamElementCount.prefab",
-    "value": {
-      "depends": [
-        "a5d53d10-d537-446f-ad12-33168222679d@f9941",
-        "2cd97e8d-a9c7-454c-a5a5-ee38376852ac@f9941"
-      ],
-      "dependScripts": [
-        "fca370d5-6ab4-49fd-9559-b478af523739"
-      ]
-    },
+    "value": {},
     "versionCode": 2
   },
   "73437213-ab5d-4492-b05a-dbe0afe2afa2": {
     "url": "db://assets/Prefabs/FriesElementCount.prefab",
-    "value": {
-      "depends": [
-        "5b62746f-2816-4c43-8243-247d8309a5d8@f9941",
-        "2cd97e8d-a9c7-454c-a5a5-ee38376852ac@f9941"
-      ],
-      "dependScripts": [
-        "fca370d5-6ab4-49fd-9559-b478af523739"
-      ]
-    },
+    "value": {},
     "versionCode": 2
   },
   "c216cd1e-f620-4cd5-b31b-fca5566fa0dc": {
     "url": "db://assets/Prefabs/FriesElement.prefab",
-    "value": {
-      "depends": [
-        "8254c4f1-fa99-4936-9559-268f88f98908",
-        "5b62746f-2816-4c43-8243-247d8309a5d8@f9941"
-      ],
-      "dependScripts": [
-        "63fc03d9-c22e-4d18-850b-8e6fc39bf560"
-      ]
-    },
+    "value": {},
     "versionCode": 2
   },
   "6f4f1d3b-a7a7-4b0d-85fd-ca4858726dea": {
     "url": "db://assets/Prefabs/IceCreamElement.prefab",
-    "value": {
-      "depends": [
-        "8254c4f1-fa99-4936-9559-268f88f98908",
-        "a5d53d10-d537-446f-ad12-33168222679d@f9941"
-      ],
-      "dependScripts": [
-        "63fc03d9-c22e-4d18-850b-8e6fc39bf560"
-      ]
-    },
+    "value": {},
     "versionCode": 2
   },
   "7066c457-7c2b-417b-8779-338dab7721ee": {
@@ -733,20 +679,23 @@
     "url": "db://assets/Prefabs/FailScreen.prefab",
     "value": {
       "depends": [
-        "bee3f1e5-626c-4395-b253-be2fbfefb5dc@f9941",
-        "8258bf71-387b-48fe-9418-5981de4885b9@f9941",
+        "cb66dd6e-9bdd-4db6-9fa9-3f40df397156@f9941",
+        "a6601604-e134-4432-a5a8-376ed789a8ef@f9941",
         "3cba3c82-1266-4e93-92a2-7140f5d616f9@f9941",
         "f79ad02f-9071-4b3d-8087-96ff9e496e76",
+        "d3920345-785a-45ea-92ca-1db5c48be785",
         "05526288-f5d5-4bac-a657-9fac5dbb00a3@f9941",
-        "20835ba4-6145-4fbc-a58a-051ce700aa3e@f9941",
-        "544e49d6-3f05-4fa8-9a9e-091f98fc2ce8@f9941",
-        "951249e0-9f16-456d-8b85-a6ca954da16b@f9941",
         "67957730-67cc-488c-a721-76ec928842b7@f9941",
-        "1653f5f2-8003-45a8-b468-8f2a008f3c80"
+        "1653f5f2-8003-45a8-b468-8f2a008f3c80",
+        "4d5fda1b-6cf1-4f77-b88f-e3cdc944c72f@f9941"
       ],
       "dependScripts": [
-        "a7f6fba0-3115-4674-8598-0672d4d65274",
-        "031381fc-b2e2-4e31-a027-c172cb01d518"
+        "384c7804-779d-4753-b75c-d3e75d9f53b1",
+        "c9c4b8b3-5ed2-4ddc-94d0-1de5c8f13462",
+        "8042363e-37b2-4f04-a2d1-a3b1f45cd610",
+        "8511e72e-99c1-4e7b-8ea6-96cdd8d6dcd4",
+        "031381fc-b2e2-4e31-a027-c172cb01d518",
+        "0e3e8ab1-deb7-44ad-a881-e5e774e01d7b"
       ]
     },
     "versionCode": 2
@@ -755,19 +704,24 @@
     "url": "db://assets/Prefabs/WinnerScreen.prefab",
     "value": {
       "depends": [
-        "bee3f1e5-626c-4395-b253-be2fbfefb5dc@f9941",
-        "8258bf71-387b-48fe-9418-5981de4885b9@f9941",
+        "cb66dd6e-9bdd-4db6-9fa9-3f40df397156@f9941",
+        "a6601604-e134-4432-a5a8-376ed789a8ef@f9941",
         "77689eb8-98fb-4251-9913-cf095e2ea9d8@f9941",
         "f79ad02f-9071-4b3d-8087-96ff9e496e76",
+        "d3920345-785a-45ea-92ca-1db5c48be785",
         "c8b8dc50-6d6f-4c92-86de-c5d99ca9a5fb@f9941",
         "20835ba4-6145-4fbc-a58a-051ce700aa3e@f9941",
         "544e49d6-3f05-4fa8-9a9e-091f98fc2ce8@f9941",
         "951249e0-9f16-456d-8b85-a6ca954da16b@f9941",
-        "bb529a1e-a1df-43ba-abc9-83c70fd315c6@f9941",
+        "fd4507e6-03f5-40af-b957-ac0e09ad2511@f9941",
         "6f7bc02c-1d6f-40a3-8880-9e3b25a7cc48"
       ],
       "dependScripts": [
-        "a7f6fba0-3115-4674-8598-0672d4d65274",
+        "384c7804-779d-4753-b75c-d3e75d9f53b1",
+        "c9c4b8b3-5ed2-4ddc-94d0-1de5c8f13462",
+        "8042363e-37b2-4f04-a2d1-a3b1f45cd610",
+        "4d01ad16-fe22-4703-a8e3-79ad83b6257d",
+        "8511e72e-99c1-4e7b-8ea6-96cdd8d6dcd4",
         "031381fc-b2e2-4e31-a027-c172cb01d518"
       ]
     },
@@ -864,47 +818,74 @@
     "url": "db://assets/Scenes/PlayableAdMatch.scene",
     "value": {
       "depends": [
+        "cb66dd6e-9bdd-4db6-9fa9-3f40df397156@f9941",
+        "d3920345-785a-45ea-92ca-1db5c48be785",
         "bf89e619-eb3c-46be-b89f-d0d618e6d05e@f9941",
         "10404a0e-017b-4c9a-81a1-dc07d1fc80f6@f9941",
+        "743399d8-74a1-42e3-b2a5-6c8db6e2f05c@f9941",
+        "0eb34eca-beb2-49fe-a6a6-7466c8920495",
+        "45759e52-9113-4f15-89e3-52f6306015ba@f9941",
+        "ac2472d3-64dc-4ca6-987a-7fc0524795de@f9941",
+        "c450dbe1-6cb1-4a68-bf1a-e116ecf771f9@f9941",
+        "0a177ca1-6420-4e1e-a0cd-c226a8f19ad1@f9941",
         "3cba3c82-1266-4e93-92a2-7140f5d616f9@f9941",
         "f79ad02f-9071-4b3d-8087-96ff9e496e76",
-        "c8b8dc50-6d6f-4c92-86de-c5d99ca9a5fb@f9941",
-        "20835ba4-6145-4fbc-a58a-051ce700aa3e@f9941",
-        "544e49d6-3f05-4fa8-9a9e-091f98fc2ce8@f9941",
-        "951249e0-9f16-456d-8b85-a6ca954da16b@f9941",
         "6584e6d4-14e2-4cd0-9204-bbc880fb3d18",
         "d49c5b5f-4aa5-432f-b100-30cc895ec194",
         "002d8685-dbe7-4fff-a8e5-ac080ec35277@f9941",
         "2cd97e8d-a9c7-454c-a5a5-ee38376852ac@f9941",
-        "6eac0062-3ecc-440f-8818-2f2421332e57",
-        "73437213-ab5d-4492-b05a-dbe0afe2afa2",
-        "1167fa96-0b9e-4861-b2de-5df32fa39226",
         "1584ad8b-6473-4a13-a6c1-d9ec39d463e1@f9941",
-        "8258bf71-387b-48fe-9418-5981de4885b9@f9941",
-        "0eb34eca-beb2-49fe-a6a6-7466c8920495",
-        "5da64fda-4ae0-493a-8d44-7b9c3b45a6ad",
-        "583380ff-4536-4c7b-9a03-221587272e4b",
-        "6f4f1d3b-a7a7-4b0d-85fd-ca4858726dea",
-        "c216cd1e-f620-4cd5-b31b-fca5566fa0dc",
-        "bee3f1e5-626c-4395-b253-be2fbfefb5dc@f9941",
+        "a6601604-e134-4432-a5a8-376ed789a8ef@f9941",
+        "c8b8dc50-6d6f-4c92-86de-c5d99ca9a5fb@f9941",
+        "8de13d00-acd8-4178-8c37-d8f876c458d7@f9941",
+        "7d1500d8-5578-4d8e-8571-356feb3f148f@f9941",
+        "74dd47d8-1bae-422b-a9b8-5a0bd5cc52ea@f9941",
+        "3bb34f55-4248-4272-80b6-a4e33267a42a@f9941",
+        "ef6aebe0-ef8b-4d71-93e7-51c483271a6b@f9941",
+        "b41b224a-1890-44ef-86c0-758a9be434b7@f9941",
+        "fd4507e6-03f5-40af-b957-ac0e09ad2511@f9941",
         "90e5b496-a0df-4fb9-ba4b-d587cdc5c863@f9941",
+        "5da64fda-4ae0-493a-8d44-7b9c3b45a6ad",
+        "75c38933-bbfa-49a2-ab56-923ebe40f4a6",
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@f9941",
+        "bee3f1e5-626c-4395-b253-be2fbfefb5dc@f9941",
         "bb529a1e-a1df-43ba-abc9-83c70fd315c6@f9941",
         "5271621c-cd0b-45fb-8f17-785c44f0618e@f9941",
         "9cd6d6b3-ef76-411d-9357-d7e642757d1b",
+        "417ccaa3-21f5-4e76-82a3-c5e79a11cd91@f9941",
+        "87a5a1c0-f9d9-45b0-b603-0dad9dac1700@f9941",
+        "465d0b26-6709-45cd-809c-11c57990436a@f9941",
+        "a95e903c-cd5e-4da0-ac16-830485b636ff@f9941",
+        "8815ebbb-8f6b-4138-b460-53a14d07ce8c@f9941",
+        "5c0029b2-4dff-445d-8a4e-84964f8524c4@f9941",
+        "4d5fda1b-6cf1-4f77-b88f-e3cdc944c72f@f9941",
+        "3c410085-a95a-4240-aaac-53a215759650@f9941",
+        "feddbd93-0a87-41d6-8046-1865dea53494",
+        "05526288-f5d5-4bac-a657-9fac5dbb00a3@f9941",
+        "9a918a94-bd23-4080-918a-de266d7e2f63@f9941",
+        "03daf477-202f-436a-9e58-e3cb66a0b936@f9941",
+        "04999d73-ac2a-4a19-ae9c-3e6725094cad@f9941",
         "3ac87572-4ee1-4542-a7a7-a2a662cfc447",
         "c90776ae-d364-4ea8-ae82-04f6e4a74965",
         "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0",
         "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0"
       ],
       "dependScripts": [
-        "a7f6fba0-3115-4674-8598-0672d4d65274",
+        "7f157597-9213-4a48-842c-722380101aa3",
         "7066c457-7c2b-417b-8779-338dab7721ee",
-        "738db3fc-5801-4e9b-a853-7a24ce80f0ea",
+        "6e105072-af44-4db7-86a0-e934805b3005",
         "38af9b55-b6e0-4600-a305-7f16f772b343",
+        "384c7804-779d-4753-b75c-d3e75d9f53b1",
+        "8042363e-37b2-4f04-a2d1-a3b1f45cd610",
+        "8eafd6ba-3593-471c-a694-c4534adaeb40",
+        "7c408ce4-5b86-4809-9bca-26080cda20f3",
         "ef137c72-8446-49a0-90d6-bf3455356caa",
         "97789766-243d-41d6-ae70-b499872b4622",
         "95b9fc3f-9663-4c9c-b080-a495d04b78ad",
-        "fdb05417-a2c0-4ac9-83f0-aaa156c58ec0"
+        "fdb05417-a2c0-4ac9-83f0-aaa156c58ec0",
+        "39f5cacb-184b-4a99-94dd-51497df88dd6",
+        "451e3fb0-9d42-467e-a4a1-e06f23084125",
+        "ed373575-27ac-4644-92aa-d9096f8ee670"
       ]
     },
     "versionCode": 2
@@ -923,6 +904,955 @@
   },
   "0445ef0d-2f61-4e9b-b66e-c5b775182aa2": {
     "url": "db://assets/Scripts/Match/TimedAutoDestroy.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "3643bd98-3150-425e-9fcb-f9bfe479b689": {
+    "url": "db://assets/extra_assets/video-game-star.png",
+    "value": {},
+    "versionCode": 1
+  },
+  "3643bd98-3150-425e-9fcb-f9bfe479b689@6c48a": {
+    "url": "db://assets/extra_assets/video-game-star.png@6c48a",
+    "value": {
+      "depends": [
+        "3643bd98-3150-425e-9fcb-f9bfe479b689"
+      ]
+    },
+    "versionCode": 1
+  },
+  "3643bd98-3150-425e-9fcb-f9bfe479b689@f9941": {
+    "url": "db://assets/extra_assets/video-game-star.png@f9941",
+    "value": {
+      "depends": [
+        "3643bd98-3150-425e-9fcb-f9bfe479b689@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "fd4507e6-03f5-40af-b957-ac0e09ad2511": {
+    "url": "db://assets/extra_assets/video-game-star (2).png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "fd4507e6-03f5-40af-b957-ac0e09ad2511@6c48a": {
+    "url": "db://assets/extra_assets/video-game-star (2).png@6c48a",
+    "value": {
+      "depends": [
+        "fd4507e6-03f5-40af-b957-ac0e09ad2511"
+      ]
+    },
+    "versionCode": 1
+  },
+  "fd4507e6-03f5-40af-b957-ac0e09ad2511@f9941": {
+    "url": "db://assets/extra_assets/video-game-star (2).png@f9941",
+    "value": {
+      "depends": [
+        "fd4507e6-03f5-40af-b957-ac0e09ad2511@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "b5a1efed-bd12-4b00-bfb3-0c3d2e99851e": {
+    "url": "db://assets/extra_assets/star_color.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "b5a1efed-bd12-4b00-bfb3-0c3d2e99851e@6c48a": {
+    "url": "db://assets/extra_assets/star_color.png@6c48a",
+    "value": {
+      "depends": [
+        "b5a1efed-bd12-4b00-bfb3-0c3d2e99851e"
+      ]
+    },
+    "versionCode": 1
+  },
+  "7f157597-9213-4a48-842c-722380101aa3": {
+    "url": "db://assets/Scripts/Match/ComboManager.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "45759e52-9113-4f15-89e3-52f6306015ba": {
+    "url": "db://assets/UI/Combo/combo_2x.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "ac2472d3-64dc-4ca6-987a-7fc0524795de": {
+    "url": "db://assets/UI/Combo/combo_4x.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "c450dbe1-6cb1-4a68-bf1a-e116ecf771f9": {
+    "url": "db://assets/UI/Combo/combo_6x.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "8e2ab00e-7fad-47dc-b43f-33d690ede0ac": {
+    "url": "db://assets/UI/Combo",
+    "value": {},
+    "versionCode": 1
+  },
+  "0a177ca1-6420-4e1e-a0cd-c226a8f19ad1": {
+    "url": "db://assets/UI/Combo/combo_8x.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "45759e52-9113-4f15-89e3-52f6306015ba@6c48a": {
+    "url": "db://assets/UI/Combo/combo_2x.png@6c48a",
+    "value": {
+      "depends": [
+        "45759e52-9113-4f15-89e3-52f6306015ba"
+      ]
+    },
+    "versionCode": 1
+  },
+  "0a177ca1-6420-4e1e-a0cd-c226a8f19ad1@6c48a": {
+    "url": "db://assets/UI/Combo/combo_8x.png@6c48a",
+    "value": {
+      "depends": [
+        "0a177ca1-6420-4e1e-a0cd-c226a8f19ad1"
+      ]
+    },
+    "versionCode": 1
+  },
+  "c450dbe1-6cb1-4a68-bf1a-e116ecf771f9@6c48a": {
+    "url": "db://assets/UI/Combo/combo_6x.png@6c48a",
+    "value": {
+      "depends": [
+        "c450dbe1-6cb1-4a68-bf1a-e116ecf771f9"
+      ]
+    },
+    "versionCode": 1
+  },
+  "ac2472d3-64dc-4ca6-987a-7fc0524795de@6c48a": {
+    "url": "db://assets/UI/Combo/combo_4x.png@6c48a",
+    "value": {
+      "depends": [
+        "ac2472d3-64dc-4ca6-987a-7fc0524795de"
+      ]
+    },
+    "versionCode": 1
+  },
+  "c450dbe1-6cb1-4a68-bf1a-e116ecf771f9@f9941": {
+    "url": "db://assets/UI/Combo/combo_6x.png@f9941",
+    "value": {
+      "depends": [
+        "c450dbe1-6cb1-4a68-bf1a-e116ecf771f9@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "ac2472d3-64dc-4ca6-987a-7fc0524795de@f9941": {
+    "url": "db://assets/UI/Combo/combo_4x.png@f9941",
+    "value": {
+      "depends": [
+        "ac2472d3-64dc-4ca6-987a-7fc0524795de@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "45759e52-9113-4f15-89e3-52f6306015ba@f9941": {
+    "url": "db://assets/UI/Combo/combo_2x.png@f9941",
+    "value": {
+      "depends": [
+        "45759e52-9113-4f15-89e3-52f6306015ba@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "0a177ca1-6420-4e1e-a0cd-c226a8f19ad1@f9941": {
+    "url": "db://assets/UI/Combo/combo_8x.png@f9941",
+    "value": {
+      "depends": [
+        "0a177ca1-6420-4e1e-a0cd-c226a8f19ad1@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "743399d8-74a1-42e3-b2a5-6c8db6e2f05c": {
+    "url": "db://assets/UI/Combo/without_combo.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "743399d8-74a1-42e3-b2a5-6c8db6e2f05c@6c48a": {
+    "url": "db://assets/UI/Combo/without_combo.png@6c48a",
+    "value": {
+      "depends": [
+        "743399d8-74a1-42e3-b2a5-6c8db6e2f05c"
+      ]
+    },
+    "versionCode": 1
+  },
+  "743399d8-74a1-42e3-b2a5-6c8db6e2f05c@f9941": {
+    "url": "db://assets/UI/Combo/without_combo.png@f9941",
+    "value": {
+      "depends": [
+        "743399d8-74a1-42e3-b2a5-6c8db6e2f05c@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8eafd6ba-3593-471c-a694-c4534adaeb40": {
+    "url": "db://assets/Scripts/Match/StartScreen.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "2b9b14a1-5376-41eb-8bc1-887a817493cb": {
+    "url": "db://assets/GameImage/chicken.png",
+    "value": {},
+    "versionCode": 1
+  },
+  "774124d2-d7f3-4e79-88c4-12b404633309": {
+    "url": "db://assets/GameImage/coca.png",
+    "value": {},
+    "versionCode": 1
+  },
+  "2b9b14a1-5376-41eb-8bc1-887a817493cb@6c48a": {
+    "url": "db://assets/GameImage/chicken.png@6c48a",
+    "value": {
+      "depends": [
+        "2b9b14a1-5376-41eb-8bc1-887a817493cb"
+      ]
+    },
+    "versionCode": 1
+  },
+  "774124d2-d7f3-4e79-88c4-12b404633309@6c48a": {
+    "url": "db://assets/GameImage/coca.png@6c48a",
+    "value": {
+      "depends": [
+        "774124d2-d7f3-4e79-88c4-12b404633309"
+      ]
+    },
+    "versionCode": 1
+  },
+  "2b9b14a1-5376-41eb-8bc1-887a817493cb@f9941": {
+    "url": "db://assets/GameImage/chicken.png@f9941",
+    "value": {
+      "depends": [
+        "2b9b14a1-5376-41eb-8bc1-887a817493cb@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "774124d2-d7f3-4e79-88c4-12b404633309@f9941": {
+    "url": "db://assets/GameImage/coca.png@f9941",
+    "value": {
+      "depends": [
+        "774124d2-d7f3-4e79-88c4-12b404633309@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "1eff2a4a-6cb8-403d-8a80-4685b1e77599": {
+    "url": "db://assets/Prefabs/ChickenElement.prefab",
+    "value": {},
+    "versionCode": 2
+  },
+  "cde45eed-7530-4dae-8568-05a1ae29e79d": {
+    "url": "db://assets/Prefabs/ChickenElementCount.prefab",
+    "value": {},
+    "versionCode": 2
+  },
+  "84ce780a-241f-4a4e-973f-8ed64543aa8d": {
+    "url": "db://assets/Prefabs/CocaElement.prefab",
+    "value": {},
+    "versionCode": 2
+  },
+  "feb75486-912f-424b-bec8-a38d262ebe67": {
+    "url": "db://assets/Prefabs/CocaElementCount.prefab",
+    "value": {},
+    "versionCode": 2
+  },
+  "a6601604-e134-4432-a5a8-376ed789a8ef": {
+    "url": "db://assets/UI/splash_logo_merge.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "a6601604-e134-4432-a5a8-376ed789a8ef@6c48a": {
+    "url": "db://assets/UI/splash_logo_merge.png@6c48a",
+    "value": {
+      "depends": [
+        "a6601604-e134-4432-a5a8-376ed789a8ef"
+      ]
+    },
+    "versionCode": 1
+  },
+  "a6601604-e134-4432-a5a8-376ed789a8ef@f9941": {
+    "url": "db://assets/UI/splash_logo_merge.png@f9941",
+    "value": {
+      "depends": [
+        "a6601604-e134-4432-a5a8-376ed789a8ef@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "0a443152-7592-494f-b9b8-c21327bf9038": {
+    "url": "db://assets/extra_assets/background.jpeg",
+    "value": {},
+    "versionCode": 1
+  },
+  "0a443152-7592-494f-b9b8-c21327bf9038@6c48a": {
+    "url": "db://assets/extra_assets/background.jpeg@6c48a",
+    "value": {
+      "depends": [
+        "0a443152-7592-494f-b9b8-c21327bf9038"
+      ]
+    },
+    "versionCode": 1
+  },
+  "cb66dd6e-9bdd-4db6-9fa9-3f40df397156": {
+    "url": "db://assets/extra_assets/background.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "cb66dd6e-9bdd-4db6-9fa9-3f40df397156@6c48a": {
+    "url": "db://assets/extra_assets/background.png@6c48a",
+    "value": {
+      "depends": [
+        "cb66dd6e-9bdd-4db6-9fa9-3f40df397156"
+      ]
+    },
+    "versionCode": 1
+  },
+  "cb66dd6e-9bdd-4db6-9fa9-3f40df397156@f9941": {
+    "url": "db://assets/extra_assets/background.png@f9941",
+    "value": {
+      "depends": [
+        "cb66dd6e-9bdd-4db6-9fa9-3f40df397156@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8042363e-37b2-4f04-a2d1-a3b1f45cd610": {
+    "url": "db://assets/Scripts/Match/AttentionShake.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "384c7804-779d-4753-b75c-d3e75d9f53b1": {
+    "url": "db://assets/Scripts/Match/LogoAnimation.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "aeeb3020-497c-4fab-a3ae-d33ef4eeeb46": {
+    "url": "db://assets/extra_assets/World_Selection",
+    "value": {},
+    "versionCode": 1
+  },
+  "3e2c6a05-f529-4df4-9895-7035f0e125b4": {
+    "url": "db://assets/Font",
+    "value": {},
+    "versionCode": 1
+  },
+  "11bd4aae-5698-4167-8788-a2ae21fc562d": {
+    "url": "db://assets/Font/Candyshop.ttf",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "ef6aebe0-ef8b-4d71-93e7-51c483271a6b": {
+    "url": "db://assets/extra_assets/World_Selection/disabled-button-level.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "7d1500d8-5578-4d8e-8571-356feb3f148f": {
+    "url": "db://assets/extra_assets/World_Selection/enabled-button-level.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "b41b224a-1890-44ef-86c0-758a9be434b7": {
+    "url": "db://assets/extra_assets/World_Selection/locked-icon.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "68460922-b4fd-4da6-8e5c-bd68ae05f95c": {
+    "url": "db://assets/Font/Candyshop.otf",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "ef6aebe0-ef8b-4d71-93e7-51c483271a6b@6c48a": {
+    "url": "db://assets/extra_assets/World_Selection/disabled-button-level.png@6c48a",
+    "value": {
+      "depends": [
+        "ef6aebe0-ef8b-4d71-93e7-51c483271a6b"
+      ]
+    },
+    "versionCode": 1
+  },
+  "b41b224a-1890-44ef-86c0-758a9be434b7@6c48a": {
+    "url": "db://assets/extra_assets/World_Selection/locked-icon.png@6c48a",
+    "value": {
+      "depends": [
+        "b41b224a-1890-44ef-86c0-758a9be434b7"
+      ]
+    },
+    "versionCode": 1
+  },
+  "7d1500d8-5578-4d8e-8571-356feb3f148f@6c48a": {
+    "url": "db://assets/extra_assets/World_Selection/enabled-button-level.png@6c48a",
+    "value": {
+      "depends": [
+        "7d1500d8-5578-4d8e-8571-356feb3f148f"
+      ]
+    },
+    "versionCode": 1
+  },
+  "04de0ceb-77af-4e8b-a3ec-a3ad355f5426": {
+    "url": "db://assets/Scripts/Match/LevelProgress.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "7c408ce4-5b86-4809-9bca-26080cda20f3": {
+    "url": "db://assets/Scripts/Match/LevelSelector.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "8de13d00-acd8-4178-8c37-d8f876c458d7": {
+    "url": "db://assets/extra_assets/points-holder.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "8de13d00-acd8-4178-8c37-d8f876c458d7@6c48a": {
+    "url": "db://assets/extra_assets/points-holder.png@6c48a",
+    "value": {
+      "depends": [
+        "8de13d00-acd8-4178-8c37-d8f876c458d7"
+      ]
+    },
+    "versionCode": 1
+  },
+  "7d1500d8-5578-4d8e-8571-356feb3f148f@f9941": {
+    "url": "db://assets/extra_assets/World_Selection/enabled-button-level.png@f9941",
+    "value": {
+      "depends": [
+        "7d1500d8-5578-4d8e-8571-356feb3f148f@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "ef6aebe0-ef8b-4d71-93e7-51c483271a6b@f9941": {
+    "url": "db://assets/extra_assets/World_Selection/disabled-button-level.png@f9941",
+    "value": {
+      "depends": [
+        "ef6aebe0-ef8b-4d71-93e7-51c483271a6b@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "b41b224a-1890-44ef-86c0-758a9be434b7@f9941": {
+    "url": "db://assets/extra_assets/World_Selection/locked-icon.png@f9941",
+    "value": {
+      "depends": [
+        "b41b224a-1890-44ef-86c0-758a9be434b7@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8511e72e-99c1-4e7b-8ea6-96cdd8d6dcd4": {
+    "url": "db://assets/Scripts/Match/ReturnToLevels.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "4d01ad16-fe22-4703-a8e3-79ad83b6257d": {
+    "url": "db://assets/Scripts/Match/WinStars.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "8de13d00-acd8-4178-8c37-d8f876c458d7@f9941": {
+    "url": "db://assets/extra_assets/points-holder.png@f9941",
+    "value": {
+      "depends": [
+        "8de13d00-acd8-4178-8c37-d8f876c458d7@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164": {
+    "url": "db://assets/GameImage/food-elements-sheet.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@6c48a",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164"
+      ]
+    },
+    "versionCode": 1
+  },
+  "74dd47d8-1bae-422b-a9b8-5a0bd5cc52ea": {
+    "url": "db://assets/extra_assets/World_Selection/enabled-button-level-special.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "74dd47d8-1bae-422b-a9b8-5a0bd5cc52ea@6c48a": {
+    "url": "db://assets/extra_assets/World_Selection/enabled-button-level-special.png@6c48a",
+    "value": {
+      "depends": [
+        "74dd47d8-1bae-422b-a9b8-5a0bd5cc52ea"
+      ]
+    },
+    "versionCode": 1
+  },
+  "74dd47d8-1bae-422b-a9b8-5a0bd5cc52ea@f9941": {
+    "url": "db://assets/extra_assets/World_Selection/enabled-button-level-special.png@f9941",
+    "value": {
+      "depends": [
+        "74dd47d8-1bae-422b-a9b8-5a0bd5cc52ea@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@f9941": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@f9941",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "4ba7881f-4d11-4400-97b5-cf05f1fa6296": {
+    "url": "db://assets/Scripts/Match/ElementCatalog.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "77d6091a-81f7-4b61-a1f3-d881d0d1d244": {
+    "url": "db://assets/Scripts/Match/LevelConfig.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "75c38933-bbfa-49a2-ab56-923ebe40f4a6": {
+    "url": "db://assets/Prefabs/FoodElement.prefab",
+    "value": {
+      "depends": [
+        "8254c4f1-fa99-4936-9559-268f88f98908",
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@f9941"
+      ],
+      "dependScripts": [
+        "63fc03d9-c22e-4d18-850b-8e6fc39bf560"
+      ]
+    },
+    "versionCode": 2
+  },
+  "3bb34f55-4248-4272-80b6-a4e33267a42a": {
+    "url": "db://assets/extra_assets/World_Selection/disabled-button-level-special.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "3bb34f55-4248-4272-80b6-a4e33267a42a@6c48a": {
+    "url": "db://assets/extra_assets/World_Selection/disabled-button-level-special.png@6c48a",
+    "value": {
+      "depends": [
+        "3bb34f55-4248-4272-80b6-a4e33267a42a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "3bb34f55-4248-4272-80b6-a4e33267a42a@f9941": {
+    "url": "db://assets/extra_assets/World_Selection/disabled-button-level-special.png@f9941",
+    "value": {
+      "depends": [
+        "3bb34f55-4248-4272-80b6-a4e33267a42a@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "6e105072-af44-4db7-86a0-e934805b3005": {
+    "url": "db://assets/Scripts/Match/OrderManager.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "1c6e3506-3083-430b-8d33-161153c7eab2": {
+    "url": "db://assets/Scripts/Match/PokiService.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "417ccaa3-21f5-4e76-82a3-c5e79a11cd91": {
+    "url": "db://assets/GameImage/powerups-sheet.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "417ccaa3-21f5-4e76-82a3-c5e79a11cd91@6c48a": {
+    "url": "db://assets/GameImage/powerups-sheet.png@6c48a",
+    "value": {
+      "depends": [
+        "417ccaa3-21f5-4e76-82a3-c5e79a11cd91"
+      ]
+    },
+    "versionCode": 1
+  },
+  "465d0b26-6709-45cd-809c-11c57990436a": {
+    "url": "db://assets/UI/power-ups-window.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "87a5a1c0-f9d9-45b0-b603-0dad9dac1700": {
+    "url": "db://assets/UI/powerup-button-holder.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "465d0b26-6709-45cd-809c-11c57990436a@6c48a": {
+    "url": "db://assets/UI/power-ups-window.png@6c48a",
+    "value": {
+      "depends": [
+        "465d0b26-6709-45cd-809c-11c57990436a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "87a5a1c0-f9d9-45b0-b603-0dad9dac1700@6c48a": {
+    "url": "db://assets/UI/powerup-button-holder.png@6c48a",
+    "value": {
+      "depends": [
+        "87a5a1c0-f9d9-45b0-b603-0dad9dac1700"
+      ]
+    },
+    "versionCode": 1
+  },
+  "417ccaa3-21f5-4e76-82a3-c5e79a11cd91@f9941": {
+    "url": "db://assets/GameImage/powerups-sheet.png@f9941",
+    "value": {
+      "depends": [
+        "417ccaa3-21f5-4e76-82a3-c5e79a11cd91@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "465d0b26-6709-45cd-809c-11c57990436a@f9941": {
+    "url": "db://assets/UI/power-ups-window.png@f9941",
+    "value": {
+      "depends": [
+        "465d0b26-6709-45cd-809c-11c57990436a@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "87a5a1c0-f9d9-45b0-b603-0dad9dac1700@f9941": {
+    "url": "db://assets/UI/powerup-button-holder.png@f9941",
+    "value": {
+      "depends": [
+        "87a5a1c0-f9d9-45b0-b603-0dad9dac1700@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "70e6e791-7798-4a8b-8be6-76068c52d927": {
+    "url": "db://assets/Scripts/Match/PlayerInventory.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "33ca32cb-8fc0-47b2-80de-686e8d7396cb": {
+    "url": "db://assets/Scripts/Match/PowerupCatalog.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "39f5cacb-184b-4a99-94dd-51497df88dd6": {
+    "url": "db://assets/Scripts/Match/PowerupManager.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "0e3e8ab1-deb7-44ad-a881-e5e774e01d7b": {
+    "url": "db://assets/Scripts/Match/ReviveButton.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "a95e903c-cd5e-4da0-ac16-830485b636ff": {
+    "url": "db://assets/UI/points-holder.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "a95e903c-cd5e-4da0-ac16-830485b636ff@6c48a": {
+    "url": "db://assets/UI/points-holder.png@6c48a",
+    "value": {
+      "depends": [
+        "a95e903c-cd5e-4da0-ac16-830485b636ff"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8815ebbb-8f6b-4138-b460-53a14d07ce8c": {
+    "url": "db://assets/UI/moeda-de-dolar.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "8815ebbb-8f6b-4138-b460-53a14d07ce8c@6c48a": {
+    "url": "db://assets/UI/moeda-de-dolar.png@6c48a",
+    "value": {
+      "depends": [
+        "8815ebbb-8f6b-4138-b460-53a14d07ce8c"
+      ]
+    },
+    "versionCode": 1
+  },
+  "a95e903c-cd5e-4da0-ac16-830485b636ff@f9941": {
+    "url": "db://assets/UI/points-holder.png@f9941",
+    "value": {
+      "depends": [
+        "a95e903c-cd5e-4da0-ac16-830485b636ff@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8815ebbb-8f6b-4138-b460-53a14d07ce8c@f9941": {
+    "url": "db://assets/UI/moeda-de-dolar.png@f9941",
+    "value": {
+      "depends": [
+        "8815ebbb-8f6b-4138-b460-53a14d07ce8c@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "4d5fda1b-6cf1-4f77-b88f-e3cdc944c72f": {
+    "url": "db://assets/UI/play.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "4d5fda1b-6cf1-4f77-b88f-e3cdc944c72f@6c48a": {
+    "url": "db://assets/UI/play.png@6c48a",
+    "value": {
+      "depends": [
+        "4d5fda1b-6cf1-4f77-b88f-e3cdc944c72f"
+      ]
+    },
+    "versionCode": 1
+  },
+  "4d5fda1b-6cf1-4f77-b88f-e3cdc944c72f@f9941": {
+    "url": "db://assets/UI/play.png@f9941",
+    "value": {
+      "depends": [
+        "4d5fda1b-6cf1-4f77-b88f-e3cdc944c72f@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "3c410085-a95a-4240-aaac-53a215759650": {
+    "url": "db://assets/UI/powerup-icon.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "3c410085-a95a-4240-aaac-53a215759650@6c48a": {
+    "url": "db://assets/UI/powerup-icon.png@6c48a",
+    "value": {
+      "depends": [
+        "3c410085-a95a-4240-aaac-53a215759650"
+      ]
+    },
+    "versionCode": 1
+  },
+  "3c410085-a95a-4240-aaac-53a215759650@f9941": {
+    "url": "db://assets/UI/powerup-icon.png@f9941",
+    "value": {
+      "depends": [
+        "3c410085-a95a-4240-aaac-53a215759650@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "feddbd93-0a87-41d6-8046-1865dea53494": {
+    "url": "db://assets/Prefabs/CoinsHolder.prefab",
+    "value": {
+      "depends": [
+        "8815ebbb-8f6b-4138-b460-53a14d07ce8c@f9941",
+        "d3920345-785a-45ea-92ca-1db5c48be785",
+        "a95e903c-cd5e-4da0-ac16-830485b636ff@f9941"
+      ],
+      "dependScripts": [
+        "a479f5e8-631f-4a94-8474-98d3458b0529"
+      ]
+    },
+    "versionCode": 2
+  },
+  "a479f5e8-631f-4a94-8474-98d3458b0529": {
+    "url": "db://assets/Scripts/Match/CoinsHolderView.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "451e3fb0-9d42-467e-a4a1-e06f23084125": {
+    "url": "db://assets/Scripts/Match/AchievementManager.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "347877b4-cbfc-4086-90cf-8a30dfa189a9": {
+    "url": "db://assets/Scripts/Match/PlayerStats.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "9a918a94-bd23-4080-918a-de266d7e2f63": {
+    "url": "db://assets/UI/achivements-icon-sheet.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "9a918a94-bd23-4080-918a-de266d7e2f63@6c48a": {
+    "url": "db://assets/UI/achivements-icon-sheet.png@6c48a",
+    "value": {
+      "depends": [
+        "9a918a94-bd23-4080-918a-de266d7e2f63"
+      ]
+    },
+    "versionCode": 1
+  },
+  "9a918a94-bd23-4080-918a-de266d7e2f63@f9941": {
+    "url": "db://assets/UI/achivements-icon-sheet.png@f9941",
+    "value": {
+      "depends": [
+        "9a918a94-bd23-4080-918a-de266d7e2f63@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "5c0029b2-4dff-445d-8a4e-84964f8524c4": {
+    "url": "db://assets/UI/moeda-de-dolar-group.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "5c0029b2-4dff-445d-8a4e-84964f8524c4@6c48a": {
+    "url": "db://assets/UI/moeda-de-dolar-group.png@6c48a",
+    "value": {
+      "depends": [
+        "5c0029b2-4dff-445d-8a4e-84964f8524c4"
+      ]
+    },
+    "versionCode": 1
+  },
+  "5c0029b2-4dff-445d-8a4e-84964f8524c4@f9941": {
+    "url": "db://assets/UI/moeda-de-dolar-group.png@f9941",
+    "value": {
+      "depends": [
+        "5c0029b2-4dff-445d-8a4e-84964f8524c4@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "ed373575-27ac-4644-92aa-d9096f8ee670": {
+    "url": "db://assets/Scripts/Match/RankingManager.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "cf32cbff-60f7-45dc-b085-c7d8a4d00b48": {
+    "url": "db://assets/Scripts/Match/PlayerData.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "04999d73-ac2a-4a19-ae9c-3e6725094cad": {
+    "url": "db://assets/UI/ranking-icon.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "04999d73-ac2a-4a19-ae9c-3e6725094cad@6c48a": {
+    "url": "db://assets/UI/ranking-icon.png@6c48a",
+    "value": {
+      "depends": [
+        "04999d73-ac2a-4a19-ae9c-3e6725094cad"
+      ]
+    },
+    "versionCode": 1
+  },
+  "04999d73-ac2a-4a19-ae9c-3e6725094cad@f9941": {
+    "url": "db://assets/UI/ranking-icon.png@f9941",
+    "value": {
+      "depends": [
+        "04999d73-ac2a-4a19-ae9c-3e6725094cad@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "03daf477-202f-436a-9e58-e3cb66a0b936": {
+    "url": "db://assets/UI/achievements-icon.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "03daf477-202f-436a-9e58-e3cb66a0b936@6c48a": {
+    "url": "db://assets/UI/achievements-icon.png@6c48a",
+    "value": {
+      "depends": [
+        "03daf477-202f-436a-9e58-e3cb66a0b936"
+      ]
+    },
+    "versionCode": 1
+  },
+  "03daf477-202f-436a-9e58-e3cb66a0b936@f9941": {
+    "url": "db://assets/UI/achievements-icon.png@f9941",
+    "value": {
+      "depends": [
+        "03daf477-202f-436a-9e58-e3cb66a0b936@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "d3920345-785a-45ea-92ca-1db5c48be785": {
+    "url": "db://assets/Font/FoxBubbleRegular.ttf",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "076fe60d-8a17-4fbe-981c-9f55e9026782": {
+    "url": "db://assets/Font/FoxBubbleRegular.eot",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "6bfb5cd2-6c4c-4efa-a257-dd896abcbdd5": {
+    "url": "db://assets/Scripts/Match/BadWords.ts",
     "value": {},
     "versionCode": 1
   }

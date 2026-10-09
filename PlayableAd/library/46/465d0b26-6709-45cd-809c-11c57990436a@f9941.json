@@ -1,0 +1,90 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "power-ups-window",
+    "atlas": "",
+    "rect": {
+      "x": 22,
+      "y": 89,
+      "width": 356,
+      "height": 220
+    },
+    "offset": {
+      "x": 0,
+      "y": 1
+    },
+    "originalSize": {
+      "width": 400,
+      "height": 400
+    },
+    "rotated": false,
+    "capInsets": [
+      56,
+      56,
+      56,
+      56
+    ],
+    "vertices": {
+      "rawPosition": [
+        -178,
+        -110,
+        0,
+        178,
+        -110,
+        0,
+        -178,
+        110,
+        0,
+        178,
+        110,
+        0
+      ],
+      "indexes": [
+        0,
+        1,
+        2,
+        2,
+        1,
+        3
+      ],
+      "uv": [
+        22,
+        311,
+        378,
+        311,
+        22,
+        91,
+        378,
+        91
+      ],
+      "nuv": [
+        0.055,
+        0.2275,
+        0.945,
+        0.2275,
+        0.055,
+        0.7775,
+        0.945,
+        0.7775
+      ],
+      "minPos": {
+        "x": -178,
+        "y": -110,
+        "z": 0
+      },
+      "maxPos": {
+        "x": 178,
+        "y": 110,
+        "z": 0
+      }
+    },
+    "texture": "465d0b26-6709-45cd-809c-11c57990436a@6c48a",
+    "packable": true,
+    "pixelsToUnit": 100,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "meshType": 0
+  }
+}

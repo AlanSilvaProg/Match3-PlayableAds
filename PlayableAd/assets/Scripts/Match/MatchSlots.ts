@@ -34,11 +34,24 @@ export class MatchSlots extends Component {
         } else {
             insertIndex = lastSameTypeIndex + 1;
 
-            if (insertIndex < this.slotElements.length && this.slotElements[insertIndex] !== null) {
-                const firstFreeIndex = this.slotElements.indexOf(null);
-                if (firstFreeIndex === -1) return null;
+            // O ultimo slot ja pertence ao mesmo tipo: nao ha onde agrupar, usa a primeira vaga livre (ou rejeita).
+            if (insertIndex >= this.slotElements.length) {
+                insertIndex = this.slotElements.indexOf(null);
+                if (insertIndex === -1) return null;
+            } else if (this.slotElements[insertIndex] !== null) {
+                // So da para empurrar os itens para a direita se houver vaga depois do ponto de insercao;
+                // caso contrario usa a primeira vaga livre (sem agrupar) para nao sobrescrever ninguem.
+                let freeAfter = -1;
+                for (let i = insertIndex + 1; i < this.slotElements.length; i++) {
+                    if (this.slotElements[i] === null) { freeAfter = i; break; }
+                }
 
-                this.ShiftElementsFrom(insertIndex, firstFreeIndex);
+                if (freeAfter !== -1) {
+                    this.ShiftElementsFrom(insertIndex, freeAfter);
+                } else {
+                    insertIndex = this.slotElements.indexOf(null);
+                    if (insertIndex === -1) return null;
+                }
             }
         }
 

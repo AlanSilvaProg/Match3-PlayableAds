@@ -1,18 +1,22 @@
-import { _decorator, Component, Node, Prefab, instantiate, UITransform, Vec3, randomRange } from 'cc';
+import { _decorator, Component, Prefab, SpriteFrame, instantiate, UITransform, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 import { MatchElement } from './MatchElement';
 import { MatchController } from './MatchController';
-import { MatchElementCount } from './MatchElementCount';
 import { ElementType } from './ElementType';
+import { ElementCatalog } from './ElementCatalog';
+import { LevelConfig, LevelPlan } from './LevelConfig';
 import { GameManager } from './GameManager';
 import { MatchSlots } from './MatchSlots';
 
 @ccclass('MatchInitializer')
 export class MatchInitializer extends Component {
 
-    @property([Prefab])
-    public matchElementPrefabs: Prefab[] = [];
+    @property({ type: Prefab, tooltip: 'Prefab unico dos itens: tipo e sprite sao definidos em runtime.' })
+    public elementPrefab: Prefab = null!;
+
+    @property({ type: SpriteFrame, tooltip: 'Sprite frame do food-elements-sheet.png inteiro; os itens sao recortados dele.' })
+    public foodSheet: SpriteFrame | null = null;
 
     @property(MatchController)
     public matchController: MatchController = null!;
@@ -20,52 +24,61 @@ export class MatchInitializer extends Component {
     @property(MatchSlots)
     public matchSlots: MatchSlots = null!;
 
-    @property
-    public numberOfElements: number = 10;
-
-    @property([MatchElementCount])
-    public matchElementCounts: MatchElementCount[] = [];
+    @property({ tooltip: 'Tamanho maximo (px) do sprite de cada item no tabuleiro.' })
+    public elementSize: number = 90;
 
     private width: number = 0;
     private height: number = 0;
     private anchorX: number = 0;
     private anchorY: number = 0;
-    private typeCounts: Map<ElementType, number> = new Map();
+    private built: boolean = false;
 
-    start() {
+    protected onLoad() {
+        ElementCatalog.init(this.foodSheet);
+    }
+
+    protected start() {
         const uiTransform = this.getComponent(UITransform);
-        if (!uiTransform) {
-            console.error("MatchInitializer requires a UITransform component.");
-            return;
+        if (uiTransform) {
+            this.width = uiTransform.width;
+            this.height = uiTransform.height;
+            this.anchorX = uiTransform.anchorX;
+            this.anchorY = uiTransform.anchorY;
         }
 
-        this.typeCounts.clear();
+        // O tabuleiro so e montado quando o jogador escolhe o nivel (ou no inicio direto, na primeira vez).
+        if (GameManager.instance) {
+            GameManager.instance.events.on(GameManager.EVENT_PLAY, this.onPlay, this);
+        }
+    }
 
-        this.width = uiTransform.width;
-        this.height = uiTransform.height;
-        this.anchorX = uiTransform.anchorX;
-        this.anchorY = uiTransform.anchorY;
+    protected onDestroy() {
+        // Ao trocar de cena o GameManager pode ja ter sido destruido (campos zerados pelo engine).
+        GameManager.instance?.events?.off(GameManager.EVENT_PLAY, this.onPlay, this);
+    }
 
-        for (let i = 0; i < this.numberOfElements; i++) {
-            if (this.matchElementPrefabs.length === 0) continue;
+    private onPlay() {
+        this.BuildLevel(LevelConfig.get(GameManager.currentLevel));
+    }
 
-            const prefabIndex = Math.floor(randomRange(0, this.matchElementPrefabs.length));
-            const prefab = this.matchElementPrefabs[prefabIndex];
+    public BuildLevel(plan: LevelPlan) {
+        if (this.built) return;
+        this.built = true;
 
-            for (let j = 0; j < 3; j++) {
-                this.CreateMatchElement(prefab, true);
+        for (const group of plan.groups) {
+            const total = group.count; // itens = soma das quantidades pedidas
+            for (let i = 0; i < total; i++) {
+                this.CreateMatchElement(group.type, true);
             }
         }
 
-        // Total count will be handled individually in CreateMatchElement
-
-        this.matchElementCounts.forEach(counter => {
-            counter.Initialize(0, this.matchController);
-        });
+        if (GameManager.instance) {
+            GameManager.instance.ApplyLevelPlan(plan);
+        }
     }
 
-    public CreateMatchElement(prefab: Prefab, randomizePosition: boolean): MatchElement | null {
-        const instance = instantiate(prefab);
+    public CreateMatchElement(type: ElementType, randomizePosition: boolean): MatchElement | null {
+        const instance = instantiate(this.elementPrefab);
         instance.parent = this.node;
 
         const matchElement = instance.getComponent(MatchElement);
@@ -74,22 +87,16 @@ export class MatchInitializer extends Component {
             return null;
         }
 
+        matchElement.Setup(type, this.elementSize);
+
         if (randomizePosition) {
             const x = (Math.random() - this.anchorX) * this.width;
             const y = (Math.random() - this.anchorY) * this.height;
             instance.setPosition(new Vec3(x, y, 0));
         }
 
-        const currentCount = this.typeCounts.get(matchElement.type) || 0;
-        this.typeCounts.set(matchElement.type, currentCount + 1);
-
         if (GameManager.instance) {
             GameManager.instance.IncreaseElements(1);
-        }
-
-        const counter = this.matchElementCounts.find(c => c.type === matchElement.type);
-        if (counter) {
-            counter.AddIncrement(1);
         }
 
         matchElement.matchController = this.matchController;

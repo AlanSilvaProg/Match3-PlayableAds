@@ -1,10 +1,23 @@
-import { _decorator, Component, director } from 'cc';
-const { ccclass, property } = _decorator;
+import { _decorator, Component } from 'cc';
+const { ccclass } = _decorator;
+import { GameManager } from './GameManager';
 
 @ccclass('RestartGame')
 export class RestartGame extends Component {
 
+    private busy: boolean = false;
+
     public Restart() {
-        director.loadScene(director.getScene().name);
+        if (this.busy) return;
+        this.busy = true;
+
+        GameManager.skipMenuOnLoad = true;
+        // Anuncio da Poki entre niveis, depois recarrega a cena.
+        GameManager.reloadWithBreak().then(ok => {
+            if (!ok) {
+                GameManager.skipMenuOnLoad = false;
+                this.busy = false;
+            }
+        });
     }
 }

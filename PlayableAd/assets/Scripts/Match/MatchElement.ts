@@ -1,8 +1,9 @@
-import { _decorator, Component, Button, Sprite, Enum, Vec3, tween, Tween, Node, AudioSource, Sorting2D } from 'cc';
+import { _decorator, Component, Button, Sprite, Enum, Vec3, tween, Tween, Node, AudioSource, Sorting2D, Color } from 'cc';
 const { ccclass, property } = _decorator;
 
 import { MatchSlots } from './MatchSlots';
 import { ElementType } from './ElementType';
+import { ElementCatalog } from './ElementCatalog';
 import { MatchController } from './MatchController';
 import { GameManager } from './GameManager';
 
@@ -39,6 +40,18 @@ export class MatchElement extends Component {
     @property
     public moveSpeed: number = 500;
 
+    @property({ tooltip: 'Duracao (s) da atracao dos elementos ate o centro no merge.' })
+    public mergePullDuration: number = 0.28;
+
+    @property({ tooltip: 'Distancia (px) do recuo de antecipacao dos elementos laterais.' })
+    public mergeWindUpDistance: number = 18;
+
+    @property({ tooltip: 'Multiplicador de escala do elemento central enquanto os outros chegam.' })
+    public mergeBuildUpScale: number = 1.25;
+
+    @property({ tooltip: 'Multiplicador de escala do elemento central no impacto.' })
+    public mergeImpactScale: number = 1.7;
+
     @property(AudioSource)
     public selectionAudio: AudioSource | null = null;
 
@@ -52,6 +65,15 @@ export class MatchElement extends Component {
     public currentSlot: Node | null = null;
     private movementDuration: number = 0;
     public hasReachedSlot: boolean = false;
+    private boardPosition: Vec3 | null = null;
+    private isRejecting: boolean = false;
+
+    /** Define o tipo e o sprite do item (um unico prefab serve para todos os alimentos). */
+    public Setup(type: ElementType, maxSize: number = 90) {
+        this.type = type;
+        const sprite = this.spriteComponent || this.getComponent(Sprite);
+        if (sprite) ElementCatalog.applyFitted(sprite, type, maxSize);
+    }
 
     start() {
         if (!this.hasReachedSlot) {
@@ -66,9 +88,33 @@ export class MatchElement extends Component {
 
     OnClick() {
         if (GameManager.instance && !GameManager.instance.IsRunning() && !GameManager.instance.IsTutorialRunning()) return;
-        if (!this.isAvailable) return;
+        // Tutorial guiado: os demais itens ficam bloqueados ate o passo terminar.
+        const allowed = GameManager.instance ? GameManager.instance.tutorialAllowed : null;
+        if (allowed && allowed.indexOf(this) === -1) {
+            if (this.isAvailable) this.PlayRejectedFeedback();
+            return;
+        }
+
+        if (!this.isAvailable) {
+            this.TryReturnToBoard();
+            return;
+        }
+
+        // Reserva o slot antes de alterar qualquer estado: com a prateleira cheia o clique e rejeitado.
+        const slot = this.matchSlots ? this.matchSlots.AssignSlot(this) : null;
+        if (!slot) {
+            this.PlayRejectedFeedback();
+            return;
+        }
+
+        // Power-up Focus pode ter deixado o item pulsando/escurecido: limpa antes de mover para a prateleira.
+        Tween.stopAllByTarget(this.node);
+        const sprite = this.spriteComponent || this.getComponent(Sprite);
+        if (sprite) sprite.color = Color.WHITE;
 
         this.isAvailable = false;
+        this.boardPosition = this.node.position.clone();
+        this.currentSlot = slot;
 
         this.SetSortingOrder(3);
 
@@ -76,43 +122,80 @@ export class MatchElement extends Component {
             this.selectionAudio.play();
         }
 
-        if (this.matchSlots) {
-            this.currentSlot = this.matchSlots.AssignSlot(this);
-            if (this.currentSlot) {
-                const targetWorldPos = new Vec3();
-                this.currentSlot.getWorldPosition(targetWorldPos);
+        const targetWorldPos = new Vec3();
+        slot.getWorldPosition(targetWorldPos);
 
-                const currentWorldPos = new Vec3();
-                this.node.getWorldPosition(currentWorldPos);
+        const currentWorldPos = new Vec3();
+        this.node.getWorldPosition(currentWorldPos);
 
-                const targetLocalPos = new Vec3();
-                if (this.node.parent) {
-                    this.node.parent.inverseTransformPoint(targetLocalPos, targetWorldPos);
-                }
-
-                const distance = Vec3.distance(currentWorldPos, targetWorldPos);
-                this.movementDuration = distance / this.moveSpeed;
-
-                tween(this.node)
-                    .to(this.movementDuration, { position: targetLocalPos, scale: this.selectedScale })
-                    .call(() => {
-                        this.hasReachedSlot = true;
-                        if (this.matchController) {
-                            this.matchController.onElementReachedSlot(this);
-                        }
-                    })
-                    .start();
-            }
+        const targetLocalPos = new Vec3();
+        if (this.node.parent) {
+            this.node.parent.inverseTransformPoint(targetLocalPos, targetWorldPos);
         }
+
+        const distance = Vec3.distance(currentWorldPos, targetWorldPos);
+        this.movementDuration = distance / this.moveSpeed;
+
+        tween(this.node)
+            .to(this.movementDuration, { position: targetLocalPos, scale: this.selectedScale })
+            .call(() => {
+                this.hasReachedSlot = true;
+                if (this.matchController) {
+                    this.matchController.onElementReachedSlot(this);
+                }
+            })
+            .start();
 
         if (this.matchController) {
             this.matchController.onElementClicked(this);
         }
     }
 
+    /** Prateleira cheia: balanca o item sem registra-lo como selecionado. */
+    private PlayRejectedFeedback() {
+        if (this.isRejecting) return;
+        this.isRejecting = true;
+        const origin = this.node.position.clone();
+        tween(this.node)
+            .to(0.04, { position: new Vec3(origin.x - 8, origin.y, origin.z) })
+            .to(0.08, { position: new Vec3(origin.x + 8, origin.y, origin.z) })
+            .to(0.04, { position: origin })
+            .call(() => { this.isRejecting = false; })
+            .start();
+    }
+
+    /** Devolve um item que esta na prateleira (e ainda nao entrou em um merge) para sua posicao no board. */
+    private TryReturnToBoard() {
+        const gm = GameManager.instance;
+        if (gm && !gm.IsRunning()) return;
+        if (!this.hasReachedSlot || !this.boardPosition || !this.currentSlot) return;
+        if (!this.matchController || this.matchController.selectedElements.indexOf(this) === -1) return;
+
+        const slots = this.matchSlots;
+        slots.ReleaseSlot(this.currentSlot);
+        this.currentSlot = null;
+        this.hasReachedSlot = false;
+        this.matchController.onElementReturned(this);
+
+        Tween.stopAllByTarget(this.node);
+        this.SetSortingOrder(3);
+        const distance = Vec3.distance(this.node.position, this.boardPosition);
+        const duration = Math.max(0.15, distance / this.moveSpeed);
+        tween(this.node)
+            .to(duration, { position: this.boardPosition, scale: this.availableScale }, { easing: 'cubicOut' })
+            .call(() => {
+                this.isAvailable = true;
+                this.SetSortingOrder(this.defaultSortingOrder);
+            })
+            .start();
+
+        slots.CompactSlots();
+    }
+
     public MoveToSlot(slot: Node) {
         this.currentSlot = slot;
         this.hasReachedSlot = false;
+        Tween.stopAllByTarget(this.node);
 
         const targetWorldPos = new Vec3();
         slot.getWorldPosition(targetWorldPos);
@@ -123,7 +206,7 @@ export class MatchElement extends Component {
         }
 
         tween(this.node)
-            .to(0.3, { position: targetLocalPos })
+            .to(0.3, { position: targetLocalPos, scale: this.selectedScale })
             .call(() => {
                 this.hasReachedSlot = true;
                 if (this.matchController) {
@@ -135,6 +218,7 @@ export class MatchElement extends Component {
 
     public ForceSetInSlot(slot: Node) {
         this.isAvailable = false;
+        this.boardPosition = this.node.position.clone();
         this.currentSlot = slot;
         this.hasReachedSlot = true;
 
@@ -184,20 +268,41 @@ export class MatchElement extends Component {
             }
         }
 
+        const pull = this.mergePullDuration;
+
         if (isMiddle) {
-            const overshootScale = this.selectedScale.clone().multiplyScalar(1.4);
+            // Centro: cresce e vibra enquanto os outros sao atraidos, e explode no impacto.
+            const buildUp = this.selectedScale.clone().multiplyScalar(this.mergeBuildUpScale);
+            const impact = this.selectedScale.clone().multiplyScalar(this.mergeImpactScale);
 
             tween(this.node)
-                .to(0.15, { scale: overshootScale }, { easing: 'backOut' })
-                .delay(0.15)
-                .to(0.15, { scale: Vec3.ZERO })
+                .parallel(
+                    tween().to(pull, { scale: buildUp }, { easing: 'sineOut' }),
+                    tween()
+                        .to(pull * 0.25, { eulerAngles: new Vec3(0, 0, 8) })
+                        .to(pull * 0.5, { eulerAngles: new Vec3(0, 0, -8) })
+                        .to(pull * 0.25, { eulerAngles: new Vec3(0, 0, 0) })
+                )
+                .to(0.07, { scale: impact }, { easing: 'backOut' })
+                .to(0.12, { scale: Vec3.ZERO }, { easing: 'quadIn' })
                 .call(() => {
                     this.node.destroy();
                 })
                 .start();
         } else {
+            // Laterais: recuam um pouco (antecipacao) e sao sugadas para o centro, acelerando.
+            const start = this.node.position.clone();
+            const dir = new Vec3();
+            Vec3.subtract(dir, start, mergePosition);
+            dir.z = 0;
+            if (dir.lengthSqr() > 0.0001) dir.normalize();
+            const windUp = new Vec3(start.x + dir.x * this.mergeWindUpDistance, start.y + dir.y * this.mergeWindUpDistance, start.z);
+            const windUpScale = this.selectedScale.clone().multiplyScalar(1.1);
+            const endScale = this.selectedScale.clone().multiplyScalar(0.6);
+
             tween(this.node)
-                .to(0.3, { position: mergePosition, scale: Vec3.ZERO })
+                .to(0.08, { position: windUp, scale: windUpScale }, { easing: 'sineOut' })
+                .to(pull - 0.08, { position: mergePosition, scale: endScale }, { easing: 'cubicIn' })
                 .call(() => {
                     this.node.destroy();
                 })

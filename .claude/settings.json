@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '=== CONTEXTO DO PROJETO (docs/PROJECT_CONTEXT.md) — revise antes de responder a primeira mensagem ==='; cat \"$CLAUDE_PROJECT_DIR/docs/PROJECT_CONTEXT.md\""
+          }
+        ]
+      }
+    ]
+  }
+}

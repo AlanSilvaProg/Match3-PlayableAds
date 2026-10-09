@@ -4,7 +4,8 @@ export enum GameState {
     Tutorial,
     Running,
     Defeat,
-    Victory
+    Victory,
+    Menu
 }
 
 Enum(GameState);

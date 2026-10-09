@@ -1,0 +1,90 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "combo_6x",
+    "atlas": "",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 125,
+      "height": 121
+    },
+    "offset": {
+      "x": 0,
+      "y": 2
+    },
+    "originalSize": {
+      "width": 125,
+      "height": 125
+    },
+    "rotated": false,
+    "capInsets": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertices": {
+      "rawPosition": [
+        -62.5,
+        -60.5,
+        0,
+        62.5,
+        -60.5,
+        0,
+        -62.5,
+        60.5,
+        0,
+        62.5,
+        60.5,
+        0
+      ],
+      "indexes": [
+        0,
+        1,
+        2,
+        2,
+        1,
+        3
+      ],
+      "uv": [
+        0,
+        125,
+        125,
+        125,
+        0,
+        4,
+        125,
+        4
+      ],
+      "nuv": [
+        0,
+        0.032,
+        1,
+        0.032,
+        0,
+        1,
+        1,
+        1
+      ],
+      "minPos": {
+        "x": -62.5,
+        "y": -60.5,
+        "z": 0
+      },
+      "maxPos": {
+        "x": 62.5,
+        "y": 60.5,
+        "z": 0
+      }
+    },
+    "texture": "c450dbe1-6cb1-4a68-bf1a-e116ecf771f9@6c48a",
+    "packable": true,
+    "pixelsToUnit": 100,
+    "pivot": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "meshType": 0
+  }
+}
