@@ -1,3 +1,5 @@
+import { WindowAnim } from './WindowAnim';
+import { SoundManager } from './SoundManager';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, UITransform, Vec3, Color, Sorting2D, UIOpacity, tween, Tween, Enum, Rect, Size, Vec2 } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -331,6 +333,8 @@ export class AchievementManager extends Component {
         this.refreshOpenButtons();
 
         // Espera a tela de vitoria aparecer; um aviso por vez, em sequencia.
+        // Um unico som por lote de conquistas (o SoundManager ainda protege contra toques proximos demais).
+        this.scheduleOnce(() => SoundManager.playNotification(), 0.9);
         fresh.slice(0, 4).forEach((d, i) => {
             this.scheduleOnce(() => this.showUnlockBanner(d, i), 0.9 + i * 0.7);
         });
@@ -519,7 +523,6 @@ export class AchievementManager extends Component {
     public openWindow() {
         if (!this.windowRoot) this.buildWindow();
         const root = this.windowRoot!;
-        root.active = true;
         const parent = root.parent;
         if (parent) root.setSiblingIndex(parent.children.length - 1);
         this.scroll = 0;
@@ -527,14 +530,14 @@ export class AchievementManager extends Component {
         this.setScroll(0);
         this.refreshRows();
         PowerupManager.instance?.refreshBadges();
-        root.setScale(0.85, 0.85, 1);
-        Tween.stopAllByTarget(root);
-        tween(root).to(0.2, { scale: Vec3.ONE }, { easing: 'backOut' }).start();
+        SoundManager.playOpenMenu();
+        WindowAnim.open(root);
     }
 
     public closeWindow() {
-        if (this.windowRoot) this.windowRoot.active = false;
-        this.refreshOpenButtons();
+        if (!this.windowRoot || !this.windowRoot.active) return;
+        SoundManager.playOpenMenu();
+        WindowAnim.close(this.windowRoot, () => this.refreshOpenButtons());
     }
 
     private buildWindow() {
@@ -553,7 +556,7 @@ export class AchievementManager extends Component {
         this.makeSprite(win, pm.windowFrame, base + 1, true);
         this.makeLabel(win, 'ACHIEVEMENTS', 46, 480, 60, 0, H / 2 - 62, base + 3, Color.WHITE, new Color(20, 70, 120, 255));
         this.windowBadge = pm.createPointsBadgeView(win, -W / 2 + 190, H / 2 - 62, base + 3, false);
-        this.makeButton(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, new Color(255, 120, 120, 255), () => this.closeWindow());
+        this.makeButton(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, new Color(255, 120, 120, 255), () => this.closeWindow(), true);
 
         // Area visivel (com mascara): a lista rola dentro dela.
         const vw = this.viewportWidth, vh = this.viewportHeight;
@@ -576,14 +579,14 @@ export class AchievementManager extends Component {
     }
 
     private makeButton(parent: Node, text: string, x: number, y: number, w: number, h: number, order: number, tint: Color,
-        onTap: () => void): { node: Node, label: Label, bg: Sprite } {
+        onTap: () => void, silent: boolean = false): { node: Node, label: Label, bg: Sprite } {
         const node = this.makeNode('Button', parent, x, y, w, h);
         const bg = this.makeSprite(node, this.pm!.buttonFrame, order, true);
         bg.color = tint;
         const label = this.makeLabel(node, text, Math.round(h * 0.45), w - 16, h - 10, 0, 3, order + 1);
         node.on(Node.EventType.TOUCH_START, () => node.setScale(0.93, 0.93, 1));
         node.on(Node.EventType.TOUCH_CANCEL, () => node.setScale(1, 1, 1));
-        node.on(Node.EventType.TOUCH_END, () => { node.setScale(1, 1, 1); onTap(); });
+        node.on(Node.EventType.TOUCH_END, () => { node.setScale(1, 1, 1); if (!silent) SoundManager.playMenuClick(); onTap(); });
         return { node, label, bg };
     }
 

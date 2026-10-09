@@ -845,6 +845,27 @@
         "b41b224a-1890-44ef-86c0-758a9be434b7@f9941",
         "fd4507e6-03f5-40af-b957-ac0e09ad2511@f9941",
         "90e5b496-a0df-4fb9-ba4b-d587cdc5c863@f9941",
+        "d5fcf940-6a37-4a36-911b-42a94a3fb653",
+        "cf803827-248d-4ffb-bc2b-ac9e4ac9ff7e",
+        "f2bbfe54-467d-4646-a59e-8c61c10cc21a",
+        "ceb3f865-972d-4aec-947a-ccd1b1ce311c",
+        "5d53f24a-224f-4e80-8290-1a606d9a0ff4",
+        "03b5b1e9-efff-4a11-b434-5edbf023ed35",
+        "036389e6-3ce2-4748-8b1a-0e0709a3a0ff",
+        "f0699c6f-a851-4978-988f-638cf5431c37",
+        "054ccc49-949a-4c5c-a124-cb9ef04c0b7d",
+        "af1f299e-a1b4-44ac-a134-dcdc8512aed1",
+        "c479ddc4-aa62-4341-adc2-c6ebd99f07b2",
+        "a162b1d0-2630-47d9-bb34-4c41e578b96f",
+        "8c387cb6-bbbb-4200-ae26-afacecefdead",
+        "891a75e3-bb08-4515-ac19-59b512a306c5",
+        "e680447d-5d67-40dc-80cd-2bff4066a6ff",
+        "c65f9065-de9a-45c7-96d9-d6c21e05cb9f",
+        "5cce37e3-97af-4e90-839d-3eb9a2a47a73",
+        "2fa6d368-bdcd-4d3e-8467-57abdfb0c52b",
+        "3ff3a70b-028b-4ae4-bd33-f355202c2383",
+        "0d3b6adc-4954-4d0f-bd52-e6ae2f4880ef",
+        "c113cfa6-d52a-4fd9-ab95-99b356f1630d",
         "5da64fda-4ae0-493a-8d44-7b9c3b45a6ad",
         "75c38933-bbfa-49a2-ab56-923ebe40f4a6",
         "8b9f04d1-6745-4f0f-904d-5b601000b164@f9941",
@@ -877,6 +898,7 @@
         "8042363e-37b2-4f04-a2d1-a3b1f45cd610",
         "8eafd6ba-3593-471c-a694-c4534adaeb40",
         "7c408ce4-5b86-4809-9bca-26080cda20f3",
+        "f26d4f9b-2212-4455-8975-fda240fd3cfc",
         "ef137c72-8446-49a0-90d6-bf3455356caa",
         "97789766-243d-41d6-ae70-b499872b4622",
         "95b9fc3f-9663-4c9c-b080-a495d04b78ad",
@@ -1852,6 +1874,284 @@
   "6bfb5cd2-6c4c-4efa-a257-dd896abcbdd5": {
     "url": "db://assets/Scripts/Match/BadWords.ts",
     "value": {},
+    "versionCode": 1
+  },
+  "d5fcf940-6a37-4a36-911b-42a94a3fb653": {
+    "url": "db://assets/Sounds/coleta.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "cf803827-248d-4ffb-bc2b-ac9e4ac9ff7e": {
+    "url": "db://assets/Sounds/notification.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "f26d4f9b-2212-4455-8975-fda240fd3cfc": {
+    "url": "db://assets/Scripts/Match/SoundManager.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "5d53f24a-224f-4e80-8290-1a606d9a0ff4": {
+    "url": "db://assets/Sounds/drop-order-to-one.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "2032632f-3d6c-49b8-bfad-790ee5b8c056": {
+    "url": "db://assets/Scripts/Match/WindowAnim.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "03b5b1e9-efff-4a11-b434-5edbf023ed35": {
+    "url": "db://assets/Sounds/menu-click.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "036389e6-3ce2-4748-8b1a-0e0709a3a0ff": {
+    "url": "db://assets/Sounds/open-menu.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "f0699c6f-a851-4978-988f-638cf5431c37": {
+    "url": "db://assets/Sounds/click-blocked.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "054ccc49-949a-4c5c-a124-cb9ef04c0b7d": {
+    "url": "db://assets/Sounds/time-increasing.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "af1f299e-a1b4-44ac-a134-dcdc8512aed1": {
+    "url": "db://assets/Sounds/time-clock.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "c479ddc4-aa62-4341-adc2-c6ebd99f07b2": {
+    "url": "db://assets/Sounds/combo-changed.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "a162b1d0-2630-47d9-bb34-4c41e578b96f": {
+    "url": "db://assets/Sounds/removed-from-selected.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "8c387cb6-bbbb-4200-ae26-afacecefdead": {
+    "url": "db://assets/Sounds/bad-result-order.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "891a75e3-bb08-4515-ac19-59b512a306c5": {
+    "url": "db://assets/Sounds/success-order.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "c65f9065-de9a-45c7-96d9-d6c21e05cb9f": {
+    "url": "db://assets/Sounds/bad-name.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "e680447d-5d67-40dc-80cd-2bff4066a6ff": {
+    "url": "db://assets/Sounds/stars-won.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "5cce37e3-97af-4e90-839d-3eb9a2a47a73": {
+    "url": "db://assets/Sounds/tutorial-step.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "2fa6d368-bdcd-4d3e-8467-57abdfb0c52b": {
+    "url": "db://assets/Sounds/auto-select.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "3ff3a70b-028b-4ae4-bd33-f355202c2383": {
+    "url": "db://assets/Sounds/double-coins.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "0d3b6adc-4954-4d0f-bd52-e6ae2f4880ef": {
+    "url": "db://assets/Sounds/heart-beat.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "c113cfa6-d52a-4fd9-ab95-99b356f1630d": {
+    "url": "db://assets/Sounds/reducing-time.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@a0000": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@a0000",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@a0001": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@a0001",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@a0002": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@a0002",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@a0003": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@a0003",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@a0004": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@a0004",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@a0005": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@a0005",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@a0006": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@a0006",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@a0007": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@a0007",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@a0008": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@a0008",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@a0009": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@a0009",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@a000a": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@a000a",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@a000b": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@a000b",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@a000c": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@a000c",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@a000d": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@a000d",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "8b9f04d1-6745-4f0f-904d-5b601000b164@a000e": {
+    "url": "db://assets/GameImage/food-elements-sheet.png@a000e",
+    "value": {
+      "depends": [
+        "8b9f04d1-6745-4f0f-904d-5b601000b164@6c48a"
+      ]
+    },
     "versionCode": 1
   }
 }

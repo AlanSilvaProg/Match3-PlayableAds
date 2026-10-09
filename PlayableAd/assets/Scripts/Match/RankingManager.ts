@@ -1,3 +1,5 @@
+import { WindowAnim } from './WindowAnim';
+import { SoundManager } from './SoundManager';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, UITransform, Vec3, Color, Sorting2D, UIOpacity, tween, Tween, sys, game } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -331,20 +333,20 @@ export class RankingManager extends Component {
         }
         if (!this.windowRoot) this.buildWindow();
         const root = this.windowRoot!;
-        root.active = true;
         const parent = root.parent;
         if (parent) root.setSiblingIndex(parent.children.length - 1);
         this.scroll = 0;
         this.velocity = 0;
         this.setScroll(0);
-        root.setScale(0.85, 0.85, 1);
-        Tween.stopAllByTarget(root);
-        tween(root).to(0.2, { scale: Vec3.ONE }, { easing: 'backOut' }).start();
+        SoundManager.playOpenMenu();
+        WindowAnim.open(root);
         this.refresh(false);
     }
 
     public closeWindow() {
-        if (this.windowRoot) this.windowRoot.active = false;
+        if (!this.windowRoot || !this.windowRoot.active) return;
+        SoundManager.playOpenMenu();
+        WindowAnim.close(this.windowRoot);
     }
 
     private buildWindow() {
@@ -371,7 +373,7 @@ export class RankingManager extends Component {
         const prof = this.makeNode('Profile', win, -W / 2 + 120, H / 2 - 62, 150, 52);
         this.makeSprite(prof, pm.buttonFrame, base + 3, true);
         this.makeLabel(prof, 'PROFILE', 24, 130, 36, 0, 3, base + 4);
-        prof.on(Node.EventType.TOUCH_END, () => this.PromptProfile(() => this.refresh(true)));
+        prof.on(Node.EventType.TOUCH_END, () => { SoundManager.playMenuClick(); this.PromptProfile(() => this.refresh(true)); });
 
         const viewport = this.makeNode('Viewport', win, 0, -52, this.viewportWidth, this.viewportHeight);
         this.content = this.makeNode('Content', viewport, 0, 0, this.viewportWidth, this.viewportHeight);
@@ -505,13 +507,13 @@ export class RankingManager extends Component {
         const login = this.makeNode('Login', win, 0, -110, 360, 62);
         this.makeSprite(login, pm.buttonFrame, base + 3, true).color = new Color(255, 190, 70, 255);
         this.makeLabel(login, 'LOGIN WITH POKI', 28, 330, 42, 0, 3, base + 4);
-        login.on(Node.EventType.TOUCH_END, () => this.onLoginTap());
+        login.on(Node.EventType.TOUCH_END, () => { SoundManager.playMenuClick(); this.onLoginTap(); });
         this.loginButton = login;
 
         const ok = this.makeNode('Ok', win, 0, -195, 260, 70);
         this.makeSprite(ok, pm.buttonFrame, base + 3, true);
         this.makeLabel(ok, 'OK', 40, 220, 50, 0, 3, base + 4);
-        ok.on(Node.EventType.TOUCH_END, () => this.confirmProfile());
+        ok.on(Node.EventType.TOUCH_END, () => { if (this.confirmProfile()) SoundManager.playMenuClick(); });
 
         root.active = false;
     }
@@ -539,7 +541,8 @@ export class RankingManager extends Component {
         return clean.length > 0 && !isProfane(name) && !isProfane(clean);
     }
 
-    private confirmProfile() {
+    /** Devolve false quando o apelido e recusado (palavrao). */
+    private confirmProfile(): boolean {
         const typed = this.inputEl ? this.inputEl.value : '';
         if (this.sanitize(typed) && (isProfane(typed) || isProfane(this.sanitize(typed)))) {
             // O aviso fica dentro da janela (um toast ficaria atras dela).
@@ -547,12 +550,14 @@ export class RankingManager extends Component {
                 this.profileHint.string = 'Please choose another nickname';
                 this.profileHint.color = new Color(255, 90, 80, 255);
             }
+            SoundManager.playBadName();
             this.inputEl?.focus();
-            return;
+            return false;
         }
         this.commitName(true);
         this.SyncScore();
         this.finishProfile();
+        return true;
     }
 
     private finishProfile() {

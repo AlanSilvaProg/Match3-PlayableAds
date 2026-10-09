@@ -1,3 +1,4 @@
+import { SoundManager } from './SoundManager';
 import { _decorator, Component } from 'cc';
 const { ccclass } = _decorator;
 import { GameManager } from './GameManager';
@@ -14,6 +15,7 @@ export class ReturnToLevels extends Component {
     public GoToLevels() {
         if (this.busy) return;
         this.busy = true;
+        SoundManager.playMenuClick();
 
         GameManager.showSelectorOnLoad = true;
         if (!GameManager.reloadScene()) {

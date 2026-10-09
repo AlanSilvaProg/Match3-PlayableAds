@@ -1,3 +1,4 @@
+import { SoundManager } from './SoundManager';
 import { _decorator, Component, Button, Sprite, Enum, Vec3, tween, Tween, Node, AudioSource, Sorting2D, Color } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -140,6 +141,7 @@ export class MatchElement extends Component {
             .to(this.movementDuration, { position: targetLocalPos, scale: this.selectedScale })
             .call(() => {
                 this.hasReachedSlot = true;
+                SoundManager.playAttach();
                 if (this.matchController) {
                     this.matchController.onElementReachedSlot(this);
                 }
@@ -155,6 +157,7 @@ export class MatchElement extends Component {
     private PlayRejectedFeedback() {
         if (this.isRejecting) return;
         this.isRejecting = true;
+        SoundManager.playBlocked();
         const origin = this.node.position.clone();
         tween(this.node)
             .to(0.04, { position: new Vec3(origin.x - 8, origin.y, origin.z) })
@@ -176,6 +179,7 @@ export class MatchElement extends Component {
         this.currentSlot = null;
         this.hasReachedSlot = false;
         this.matchController.onElementReturned(this);
+        SoundManager.playRemovedFromSelected();
 
         Tween.stopAllByTarget(this.node);
         this.SetSortingOrder(3);

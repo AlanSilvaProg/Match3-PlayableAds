@@ -1,6 +1,7 @@
 import { _decorator, Component, Sprite, Vec3, Color, tween, Tween } from 'cc';
 const { ccclass, property } = _decorator;
 import { GameManager } from './GameManager';
+import { SoundManager } from './SoundManager';
 
 /** Na tela de vitoria: acende so as estrelas ganhas nesta partida (as demais ficam apagadas). */
 @ccclass('WinStars')
@@ -30,6 +31,7 @@ export class WinStars extends Component {
             node.setScale(0, 0, base.z);
             tween(node)
                 .delay(this.popDelay + this.popInterval * i)
+                .call(() => SoundManager.playStarsWon())
                 .to(0.18, { scale: new Vec3(base.x * 1.3, base.y * 1.3, base.z) }, { easing: 'quadOut' })
                 .to(0.12, { scale: base })
                 .start();

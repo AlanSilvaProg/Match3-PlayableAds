@@ -1,3 +1,5 @@
+import { WindowAnim } from './WindowAnim';
+import { SoundManager } from './SoundManager';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, tween, Tween, Prefab, instantiate } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -159,7 +161,10 @@ export class PowerupManager extends Component {
                 this.highlightTick = 0.4;
                 this.applyHighlight();
             }
-            if (this.highlightRemaining === 0) this.clearHighlight();
+            if (this.highlightRemaining === 0) {
+                this.clearHighlight();
+                SoundManager.setHeartBeat(false);
+            }
         }
         r[PowerupType.Highlight] = this.highlightRemaining;
 
@@ -190,10 +195,11 @@ export class PowerupManager extends Component {
         switch (type) {
             case PowerupType.FreezeTimer:
                 gm.FreezeTimer(def.seconds);
+                SoundManager.playTimeClock();
                 ok = true;
                 break;
             case PowerupType.FreezeOrders:
-                if (OrderManager.instance) { OrderManager.instance.FreezeOrders(def.seconds); ok = true; }
+                if (OrderManager.instance) { OrderManager.instance.FreezeOrders(def.seconds); SoundManager.playTimeClock(); ok = true; }
                 break;
             case PowerupType.TimeBonus:
                 gm.AddTime(def.seconds, fromNode ? fromNode.worldPosition : undefined);
@@ -201,20 +207,23 @@ export class PowerupManager extends Component {
                 break;
             case PowerupType.ReduceQuantity:
                 ok = !!OrderManager.instance && OrderManager.instance.ReduceQuantities();
+                if (ok) SoundManager.playDropToOne();
                 break;
             case PowerupType.AutoSelect:
                 ok = this.autoSelect();
+                if (ok) SoundManager.playAutoSelect();
                 break;
             case PowerupType.Highlight:
                 this.highlightRemaining = def.seconds;
                 this.highlightTick = 0;
+                SoundManager.setHeartBeat(true);
                 ok = true;
                 break;
             case PowerupType.MaxCombo:
                 if (ComboManager.instance) { ComboManager.instance.ForceMax(def.seconds); ok = true; }
                 break;
             case PowerupType.DoublePoints:
-                if (ComboManager.instance) { ComboManager.instance.SetScoreMultiplier(2, def.seconds); ok = true; }
+                if (ComboManager.instance) { ComboManager.instance.SetScoreMultiplier(2, def.seconds); SoundManager.playDoubleCoins(); ok = true; }
                 break;
         }
 
@@ -342,14 +351,14 @@ export class PowerupManager extends Component {
 
     /** Botao generico: fundo (botao verde tingido) + texto + toque. */
     private makeButton(parent: Node, text: string, x: number, y: number, w: number, h: number, order: number, tint: Color,
-        onTap: () => void, frame: SpriteFrame | null = this.buttonFrame): { node: Node, label: Label, bg: Sprite } {
+        onTap: () => boolean | void, frame: SpriteFrame | null = this.buttonFrame, silent: boolean = false): { node: Node, label: Label, bg: Sprite } {
         const node = this.makeNode('Button', parent, x, y, w, h);
         const bg = this.makeSprite(node, frame, order, true);
         bg.color = tint;
         const label = this.makeLabel(node, text, Math.round(h * 0.5), w - 14, h - 10, 0, 3, order + 1);
         node.on(Node.EventType.TOUCH_START, () => node.setScale(0.93, 0.93, 1));
         node.on(Node.EventType.TOUCH_CANCEL, () => node.setScale(1, 1, 1));
-        node.on(Node.EventType.TOUCH_END, () => { node.setScale(1, 1, 1); onTap(); });
+        node.on(Node.EventType.TOUCH_END, () => { node.setScale(1, 1, 1); const result = onTap(); if (!silent) { if (result === false) SoundManager.playBlocked(); else SoundManager.playMenuClick(); } });
         return { node, label, bg };
     }
 
@@ -378,7 +387,8 @@ export class PowerupManager extends Component {
             node.on(Node.EventType.TOUCH_END, () => {
                 // Um toque longo so mostra a descricao: nao usa o power-up ao soltar.
                 if (this.longPressShown) { this.longPressShown = false; return; }
-                this.Use(def.type, node);
+                // Uso bem-sucedido toca o clique de menu; uso bloqueado ja toca o som de bloqueado dentro de Use().
+                if (this.Use(def.type, node)) SoundManager.playMenuClick();
             });
             return { type: def.type, node, icon, countLabel, timerLabel };
         });
@@ -497,6 +507,7 @@ export class PowerupManager extends Component {
      */
     public FlyCoinsTo(fromWorld: Vec3, count: number, target: Node, onArrive: (index: number) => void) {
         if (!this.coinFrame || !target || !target.isValid) {
+            SoundManager.playCoin();
             for (let i = 0; i < count; i++) onArrive(i);
             return;
         }
@@ -527,6 +538,7 @@ export class PowerupManager extends Component {
                 )
                 .call(() => {
                     coin.destroy();
+                    SoundManager.playCoin();
                     onArrive(i);
                 })
                 .start();
@@ -553,18 +565,17 @@ export class PowerupManager extends Component {
     public openWindow() {
         if (!this.windowRoot) this.buildWindow();
         const root = this.windowRoot!;
-        root.active = true;
         const parent = root.parent;
         if (parent) root.setSiblingIndex(parent.children.length - 1);
         this.windowRefresh?.();
-        root.setScale(0.85, 0.85, 1);
-        Tween.stopAllByTarget(root);
-        tween(root).to(0.2, { scale: Vec3.ONE }, { easing: 'backOut' }).start();
+        SoundManager.playOpenMenu();
+        WindowAnim.open(root);
     }
 
     public closeWindow() {
-        if (this.windowRoot) this.windowRoot.active = false;
-        this.refreshBar();
+        if (!this.windowRoot || !this.windowRoot.active) return;
+        SoundManager.playOpenMenu();
+        WindowAnim.close(this.windowRoot, () => this.refreshBar());
     }
 
     private buildWindow() {
@@ -588,7 +599,7 @@ export class PowerupManager extends Component {
         // Na janela de power-ups o fundo (holder) fica escondido: so a moeda e o numero.
         this.createPointsBadge(win, -W / 2 + 190, H / 2 - 62, base + 3, false);
 
-        this.makeButton(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, new Color(255, 120, 120, 255), () => this.closeWindow());
+        this.makeButton(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, new Color(255, 120, 120, 255), () => this.closeWindow(), this.buttonFrame, true);
 
 
         const cellW = 215, cellH = 205;
@@ -653,16 +664,18 @@ export class PowerupManager extends Component {
         root.active = false;
     }
 
-    private buy(type: PowerupType) {
+    /** Retorna false quando a compra e bloqueada (moedas insuficientes). */
+    private buy(type: PowerupType): boolean {
         const def = PowerupCatalog.getDef(type);
         if (!PlayerWallet.spend(def.cost)) {
             this.showToast('Not enough coins');
-            return;
+            return false;
         }
         PowerupInventory.add(type, 1);
         PlayerStats.increment(AchievementMetric.PowerupsBought);
         this.showToast(`+1 ${def.name}`);
         this.windowRefresh?.();
+        return true;
     }
 
     private watchAd(type: PowerupType, button: Node) {
@@ -794,6 +807,7 @@ export class PowerupManager extends Component {
     // ---------- Feedback ----------
 
     private shake(node?: Node) {
+        SoundManager.playBlocked();
         if (!node) return;
         Tween.stopAllByTarget(node);
         node.setRotationFromEuler(0, 0, 0);

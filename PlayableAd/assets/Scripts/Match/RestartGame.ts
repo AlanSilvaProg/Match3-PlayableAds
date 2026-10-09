@@ -1,3 +1,4 @@
+import { SoundManager } from './SoundManager';
 import { _decorator, Component } from 'cc';
 const { ccclass } = _decorator;
 import { GameManager } from './GameManager';
@@ -10,6 +11,7 @@ export class RestartGame extends Component {
     public Restart() {
         if (this.busy) return;
         this.busy = true;
+        SoundManager.playMenuClick();
 
         GameManager.skipMenuOnLoad = true;
         // Anuncio da Poki entre niveis, depois recarrega a cena.

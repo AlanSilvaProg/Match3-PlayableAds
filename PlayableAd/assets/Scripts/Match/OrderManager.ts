@@ -1,3 +1,4 @@
+import { SoundManager } from './SoundManager';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, tween, Tween } from 'cc';
 const { ccclass, property } = _decorator;
 import { ElementType } from './ElementType';
@@ -293,11 +294,13 @@ export class OrderManager extends Component {
             if (gm && bonus > 0) gm.AddTime(bonus, worldPos);
         } else {
             this.lateOrders++;
+            SoundManager.playBadResultOrder();
             const penalty = Math.ceil(-order.timeLeft * this.latePenaltyFactor);
             if (gm && penalty > 0) gm.AddTime(-penalty, worldPos);
         }
 
         const late = order.timeLeft < 0;
+        if (!late) SoundManager.playSuccessOrder();
         order.bg.color = late ? this.badColor : this.okColor;
         Tween.stopAllByTarget(order.node);
         const cs = this.cardScale;

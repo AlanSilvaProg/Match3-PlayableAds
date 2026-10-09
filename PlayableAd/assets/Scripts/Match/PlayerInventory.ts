@@ -1,3 +1,4 @@
+import { SoundManager } from './SoundManager';
 import { sys } from 'cc';
 import { PowerupType } from './PowerupCatalog';
 
@@ -82,6 +83,7 @@ export class PlayerWallet {
         if (this.getPoints() < amount) return false;
         this.cache = this.getPoints() - amount;
         writeJson(this.STORAGE_KEY, this.cache);
+        if (amount > 0) SoundManager.playSuccessOrder();
         return true;
     }
 }

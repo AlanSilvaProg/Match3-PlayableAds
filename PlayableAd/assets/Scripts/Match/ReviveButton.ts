@@ -1,3 +1,4 @@
+import { SoundManager } from './SoundManager';
 import { _decorator, Component } from 'cc';
 const { ccclass, property } = _decorator;
 import { GameManager } from './GameManager';
@@ -19,6 +20,7 @@ export class ReviveButton extends Component {
     public Revive() {
         if (this.busy) return;
         this.busy = true;
+        SoundManager.playMenuClick();
         PokiService.rewardedBreak().then(ok => {
             if (ok && GameManager.instance) {
                 GameManager.instance.Revive();

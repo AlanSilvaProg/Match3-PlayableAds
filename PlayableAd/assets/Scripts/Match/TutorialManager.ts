@@ -1,3 +1,4 @@
+import { SoundManager } from './SoundManager';
 import { _decorator, Component, Node, Vec3, Color, Sprite, SpriteFrame, Label, Font, UITransform, Sorting2D, tween, Tween, UIOpacity } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -110,6 +111,8 @@ export class TutorialManager extends Component {
     // ---------- Fluxo ----------
 
     private goTo(step: TutorialStep) {
+        // Som a cada passo que avanca (o primeiro passo, que so aparece, nao conta).
+        if (this.step !== TutorialStep.None) SoundManager.playTutorialStep();
         this.ensureSkipButton();
         this.clearHighlight();
         this.step = step;
@@ -194,7 +197,7 @@ export class TutorialManager extends Component {
             const sprite = this.makePanelSprite(node, new Color(255, 140, 40, 255));
             sprite.node.getComponent(Sorting2D)!.sortingOrder = TutorialManager.UI_ORDER + 60;
             this.makeLabel(node, 'SKIP', 32, w - 16, h - 10, 0, 2, 61);
-            node.on(Node.EventType.TOUCH_END, () => this.skip());
+            node.on(Node.EventType.TOUCH_END, () => { SoundManager.playMenuClick(); this.skip(); });
             this.skipButton = node;
         }
         this.skipButton.active = true;

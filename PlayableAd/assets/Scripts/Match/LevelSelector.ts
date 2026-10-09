@@ -1,3 +1,4 @@
+import { SoundManager } from './SoundManager';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, EventTouch, EventMouse, tween, Tween } from 'cc';
 const { ccclass, property } = _decorator;
 import { GameManager } from './GameManager';
@@ -578,6 +579,7 @@ export class LevelSelector extends Component {
             Tween.stopAllByTarget(this.currentButton);
             tween(this.currentButton).to(0.08, { scale: Vec3.ONE }).start();
             if (this.dragDistance <= this.dragThreshold && event.type !== Node.EventType.TOUCH_CANCEL) {
+                SoundManager.playMenuClick();
                 this.scrollToCurrent();
             }
             return;
@@ -615,6 +617,7 @@ export class LevelSelector extends Component {
 
     private chooseLevel(item: LevelItem) {
         this.choosing = true;
+        SoundManager.playMenuClick();
         const s = this.itemScale;
         Tween.stopAllByTarget(item.node);
         tween(item.node)
@@ -632,6 +635,7 @@ export class LevelSelector extends Component {
     }
 
     private rejectLevel(item: LevelItem) {
+        SoundManager.playBlocked();
         Tween.stopAllByTarget(item.node);
         item.node.setRotationFromEuler(0, 0, 0);
         tween(item.node)

@@ -9,6 +9,7 @@ import { PowerupType } from './PowerupCatalog';
 import { ComboManager } from './ComboManager';
 import { PlayerStats, AchievementMetric } from './PlayerStats';
 import { AchievementManager } from './AchievementManager';
+import { SoundManager } from './SoundManager';
 import { RankingManager } from './RankingManager';
 import { PlayerData } from './PlayerData';
 const { ccclass, property } = _decorator;
@@ -365,6 +366,7 @@ export class GameManager extends Component {
 
         this.victoryPending = false;
         this.timer = this.reviveSeconds;
+        SoundManager.playTimeIncreasing();
         this.timerFrozenFor = 0;
         this.lastWarningSecond = -1;
         this.pendingDisplayDelta = 0;
@@ -393,7 +395,9 @@ export class GameManager extends Component {
     public AddTime(delta: number, fromWorld?: Vec3) {
         if (delta === 0) return;
         this.timer += delta;
-        if (delta > 0) this.duration += delta; // bonus aumenta o tempo total do nivel
+        if (delta > 0) {
+            this.duration += delta; // bonus aumenta o tempo total do nivel
+        }
         this.pendingDisplayDelta += delta;
         this.playTimeFx(delta, fromWorld);
     }
@@ -410,6 +414,7 @@ export class GameManager extends Component {
         const parent = timerLabel?.node.parent;
         if (!timerLabel || !parent) {
             this.pendingDisplayDelta -= delta;
+            if (delta > 0) SoundManager.playTimeIncreasing(); // sem texto voando: toca na hora
             return;
         }
 
@@ -449,6 +454,8 @@ export class GameManager extends Component {
                 this.pendingDisplayDelta -= delta;
                 this.updateTimerUI();
                 this.flashTimer(color);
+                // Bonus e penalidade so soam quando o texto chega ao timer e o valor exibido realmente muda.
+                if (positive) SoundManager.playTimeIncreasing(); else SoundManager.playReducingTime();
                 fx.destroy();
             })
             .start();
@@ -505,6 +512,10 @@ export class GameManager extends Component {
 
     private SetState(state: GameState) {
         this.currentState = state;
+        if (state !== GameState.Running) {
+            SoundManager.setAlarm(false);
+            SoundManager.setHeartBeat(false);
+        }
 
         if (state === GameState.Victory || state === GameState.Defeat) {
             PokiService.gameplayStop();
@@ -566,6 +577,7 @@ export class GameManager extends Component {
         label.color = performance.now() < this.flashUntil ? this.flashColor
             : (frozen ? new Color(120, 220, 255, 255) : (inWarning ? this.warningColor : this.timerBaseColor));
         if (this.timerBar) this.timerBar.color = inWarning ? this.warningColor : this.barBaseColor;
+        SoundManager.setAlarm(inWarning && !frozen && this.currentState === GameState.Running);
         if (!inWarning) return;
 
         const second = Math.ceil(this.timer);

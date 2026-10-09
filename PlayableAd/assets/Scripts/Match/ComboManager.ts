@@ -1,3 +1,4 @@
+import { SoundManager } from './SoundManager';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Prefab, instantiate, tween, Tween, Vec3, math, Color } from 'cc';
 import { GameManager } from './GameManager';
 import { PlayerStats, AchievementMetric } from './PlayerStats';
@@ -351,6 +352,7 @@ export class ComboManager extends Component {
     }
 
     private playLevelUp() {
+        SoundManager.playComboChanged();
         this.applyLevelVisual();
 
         const icon = this.iconSprite?.node;
@@ -379,6 +381,7 @@ export class ComboManager extends Component {
     }
 
     private playDrop() {
+        SoundManager.playComboChanged();
         const icon = this.iconSprite?.node;
         if (!icon) return;
         this.busyTween = true;

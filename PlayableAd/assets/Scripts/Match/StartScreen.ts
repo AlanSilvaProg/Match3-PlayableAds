@@ -1,3 +1,4 @@
+import { SoundManager } from './SoundManager';
 import { _decorator, Component, Button, Node } from 'cc';
 const { ccclass, property } = _decorator;
 import { GameManager } from './GameManager';
@@ -22,6 +23,7 @@ export class StartScreen extends Component {
     }
 
     private onPlayClicked() {
+        SoundManager.playMenuClick();
         if (this.levelSelector) {
             this.levelSelector.active = true;
             this.node.active = false;
