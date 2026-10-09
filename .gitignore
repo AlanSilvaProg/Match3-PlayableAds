@@ -20,3 +20,5 @@ node_modules/
 # WebStorm
 #//////////////////////////
 .idea/
+# Zips versionados de release (publicados em GitHub Releases)
+PlayableAd/build/merge-merge-merge-web-mobile-v*.zip

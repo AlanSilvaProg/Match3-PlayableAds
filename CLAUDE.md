@@ -8,3 +8,4 @@ Um hook `SessionStart` (`.claude/settings.json`) já injeta esse arquivo em chat
 - Sem commit/push sem pedido explícito (push em `main` publica no GitHub Pages).
 - Ao concluir mudanças relevantes (feature, integração, armadilha nova), atualize `docs/PROJECT_CONTEXT.md`.
 - `PokiService.devRewardBypass` deve permanecer só-PREVIEW; nunca true na build publicada.
+- Commits e PRs devem ter **apenas a autoria do usuario**: nunca adicionar `Co-Authored-By: Claude` nem rodape de atribuicao ao Claude.
