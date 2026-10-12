@@ -1,7 +1,7 @@
 {
   "__version__": "1.0.12",
   "macroConfig": {
-    "ENABLE_MULTI_TOUCH": false,
+    "ENABLE_MULTI_TOUCH": true,
     "ENABLE_TILEDMAP_CULLING": false,
     "ENABLE_WEBGL_ANTIALIAS": false
   },
