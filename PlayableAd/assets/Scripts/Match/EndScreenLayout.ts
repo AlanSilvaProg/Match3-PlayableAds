@@ -48,5 +48,8 @@ export class EndScreenLayout {
             else c.setPosition(o.x + this.SHIFT, o.y, c.position.z); // coluna de botoes/estrelas vai para o centro
             if (anim) anim.enabled = true;
         });
+        // A tela de vitoria posiciona seus botoes e a faixa de moedas por conta propria (veja WinRewards).
+        const winLayout = (screen as any).__winLayout;
+        if (winLayout) winLayout();
     }
 }

@@ -36,6 +36,9 @@ export class ComboManager extends Component {
         ComboManager.makeLevel(8, 600, 1.8),
     ];
 
+    @property({ range: [0.05, 1, 0.05], tooltip: 'Fracao dos pontos de cada merge que vira moeda (placar, voo de moedas e saldo). Menor = economia mais lenta. A barra do combo continua enchendo pelos pontos cheios.' })
+    public coinRewardFactor: number = 0.3;
+
     // ---------- Barra ----------
     @property({ tooltip: 'Drenagem da barra por segundo (0..1) no nivel base.' })
     public baseDrainPerSecond: number = 0.12;
@@ -110,6 +113,8 @@ export class ComboManager extends Component {
     }
 
     private levelIndex: number = 0;
+    /** Maior nivel de combo alcancado desde que o combo comecou (zera ao acabar). */
+    private peakLevel: number = 0;
     private bar: number = 0;
     private comboActive: boolean = false;
     private sinceLastMatch: number = 999;
@@ -177,14 +182,16 @@ export class ComboManager extends Component {
         const level = this.levels[this.levelIndex];
         // O peso do item (ElementCatalog.comboWeight) escala os pontos e, com eles, o enchimento da barra.
         // Pedidos maiores valem mais: +20% por item alem do primeiro.
-        const gained = Math.round((this.basePointsPerMatch + level.multiplier) * weight * (1 + 0.2 * (quantity - 1))
+        const rawPoints = Math.round((this.basePointsPerMatch + level.multiplier) * weight * (1 + 0.2 * (quantity - 1))
             * (this.scoreMultiplierRemaining > 0 ? this.scoreMultiplier : 1));
+        // A barra do combo enche pelos pontos cheios; o jogador recebe so uma fracao deles em moedas.
+        const gained = Math.max(1, Math.round(rawPoints * this.coinRewardFactor));
         this.score += gained;
 
         const speed = this.comboActive
             ? math.clamp01(1 - this.sinceLastMatch / Math.max(0.01, this.speedBonusWindow))
             : 0;
-        const fill = (gained / Math.max(1, level.pointsToFill)) * (1 + this.maxSpeedBonus * speed);
+        const fill = (rawPoints / Math.max(1, level.pointsToFill)) * (1 + this.maxSpeedBonus * speed);
 
         const wasActive = this.comboActive;
         this.comboActive = true;
@@ -198,6 +205,8 @@ export class ComboManager extends Component {
             if (!isLast) {
                 this.bar = Math.min(1, this.carryOverOnLevelUp + (this.bar - 1));
                 this.levelIndex++;
+                this.peakLevel = Math.max(this.peakLevel, this.levelIndex);
+                GameManager.instance?.events.emit(GameManager.EVENT_COMBO_LEVEL_UP, this.levelIndex);
                 if (this.levelIndex === this.levels.length - 1) PlayerStats.increment(AchievementMetric.MaxComboReached);
                 this.playLevelUp();
             } else {
@@ -227,6 +236,7 @@ export class ComboManager extends Component {
         this.time += dt;
         const gm = GameManager.instance;
         if (gm && !gm.IsRunning()) return;
+        if (gm && gm.timeHeld) return; // tutorial de power-up: combo parado
 
         this.sinceLastMatch += dt;
 
@@ -263,10 +273,14 @@ export class ComboManager extends Component {
     // ---------- Estado ----------
 
     private dropCombo() {
+        // So avisa que o combo acabou se ele chegou a subir de nivel (gatilho do tutorial de Max Combo).
+        const hadRisen = this.peakLevel >= 1;
+        this.peakLevel = 0;
         this.comboActive = false;
         this.levelIndex = 0;
         this.applyLevelVisual();
         this.playDrop();
+        if (hadRisen) GameManager.instance?.events.emit(GameManager.EVENT_COMBO_LOST);
     }
 
     // ---------- Visual ----------

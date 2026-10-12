@@ -120,6 +120,14 @@ export class PowerupManager extends Component {
     public tutorialBarVisible: boolean = false;
 
     public get barNode(): Node | null { return this.bar; }
+
+    /** Quando definido (tutorial de power-up), so este power-up pode ser usado. */
+    public forcedType: PowerupType | null = null;
+
+    /** No do botao deste power-up na barra (para o tutorial destaca-lo). */
+    public slotNode(type: PowerupType): Node | null {
+        return this.slots.find(s => s.type === type)?.node ?? null;
+    }
     private scoreHolder: Node | null = null;
     private coinTarget: Node | null = null;
     private lastCoinPunch: number = 0;
@@ -170,7 +178,7 @@ export class PowerupManager extends Component {
         r[PowerupType.MaxCombo] = ComboManager.instance ? ComboManager.instance.maxComboSecondsLeft : 0;
         r[PowerupType.DoublePoints] = ComboManager.instance ? ComboManager.instance.scoreMultiplierSecondsLeft : 0;
 
-        if (this.highlightRemaining > 0) {
+        if (this.highlightRemaining > 0 && !gm?.timeHeld) {
             this.highlightRemaining = Math.max(0, this.highlightRemaining - dt);
             this.highlightTick -= dt;
             if (this.highlightTick <= 0) {
@@ -197,6 +205,11 @@ export class PowerupManager extends Component {
     public Use(type: PowerupType, fromNode?: Node): boolean {
         const gm = GameManager.instance;
         if (!gm || !gm.IsRunning()) return false;
+        // Tutorial de power-up: so o power-up ensinado pode ser usado.
+        if (this.forcedType !== null && type !== this.forcedType) {
+            this.shake(fromNode);
+            return false;
+        }
         if (PowerupInventory.getCount(type) <= 0) {
             this.shake(fromNode);
             return false;
@@ -250,6 +263,7 @@ export class PowerupManager extends Component {
         }
 
         PowerupInventory.consume(type);
+        gm.events.emit(GameManager.EVENT_POWERUP_USED, type);
         PlayerStats.increment(AchievementMetric.PowerupsUsed);
         this.showToast(def.name);
         this.playActivateEffect(fromNode);
@@ -689,6 +703,7 @@ export class PowerupManager extends Component {
             return false;
         }
         PowerupInventory.add(type, 1);
+        PowerupInventory.markSeen(type);
         PlayerStats.increment(AchievementMetric.PowerupsBought);
         this.showToast(`+1 ${def.name}`);
         this.windowRefresh?.();
@@ -702,6 +717,7 @@ export class PowerupManager extends Component {
             this.adBusy = false;
             if (!ok) return; // sem anuncio/recompensa: nada acontece (a Poki cuida da mensagem)
             PowerupInventory.add(type, 1);
+            PowerupInventory.markSeen(type);
             this.showToast(`+1 ${PowerupCatalog.getDef(type).name}`);
             this.windowRefresh?.();
         });

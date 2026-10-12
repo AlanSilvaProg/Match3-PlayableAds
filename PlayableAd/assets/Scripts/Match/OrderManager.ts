@@ -158,7 +158,7 @@ export class OrderManager extends Component {
         this.clock += dt;
 
         const running = GameManager.instance?.IsRunning();
-        if (running && !this.allDelivered) {
+        if (running && !this.allDelivered && !GameManager.instance?.timeHeld) {
             if (this.frozenFor > 0) {
                 // Power-up: os prazos dos pedidos e o aparecimento de novos ficam parados.
                 this.frozenFor = Math.max(0, this.frozenFor - dt);
@@ -222,6 +222,23 @@ export class OrderManager extends Component {
         // Com menos itens exigidos, o que ja esta na prateleira pode completar pedidos na hora.
         if (changed) GameManager.instance?.events.emit(GameManager.EVENT_DEMAND_CHANGED);
         return changed;
+    }
+
+    /** Menor prazo (s) entre os pedidos abertos ainda no tempo (Infinity se nao ha). Usado pelos tutoriais de power-up. */
+    public minOrderTimeLeft(): number {
+        let min = Infinity;
+        for (const o of this.active) if (!o.delivered && o.timeLeft >= 0) min = Math.min(min, o.timeLeft);
+        return min;
+    }
+
+    /** Maior quantidade pedida numa linha ainda pendente (0 se nao ha). */
+    public maxPendingQuantity(): number {
+        let max = 0;
+        for (const o of this.active) {
+            if (o.delivered) continue;
+            for (const l of o.lines) if (!l.done && !l.reserved) max = Math.max(max, l.quantity);
+        }
+        return max;
     }
 
     /** Primeira linha pendente (na ordem da tela): o proximo alimento a juntar. */

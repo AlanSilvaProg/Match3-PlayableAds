@@ -1,6 +1,6 @@
 import { SoundManager } from './SoundManager';
 import { Responsive } from './Responsive';
-import { _decorator, Component, Node, Vec3, Color, Sprite, SpriteFrame, Label, Font, UITransform, Sorting2D, tween, Tween, UIOpacity } from 'cc';
+import { _decorator, Component, Node, Vec3, Color, Sprite, SpriteFrame, Label, Font, UITransform, Sorting2D, tween, Tween, UIOpacity, sys } from 'cc';
 const { ccclass, property } = _decorator;
 
 import { MatchController } from './MatchController';
@@ -12,6 +12,8 @@ import { OrderManager } from './OrderManager';
 import { ComboManager } from './ComboManager';
 import { PowerupManager } from './PowerupManager';
 import { RankingManager } from './RankingManager';
+import { PowerupType } from './PowerupCatalog';
+import { PowerupInventory } from './PlayerInventory';
 import { GameManager } from './GameManager';
 
 enum TutorialStep {
@@ -72,7 +74,32 @@ export class TutorialManager extends Component {
     private whitelist: MatchElement[] = [];
     private skipButton: Node | null = null;
 
+    /** Dica "toque no item da prateleira para remove-lo": mostrada uma unica vez, na primeira selecao errada. */
+    private static readonly REMOVE_HINT_KEY = 'match3_remove_hint_seen';
+    private static readonly REMOVE_HINT_MS = 9000;
+    private hintElement: MatchElement | null = null;
+    private hintUntil: number = 0;
+    private handRaised: boolean = false;
+
+    // ---------- Tutoriais contextuais de power-up ----------
+    /** Cada power-up tem seu tutorial: aparece so ate o nivel 10 e so se o jogador nunca comprou/usou aquele power-up. */
+    private static readonly GUIDE_MAX_LEVEL = 10;
+    private static readonly GUIDE_COOLDOWN_MS = 6000;
+    private static readonly GUIDE_TIMEOUT_MS = 25000;
+    private guideType: PowerupType | null = null;
+    private guideStartedAt: number = 0;
+    private lastGuideEnd: number = -1e9;
+    private runTime: number = 0;
+    private idleTime: number = 0;
+    private guideCheck: number = 0;
+
     protected start() {
+        const ev = GameManager.instance?.events;
+        ev?.on(GameManager.EVENT_COMBO_LOST, this.onComboLost, this);
+        ev?.on(GameManager.EVENT_COMBO_LEVEL_UP, this.onComboLevelUp, this);
+        ev?.on(GameManager.EVENT_POWERUP_USED, this.onPowerupUsed, this);
+        ev?.on(GameManager.EVENT_SELECTION_CHANGED, this.onSelectionChanged, this);
+        GameManager.instance?.events.on(GameManager.EVENT_WRONG_SELECTED, this.onWrongSelected, this);
         if (this.fadeNode) this.fadeNode.active = false;
         if (this.tutorialIndicator) this.tutorialIndicator.active = false;
 
@@ -85,18 +112,204 @@ export class TutorialManager extends Component {
         const events = GameManager.instance?.events;
         events?.off(GameManager.EVENT_PLAY, this.onPlay, this);
         events?.off(GameManager.EVENT_ORDER_DELIVERED, this.onOrderDelivered, this);
+        events?.off(GameManager.EVENT_WRONG_SELECTED, this.onWrongSelected, this);
+        events?.off(GameManager.EVENT_COMBO_LOST, this.onComboLost, this);
+        events?.off(GameManager.EVENT_COMBO_LEVEL_UP, this.onComboLevelUp, this);
+        events?.off(GameManager.EVENT_POWERUP_USED, this.onPowerupUsed, this);
+        events?.off(GameManager.EVENT_SELECTION_CHANGED, this.onSelectionChanged, this);
+        if (GameManager.instance && this.guideType !== null) GameManager.instance.timeHeld = false;
+        if (PowerupManager.instance) PowerupManager.instance.forcedType = null;
         // Na troca de cena o no do fade pode ja ter sido destruido.
         if (this.fadeNode && this.fadeNode.isValid) this.fadeNode.off(Node.EventType.TOUCH_END, this.onTap, this);
         if (GameManager.instance) GameManager.instance.tutorialAllowed = null;
     }
 
     private onPlay(firstTime: boolean) {
+        this.runTime = 0;
+        this.idleTime = 0;
         if (!firstTime || this.step !== TutorialStep.None) return;
         // Aguarda o tabuleiro e o primeiro pedido serem criados.
         this.scheduleOnce(() => this.goTo(TutorialStep.Timer), 0.4);
     }
 
-    protected update() {
+    // ---------- Tutoriais contextuais de power-up ----------
+
+    private readonly guideTexts: { [k: number]: string } = {
+        [PowerupType.MaxCombo]: 'Your combo ran out!\nMAX COMBO fills it to the top.\nHere is one FREE: tap it now!',
+        [PowerupType.TimeBonus]: 'Time is running out!\n+15 SECONDS gives you extra time.\nHere is one FREE: tap it now!',
+        [PowerupType.FreezeTimer]: 'Need a breather?\nFREEZE TIME stops the clock for 10s.\nHere is one FREE: tap it now!',
+        [PowerupType.FreezeOrders]: 'An order is about to expire!\nFREEZE ORDERS stops all order timers.\nHere is one FREE: tap it now!',
+        [PowerupType.ReduceQuantity]: 'Big orders? LESS ITEMS cuts every\nfood in every order down to 1.\nHere is one FREE: tap it now!',
+        [PowerupType.AutoSelect]: 'Stuck? AUTO SELECT picks the foods\nof the next order for you.\nHere is one FREE: tap it now!',
+        [PowerupType.Highlight]: 'Can\'t find the food? FOCUS highlights\nwhat you need for a few seconds.\nHere is one FREE: tap it now!',
+        [PowerupType.DoublePoints]: 'Great combo!\nDOUBLE COINS doubles your coins.\nHere is one FREE: tap it now!',
+    };
+
+    private onSelectionChanged() { this.idleTime = 0; }
+
+    private onComboLost() { this.tryStartGuide(PowerupType.MaxCombo); }
+
+    private onComboLevelUp() { this.tryStartGuide(PowerupType.DoublePoints); }
+
+    private onPowerupUsed(type: PowerupType) {
+        if (this.guideType === type) this.finishGuide();
+    }
+
+    /** O tutorial deste power-up pode comecar agora? (nivel <= 10, nunca comprou/usou, nada mais em andamento) */
+    private canStartGuide(type: PowerupType): boolean {
+        const gm = GameManager.instance;
+        if (!gm || !gm.IsRunning() || this.guideType !== null || this.hintElement) return false;
+        if (this.step !== TutorialStep.None && this.step !== TutorialStep.Done) return false;
+        if (GameManager.currentLevel >= TutorialManager.GUIDE_MAX_LEVEL) return false;
+        if (PowerupInventory.hasSeen(type)) return false;
+        return performance.now() - this.lastGuideEnd >= TutorialManager.GUIDE_COOLDOWN_MS;
+    }
+
+    private tryStartGuide(type: PowerupType) {
+        if (this.canStartGuide(type)) this.startGuide(type);
+    }
+
+    /** Gatilhos por situacao (os de combo vem por evento). A primeira situacao que se aplica vence. */
+    private updateGuides(dt: number) {
+        const gm = GameManager.instance;
+        if (!gm) return;
+
+        if (this.guideType !== null) {
+            const slot = PowerupManager.instance?.slotNode(this.guideType);
+            if (this.tutorialIndicator && slot && slot.isValid) this.tutorialIndicator.setWorldPosition(slot.worldPosition);
+            // Partida acabou ou o jogador nao conseguiu usar: encerra sem prender o jogo.
+            if (!gm.IsRunning() || performance.now() - this.guideStartedAt > TutorialManager.GUIDE_TIMEOUT_MS) this.finishGuide();
+            return;
+        }
+
+        if (!gm.IsRunning() || gm.timeHeld) return;
+        this.runTime += dt;
+        this.idleTime += dt;
+        this.guideCheck -= dt;
+        if (this.guideCheck > 0) return;
+        this.guideCheck = 0.3;
+
+        const orders = OrderManager.instance;
+        const left = gm.timeLeft;
+        const candidates: [PowerupType, boolean][] = [
+            [PowerupType.TimeBonus, left <= 15],
+            [PowerupType.FreezeTimer, left <= 25],
+            [PowerupType.FreezeOrders, !!orders && orders.minOrderTimeLeft() <= 4],
+            [PowerupType.ReduceQuantity, !!orders && orders.maxPendingQuantity() >= 3 && this.runTime >= 5],
+            [PowerupType.Highlight, !!orders && orders.deliveredOrders === 0 && this.runTime >= 25],
+            [PowerupType.AutoSelect, this.idleTime >= 10 && this.runTime >= 10],
+        ];
+        for (const [type, cond] of candidates) {
+            if (cond && this.canStartGuide(type)) { this.startGuide(type); return; }
+        }
+    }
+
+    /** Presenteia 1 unidade, para o tempo, escurece a tela e aponta o botao: o jogador precisa usa-lo agora. */
+    private startGuide(type: PowerupType) {
+        const gm = GameManager.instance, pm = PowerupManager.instance;
+        const slot = pm?.slotNode(type);
+        if (!gm || !pm || !slot) return;
+
+        this.guideType = type;
+        this.guideStartedAt = performance.now();
+        PowerupInventory.add(type, 1);
+        gm.timeHeld = true;
+        pm.forcedType = type;
+        SoundManager.playTutorialStep();
+
+        // Fundo escuro que captura os toques do tabuleiro; a barra de power-ups fica acima dele (so o botao certo funciona).
+        this.showFade(true);
+        this.fadeNode?.off(Node.EventType.TOUCH_END, this.onTap, this);
+        this.fadeNode?.on(Node.EventType.TOUCH_END, this.swallowTouch, this);
+        this.highlight([slot]);
+
+        this.showCaption(this.guideTexts[type] || 'Tap the highlighted power-up!', this.capPos('powerups', new Vec3(0, -120, 0)), false);
+        if (this.tutorialIndicator) {
+            if (!this.handRaised) {
+                this.handRaised = true;
+                this.tutorialIndicator.getComponentsInChildren(Sorting2D).forEach(sp => {
+                    sp.sortingOrder = TutorialManager.UI_ORDER + 50 + sp.sortingOrder;
+                });
+            }
+            this.tutorialIndicator.active = true;
+            this.tutorialIndicator.setWorldPosition(slot.worldPosition);
+        }
+    }
+
+    private swallowTouch() { /* so bloqueia o tabuleiro */ }
+
+    private finishGuide() {
+        const type = this.guideType;
+        if (type === null) return;
+        this.guideType = null;
+        this.lastGuideEnd = performance.now();
+        this.idleTime = 0;
+        PowerupInventory.markSeen(type); // nunca mais repete, usado ou nao
+        const gm = GameManager.instance, pm = PowerupManager.instance;
+        if (gm) gm.timeHeld = false;
+        if (pm) pm.forcedType = null;
+        this.fadeNode?.off(Node.EventType.TOUCH_END, this.swallowTouch, this);
+        this.showFade(false);
+        this.clearHighlight();
+        if (this.captionRoot) this.captionRoot.active = false;
+        if (this.tutorialIndicator) this.tutorialIndicator.active = false;
+    }
+
+    // ---------- Dica: remover um item selecionado ----------
+
+    private hintSeen(): boolean {
+        try { return !!sys.localStorage.getItem(TutorialManager.REMOVE_HINT_KEY); } catch (e) { return false; }
+    }
+
+    private onWrongSelected(element: MatchElement) {
+        // So uma vez na vida, fora do tutorial guiado, e sem outra dica em andamento.
+        if (this.hintElement || this.hintSeen()) return;
+        if (this.step !== TutorialStep.None && this.step !== TutorialStep.Done) return;
+        if (!element || !element.isValid || element.isAvailable || !element.hasReachedSlot) return;
+        try { sys.localStorage.setItem(TutorialManager.REMOVE_HINT_KEY, '1'); } catch (e) { }
+
+        this.hintElement = element;
+        this.hintUntil = performance.now() + TutorialManager.REMOVE_HINT_MS;
+        SoundManager.playTutorialStep();
+
+        // Legenda ao lado do item (paisagem: a esquerda da coluna da prateleira; retrato: acima da fileira).
+        const local = new Vec3();
+        this.node.inverseTransformPoint(local, element.node.worldPosition);
+        const pos = Responsive.portrait
+            ? new Vec3(0, local.y + 170, 0)
+            : new Vec3(Math.max(-420, local.x - 330), Math.max(-130, Math.min(230, local.y)), 0);
+        this.showCaption('Wrong food?\nTap it in the tray to put it back!', pos, false);
+
+        if (this.tutorialIndicator) {
+            if (!this.handRaised) {
+                this.handRaised = true;
+                this.tutorialIndicator.getComponentsInChildren(Sorting2D).forEach(s => {
+                    s.sortingOrder = TutorialManager.UI_ORDER + 50 + s.sortingOrder;
+                });
+            }
+            this.tutorialIndicator.active = true;
+            this.tutorialIndicator.setWorldPosition(element.node.worldPosition);
+        }
+    }
+
+    private updateHint() {
+        const el = this.hintElement;
+        const gm = GameManager.instance;
+        const over = !el || !el.isValid || !el.node || !el.node.isValid || el.isAvailable
+            || !gm || !gm.IsRunning() || performance.now() > this.hintUntil;
+        if (over) { this.endHint(); return; }
+        if (this.tutorialIndicator) this.tutorialIndicator.setWorldPosition(el!.node.worldPosition);
+    }
+
+    private endHint() {
+        this.hintElement = null;
+        if (this.captionRoot) this.captionRoot.active = false;
+        if (this.tutorialIndicator) this.tutorialIndicator.active = false;
+    }
+
+    protected update(dt: number) {
+        if (this.hintElement) this.updateHint();
+        this.updateGuides(dt);
         // A mao segue o proximo alimento a clicar.
         if (this.step !== TutorialStep.Click || !this.tutorialIndicator) return;
         const selected = this.matchController ? this.matchController.selectedElements : [];

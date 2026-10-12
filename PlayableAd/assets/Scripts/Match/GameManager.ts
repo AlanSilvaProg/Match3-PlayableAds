@@ -13,6 +13,7 @@ import { SoundManager } from './SoundManager';
 import { Responsive } from './Responsive';
 import { GameLayout } from './GameLayout';
 import { EndScreenLayout } from './EndScreenLayout';
+import { WinRewards } from './WinRewards';
 import { RankingManager } from './RankingManager';
 import { PlayerData } from './PlayerData';
 const { ccclass, property } = _decorator;
@@ -79,6 +80,14 @@ export class GameManager extends Component {
     public static readonly EVENT_ORDER_DELIVERED = 'order_delivered';
     /** Emitido pelo MatchController quando a selecao muda (payload: Map<ElementType, number> com a contagem na prateleira). */
     public static readonly EVENT_SELECTION_CHANGED = 'selection_changed';
+    /** Emitido pelo MatchController quando um item que nenhum pedido aberto pede chega a prateleira (payload: MatchElement). */
+    public static readonly EVENT_WRONG_SELECTED = 'wrong_selected';
+    /** Emitido pelo ComboManager ao subir de nivel de combo (payload: indice do novo nivel, 0 = primeiro). */
+    public static readonly EVENT_COMBO_LEVEL_UP = 'combo_level_up';
+    /** Emitido pelo ComboManager quando o combo acaba depois de ter subido de nivel. */
+    public static readonly EVENT_COMBO_LOST = 'combo_lost';
+    /** Emitido pelo PowerupManager quando um power-up foi usado com sucesso (payload: PowerupType). */
+    public static readonly EVENT_POWERUP_USED = 'powerup_used';
 
     @property({ tooltip: 'Nome da cena a recarregar no Restart/Levels. Necessario porque director.getScene().name vem vazio em runtime.' })
     public sceneName: string = 'PlayableAdMatch';
@@ -100,6 +109,9 @@ export class GameManager extends Component {
 
     /** Estrelas ganhas na ultima vitoria (lidas pela tela de vitoria). */
     public static lastStars: number = 0;
+
+    /** Moedas ganhas na ultima partida vencida (mostradas na tela de vitoria, que oferece dobrar com anuncio). */
+    public static lastRoundCoins: number = 0;
 
     /** Nivel (indice, 0 = primeiro) escolhido no seletor; preservado ao reiniciar a cena. */
     public static currentLevel: number = 0;
@@ -138,6 +150,12 @@ export class GameManager extends Component {
 
     /** Durante o tutorial guiado: so estes itens aceitam clique (null = todos liberados). */
     public tutorialAllowed: MatchElement[] | null = null;
+
+    /** Tutoriais de power-up: enquanto true, o cronometro, os prazos dos pedidos e o combo ficam parados. */
+    public timeHeld: boolean = false;
+
+    /** Segundos restantes no cronometro do nivel. */
+    public get timeLeft(): number { return this.timer; }
 
     private currentState: GameState = GameState.Menu;
     private timer: number = 0;
@@ -202,6 +220,7 @@ export class GameManager extends Component {
         let elapsed = Math.max(0, (now - this.lastRealTime) / 1000);
         this.lastRealTime = now;
         if (this.currentState !== GameState.Running) return false;
+        if (this.timeHeld) return true;
 
         // Power-up Freeze Time: o cronometro do nivel fica parado.
         if (this.timerFrozenFor > 0) {
@@ -536,6 +555,7 @@ export class GameManager extends Component {
 
         if (state === GameState.Victory) {
             GameManager.lastStars = this.calculateStars();
+            GameManager.lastRoundCoins = ComboManager.instance ? ComboManager.instance.score : 0;
             LevelProgress.setStars(GameManager.currentLevel, GameManager.lastStars);
             // Conquistas liberadas por esta vitoria aparecem como avisos por cima da tela de vitoria.
             AchievementManager.instance?.NotifyNewUnlocks();
@@ -544,12 +564,14 @@ export class GameManager extends Component {
             if (this.victoryPrefab) {
                 const instance = instantiate(this.victoryPrefab);
                 instance.parent = this.node.parent;
+                WinRewards.setup(instance); // NEXT, moedas ganhas e botao de dobrar (antes do layout)
                 EndScreenLayout.apply(instance);
             }
         } else if (state === GameState.Defeat) {
             if (this.defeatPrefab) {
                 const instance = instantiate(this.defeatPrefab);
                 instance.parent = this.node.parent;
+                WinRewards.setupFail(instance);
                 EndScreenLayout.apply(instance);
                 this.defeatInstance = instance;
             }

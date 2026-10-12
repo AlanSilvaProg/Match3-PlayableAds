@@ -2169,5 +2169,10 @@
     "url": "db://assets/Scripts/Match/Responsive.ts",
     "value": {},
     "versionCode": 1
+  },
+  "dad88ccd-4d24-43c4-8214-afb1436e28a7": {
+    "url": "db://assets/Scripts/Match/WinRewards.ts",
+    "value": {},
+    "versionCode": 1
   }
 }

@@ -1,5 +1,5 @@
 import { SoundManager } from './SoundManager';
-import { _decorator, Component, Button, Sprite, Enum, Vec3, tween, Tween, Node, AudioSource, Sorting2D, Color } from 'cc';
+import { _decorator, Component, Button, Sprite, Enum, Vec3, tween, Tween, Node, AudioSource, Sorting2D, Color, EventTouch } from 'cc';
 const { ccclass, property } = _decorator;
 
 import { MatchSlots } from './MatchSlots';
@@ -7,6 +7,7 @@ import { ElementType } from './ElementType';
 import { ElementCatalog } from './ElementCatalog';
 import { MatchController } from './MatchController';
 import { GameManager } from './GameManager';
+import { OrderManager } from './OrderManager';
 
 @ccclass('MatchElement')
 export class MatchElement extends Component {
@@ -69,6 +70,35 @@ export class MatchElement extends Component {
     private boardPosition: Vec3 | null = null;
     private isRejecting: boolean = false;
 
+    // ---------- Arrastar ----------
+    @property({ tooltip: 'Distancia (px) de arraste a partir da qual o toque vira um arrasto (abaixo disso e um toque simples).' })
+    public dragThreshold: number = 8;
+
+    @property({ tooltip: 'Escala do item enquanto e arrastado.' })
+    public dragScale: number = 1.2;
+
+    // ---------- Reforco visual: item errado parado na prateleira ----------
+    @property({ tooltip: 'Segundos que um item errado (que nenhum pedido pede) pode ficar na prateleira antes de comecar a pulsar.' })
+    public wrongPulseDelay: number = 3;
+
+    @property({ tooltip: 'Amplitude da pulsacao (fracao da escala) do item errado.' })
+    public wrongPulseAmount: number = 0.25;
+
+    @property({ tooltip: 'Velocidade (rad/s) da pulsacao do item errado.' })
+    public wrongPulseSpeed: number = 9;
+
+    private wrongTime: number = 0;
+    private wrongNow: boolean = false;
+    private wrongCheck: number = 0;
+    private pulsing: boolean = false;
+    private pulseClock: number = 0;
+    private merging: boolean = false;
+
+    private touchId: number = -1;
+    private dragging: boolean = false;
+    private dragMoved: number = 0;
+    private dragOrigin: Vec3 | null = null;
+
     /** Define o tipo e o sprite do item (um unico prefab serve para todos os alimentos). */
     public Setup(type: ElementType, maxSize: number = 90) {
         this.type = type;
@@ -82,8 +112,80 @@ export class MatchElement extends Component {
             this.SetSortingOrder(this.defaultSortingOrder);
         }
 
-        if (this.buttonComponent) {
-            this.buttonComponent.node.on(Button.EventType.CLICK, this.OnClick, this);
+        // O Button so dispara o clique se o toque soltar em cima do mesmo item; aqui o toque e tratado por inteiro:
+        // o item pressionado (e arrastado) e o que fica selecionado ao soltar, esteja o dedo onde estiver.
+        if (this.buttonComponent) this.buttonComponent.enabled = false;
+        this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
+        this.node.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
+        this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+        this.node.on(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
+    }
+
+    onDestroy() {
+        if (this.node && this.node.isValid) this.node.targetOff(this);
+    }
+
+    /** Pode comecar a arrastar este item agora? (partida rodando, item no tabuleiro e liberado pelo tutorial) */
+    private canDrag(): boolean {
+        const gm = GameManager.instance;
+        if (gm && !gm.IsRunning() && !gm.IsTutorialRunning()) return false;
+        const allowed = gm ? gm.tutorialAllowed : null;
+        if (allowed && allowed.indexOf(this) === -1) return false;
+        return this.isAvailable && !this.hasReachedSlot && !this.isRejecting;
+    }
+
+    private onTouchStart(event: EventTouch) {
+        if (this.touchId !== -1) return;
+        this.touchId = event.getID();
+        this.dragging = false;
+        this.dragMoved = 0;
+        this.dragOrigin = this.canDrag() ? this.node.position.clone() : null;
+    }
+
+    private onTouchMove(event: EventTouch) {
+        if (event.getID() !== this.touchId || !this.dragOrigin) return;
+        const d = event.getUIDelta();
+        this.dragMoved += Math.hypot(d.x, d.y);
+        if (!this.dragging) {
+            if (this.dragMoved < this.dragThreshold) return;
+            // Comeca o arrasto: o item sobe para a frente de todos e cresce um pouco.
+            this.dragging = true;
+            Tween.stopAllByTarget(this.node);
+            this.SetSortingOrder(6);
+            this.node.setScale(this.dragScale, this.dragScale, 1);
+            this.node.setSiblingIndex(this.node.parent ? this.node.parent.children.length - 1 : 0);
+        }
+        // O delta vem em unidades de tela; o pai (tabuleiro) pode estar com escala.
+        const k = this.node.parent ? this.node.parent.worldScale.x || 1 : 1;
+        const p = this.node.position;
+        this.node.setPosition(p.x + d.x / k, p.y + d.y / k, p.z);
+    }
+
+    private onTouchEnd(event: EventTouch) {
+        if (event.getID() !== this.touchId) return;
+        this.touchId = -1;
+        const origin = this.dragOrigin;
+        const wasDragged = this.dragging;
+        this.dragging = false;
+        this.dragOrigin = null;
+
+        // Soltar fora do item sem ter arrastado nao e um clique (igual ao Button); arrastado, o item e sempre selecionado.
+        if (event.type === Node.EventType.TOUCH_CANCEL && !wasDragged) return;
+        this.OnClick();
+
+        if (wasDragged && origin) {
+            if (this.isAvailable) {
+                // Nao foi selecionado (prateleira cheia, tutorial...): volta ao lugar de onde saiu.
+                Tween.stopAllByTarget(this.node);
+                this.isRejecting = false; // o tremor de rejeicao foi interrompido
+                this.SetSortingOrder(this.defaultSortingOrder);
+                tween(this.node)
+                    .to(0.18, { position: origin, scale: this.availableScale }, { easing: 'cubicOut' })
+                    .start();
+            } else {
+                // Selecionado: se for devolvido ao tabuleiro, volta ao lugar de origem (nao ao ponto onde soltou).
+                this.boardPosition = origin;
+            }
         }
     }
 
@@ -249,6 +351,8 @@ export class MatchElement extends Component {
     }
 
     public Merge(targetSlot: Node | null = null, isMiddle: boolean = false) {
+        this.merging = true;
+        this.StopWrongPulse(false);
         if (this.currentSlot && this.matchSlots) {
             this.matchSlots.ReleaseSlot(this.currentSlot);
             this.currentSlot = null;
@@ -325,6 +429,58 @@ export class MatchElement extends Component {
         }
     }
 
+    /** Na prateleira, quieto, e nenhum pedido aberto pede este alimento (e ele nao esta num merge). */
+    private isWrongSelection(): boolean {
+        const gm = GameManager.instance;
+        if (!gm || !gm.IsRunning() || this.merging || !this.matchController) return false;
+        if (this.matchController.isInPendingMerge(this)) return false;
+        const orders = OrderManager.instance;
+        return !!orders && orders.NextQuantityFor(this.type) === 0;
+    }
+
+    private StopWrongPulse(restoreScale: boolean) {
+        if (!this.pulsing) return;
+        this.pulsing = false;
+        const sprite = this.spriteComponent || this.getComponent(Sprite);
+        if (sprite) sprite.color = Color.WHITE;
+        if (restoreScale && this.node.isValid) this.node.setScale(this.selectedScale);
+    }
+
     update(deltaTime: number) {
+        const inTray = !this.isAvailable && this.hasReachedSlot && !this.merging;
+        if (!inTray) {
+            // Saiu da prateleira (voltou ao tabuleiro, esta se movendo ou entrou em merge): zera o relogio.
+            this.wrongTime = 0;
+            this.wrongNow = false;
+            this.StopWrongPulse(false);
+            return;
+        }
+
+        this.wrongCheck -= deltaTime;
+        if (this.wrongCheck <= 0) {
+            this.wrongCheck = 0.2;
+            this.wrongNow = this.isWrongSelection();
+        }
+        if (!this.wrongNow) {
+            this.wrongTime = 0;
+            this.StopWrongPulse(true);
+            return;
+        }
+
+        this.wrongTime += deltaTime;
+        if (this.wrongTime < this.wrongPulseDelay) return;
+
+        // Pulsa (escala + tom avermelhado) ate o jogador remover o item ou um pedido passar a pedi-lo.
+        if (!this.pulsing) {
+            this.pulsing = true;
+            this.pulseClock = 0;
+            Tween.stopAllByTarget(this.node);
+        }
+        this.pulseClock += deltaTime;
+        const k = 0.5 + 0.5 * Math.sin(this.pulseClock * this.wrongPulseSpeed);
+        const s = 1 + this.wrongPulseAmount * k;
+        this.node.setScale(this.selectedScale.x * s, this.selectedScale.y * s, this.selectedScale.z);
+        const sprite = this.spriteComponent || this.getComponent(Sprite);
+        if (sprite) sprite.color = new Color(255, Math.round(255 - 130 * k), Math.round(255 - 130 * k), 255);
     }
 }

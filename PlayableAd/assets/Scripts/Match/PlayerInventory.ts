@@ -34,6 +34,7 @@ export class PowerupInventory {
 
     public static reload() {
         this.cache = null;
+        this.seen = null;
     }
 
     public static getCount(type: PowerupType): number {
@@ -47,12 +48,31 @@ export class PowerupInventory {
         writeJson(this.STORAGE_KEY, data);
     }
 
+    private static readonly SEEN_KEY = 'match3_powerup_seen';
+    private static seen: number[] | null = null;
+
+    /** O jogador ja comprou, ganhou por anuncio ou usou este power-up alguma vez? (os tutoriais so valem para quem nunca fez) */
+    public static hasSeen(type: PowerupType): boolean {
+        if (!this.seen) {
+            const data = readJson<number[]>(this.SEEN_KEY, []);
+            this.seen = Array.isArray(data) ? data : [];
+        }
+        return this.seen.indexOf(type) !== -1;
+    }
+
+    public static markSeen(type: PowerupType) {
+        if (this.hasSeen(type)) return;
+        this.seen!.push(type);
+        writeJson(this.SEEN_KEY, this.seen);
+    }
+
     /** Consome 1 unidade. Retorna false se nao havia. */
     public static consume(type: PowerupType): boolean {
         const data = this.load();
         if ((data[type] || 0) <= 0) return false;
         data[type]--;
         writeJson(this.STORAGE_KEY, data);
+        this.markSeen(type);
         return true;
     }
 }

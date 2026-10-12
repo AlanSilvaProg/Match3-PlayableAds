@@ -135,7 +135,8 @@
             "extra_assets/World_Selection/locked-icon.png",
             "Scripts/Match/EndScreenLayout.ts",
             "Scripts/Match/GameLayout.ts",
-            "Scripts/Match/Responsive.ts"
+            "Scripts/Match/Responsive.ts",
+            "Scripts/Match/WinRewards.ts"
         ]
     }
 }

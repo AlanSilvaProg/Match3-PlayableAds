@@ -34,6 +34,11 @@ export class MatchController extends Component {
         GameManager.instance?.events?.off(GameManager.EVENT_DEMAND_CHANGED, this.checkMatch, this);
     }
 
+    /** O item faz parte de um merge ja reservado (esperando chegar a prateleira ou animando)? */
+    public isInPendingMerge(element: MatchElement): boolean {
+        return this.pendingMatches.some(m => m.elements.indexOf(element) !== -1);
+    }
+
     private emitSelection() {
         const counts = new Map<ElementType, number>();
         this.selectedElements.forEach(el => counts.set(el.type, (counts.get(el.type) || 0) + 1));
@@ -57,6 +62,13 @@ export class MatchController extends Component {
 
     public onElementReachedSlot(element: MatchElement) {
         const matchIndex = this.pendingMatches.findIndex(m => m.elements.indexOf(element) !== -1);
+
+        // Item que nenhum pedido aberto pede (e que nao faz parte de um merge): selecao "errada" (dica de remover).
+        const gm = GameManager.instance;
+        if (matchIndex === -1 && gm && gm.IsRunning() && OrderManager.instance
+            && OrderManager.instance.NextQuantityFor(element.type) === 0) {
+            gm.events.emit(GameManager.EVENT_WRONG_SELECTED, element);
+        }
 
         if (matchIndex !== -1) {
             const match = this.pendingMatches[matchIndex];
