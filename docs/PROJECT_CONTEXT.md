@@ -6,7 +6,7 @@
 ## 1. Visão geral
 - Jogo web de merge/match 2D "Merge Merge Merge!" (tema fast food), feito em **Cocos Creator 3.8.8 + TypeScript**, destino: **Poki** (web-mobile).
 - Projeto Cocos: `PlayableAd/`. Código: `PlayableAd/assets/Scripts/Match/`. Cena única: `assets/Scenes/PlayableAdMatch.scene`.
-- Game id Poki: `merge-merge-merge!-fast-food` (`RankingManager.pokiGameId`, definido na cena).
+- Game id do ranking (AUDS): `b18d546d-465f-46d0-8e04-b261ed816d79` (`RankingManager.pokiGameId`, definido na cena; o id antigo `merge-merge-merge!-fast-food` era o slug da Poki, não o id do AUDS).
 - Design em **1280x720**, política **SHOW_ALL** (letterbox), definida no topo de `GameManager.ts` (nível de módulo, antes do Canvas alinhar a câmera).
 - Barras do letterbox e dica "Rotate your device" (retrato em celular) são **DOM** em `build-templates/web-mobile/index.ejs` (o motor desenha itens fora dos 1280px, ex. seleção de fases; as barras DOM cobrem isso).
 

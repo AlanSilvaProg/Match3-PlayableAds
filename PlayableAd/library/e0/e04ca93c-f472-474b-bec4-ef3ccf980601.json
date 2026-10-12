@@ -499,8 +499,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 78.61610958999917,
-      "height": 50.400000000000006
+      "width": 78.6181494530211,
+      "height": 50.4
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -532,7 +532,7 @@
     "_string": "0:30",
     "_horizontalAlign": 0,
     "_verticalAlign": 0,
-    "_actualFontSize": 41.88888888888889,
+    "_actualFontSize": 41.77777777777778,
     "_fontSize": 40,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
@@ -1353,7 +1353,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 33.25906169699105,
+      "width": 33.26036721087517,
       "height": 61.440000000000005
     },
     "_anchorPoint": {
@@ -1386,7 +1386,7 @@
     "_string": "0",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 46.07777777777778,
+    "_actualFontSize": 45.955555555555556,
     "_fontSize": 44,
     "_fontFamily": "Arial",
     "_lineHeight": 44,
@@ -6345,7 +6345,7 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "pokiGameId": "merge-merge-merge!-fast-food",
+    "pokiGameId": "b18d546d-465f-46d0-8e04-b261ed816d79",
     "baseUrl": "https://auds.poki.io/v0",
     "collection": "leaderboard",
     "topCount": 50,
