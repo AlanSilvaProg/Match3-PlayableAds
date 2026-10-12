@@ -1,5 +1,5 @@
 import { SoundManager } from './SoundManager';
-import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, EventTouch, EventMouse, tween, Tween } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, EventTouch, EventMouse, tween, Tween, view } from 'cc';
 const { ccclass, property } = _decorator;
 import { GameManager } from './GameManager';
 import { LevelProgress } from './LevelProgress';
@@ -8,6 +8,7 @@ import { PowerupManager } from './PowerupManager';
 import { AchievementManager } from './AchievementManager';
 import { PokiService } from './PokiService';
 import { RankingManager } from './RankingManager';
+import { Responsive } from './Responsive';
 
 interface LevelItem {
     node: Node;
@@ -152,6 +153,7 @@ export class LevelSelector extends Component {
     private pressedCurrentButton: boolean = false;
     private velocity: number = 0;
     private width: number = 1280;
+    private widgets: { powerups?: Node | null, achievements?: Node | null, ranking?: Node | null, coins?: Node | null, coinAd?: Node | null, starsY: number } = { starsY: 310 };
 
     private dragging: boolean = false;
     private lastX: number = 0;
@@ -166,28 +168,85 @@ export class LevelSelector extends Component {
     protected onLoad() {
         this.createCurrentButton();
         this.createPowerupWidgets();
+        Responsive.onChange(this.onResponsive);
+        this.applyLayout();
+    }
+
+    protected onDestroy() {
+        Responsive.offChange(this.onResponsive);
+    }
+
+    private onResponsive = () => {
+        if (!this.node || !this.node.isValid) return;
+        this.applyLayout();
+        if (this.node.active) {
+            // A largura visivel mudou: mantem o nivel em foco no centro e remonta os itens visiveis.
+            const center = this.scroll + this.width / 2;
+            this.width = Responsive.width;
+            this.scroll = this.clampScroll(center - this.width / 2);
+            this.refreshVisible();
+        } else {
+            this.width = Responsive.width;
+        }
+    };
+
+    /** Posiciona cabecalho, botoes e saldo conforme a orientacao (paisagem: cantos; retrato: linhas empilhadas). */
+    private applyLayout() {
+        const w = this.widgets;
+        const title = this.node.getChildByName('Title');
+        const stars = this.node.getChildByName('Icon');
+        const set = (n: Node | null | undefined, x: number, y: number, scale: number = 1) => {
+            if (!n) return;
+            n.setPosition(x, y, n.position.z);
+            n.setScale(scale, scale, 1);
+        };
+        // Tudo ancorado nas bordas VISIVEIS (cantos reais da tela), nao na area segura: em telas mais largas ou
+        // mais altas os botoes acompanham a tela.
+        const T = Responsive.top, B = Responsive.bottom, L = Responsive.left, R = Responsive.right;
+        if (Responsive.portrait) {
+            set(title, 0, T - 70, 0.75);
+            set(w.coins, L + 145, T - 170);
+            set(stars, R - 145, T - 170);
+            set(w.coinAd, L + 145, T - 240);
+            set(w.powerups, -230, B + 150);
+            set(w.achievements, 0, B + 150);
+            set(w.ranking, 230, B + 150);
+            this.currentButton?.setPosition(0, B + 300, 0);
+        } else {
+            set(title, 0, T - 50);
+            set(w.coins, L + 150, T - 50);
+            set(stars, R - 144, T - 50);
+            set(w.coinAd, L + 150, T - 120);
+            set(w.powerups, L + 100, B + 105);
+            set(w.achievements, L + 230, B + 105);
+            set(w.ranking, L + 360, B + 105);
+            this.currentButton?.setPosition(0, B + (360 + this.currentButtonY), 0);
+        }
     }
 
     /** Botao de power-ups (canto inferior esquerdo) e saldo de pontos (ponta oposta ao total de estrelas). */
     private createPowerupWidgets() {
         const pm = PowerupManager.instance;
         if (!pm) return;
-        pm.createOpenButton(this.node, -540, -255, this.sortingBase + 14);
+        this.widgets.powerups = pm.createOpenButton(this.node, -540, -255, this.sortingBase + 14);
         // Conquistas: ao lado do botao de power-ups, com a contagem de premios a coletar.
-        AchievementManager.instance?.createOpenButton(this.node, -410, -255, this.sortingBase + 14);
+        this.widgets.achievements = AchievementManager.instance?.createOpenButton(this.node, -410, -255, this.sortingBase + 14);
         // Ranking por estrelas totais (AUDS da Poki).
-        RankingManager.instance?.createOpenButton(this.node, -280, -255, this.sortingBase + 14);
+        this.widgets.ranking = RankingManager.instance?.createOpenButton(this.node, -280, -255, this.sortingBase + 14);
         // Alinhado no eixo Y com o holder de estrelas (TotalStars), onde quer que ele esteja.
         const starsY = this.node.getChildByName('TotalStars')?.position.y ?? 310;
         const holder = pm.createPointsBadgeView(this.node, -490, starsY, this.sortingBase + 10);
-        // Anuncio de coins logo abaixo do saldo (com espera de 3 minutos).
-        pm.createCoinAdButton(this.node, -490, starsY - 70, this.sortingBase + 10, holder);
+        this.widgets.starsY = starsY;
+        this.widgets.coins = holder?.node ?? null;
+        // Anuncio de coins logo abaixo do saldo (a frequencia dos anuncios e controlada pela Poki).
+        this.widgets.coinAd = pm.createCoinAdButton(this.node, -490, starsY - 70, this.sortingBase + 10, holder);
     }
 
     protected onEnable() {
         PowerupManager.instance?.refreshBadges();
         AchievementManager.instance?.refreshOpenButtons();
-        this.width = this.node.getComponent(UITransform)?.width || 1280;
+        this.width = Responsive.width;
+        this.applyLayout();
         this.choosing = false;
         this.dragging = false;
         this.velocity = 0;
@@ -505,9 +564,11 @@ export class LevelSelector extends Component {
     // ---------- Input ----------
 
     private toLocal(event: EventTouch): Vec3 {
+        // O toque vem relativo ao canto inferior esquerdo da area VISIVEL (que e maior que a area segura): soma a origem.
         const ui = event.getUILocation();
+        const w = Responsive.uiToWorld(ui.x, ui.y);
         const ut = this.node.getComponent(UITransform)!;
-        return ut.convertToNodeSpaceAR(new Vec3(ui.x, ui.y, 0));
+        return ut.convertToNodeSpaceAR(new Vec3(w.x, w.y, 0));
     }
 
     private itemAt(local: Vec3): LevelItem | null {

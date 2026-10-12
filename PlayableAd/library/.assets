@@ -132,7 +132,10 @@
             "extra_assets/World_Selection/disabled-button-level.png",
             "extra_assets/World_Selection/enabled-button-level-special.png",
             "extra_assets/World_Selection/enabled-button-level.png",
-            "extra_assets/World_Selection/locked-icon.png"
+            "extra_assets/World_Selection/locked-icon.png",
+            "Scripts/Match/EndScreenLayout.ts",
+            "Scripts/Match/GameLayout.ts",
+            "Scripts/Match/Responsive.ts"
         ]
     }
 }

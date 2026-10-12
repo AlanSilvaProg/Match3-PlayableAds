@@ -10,15 +10,18 @@ import { ComboManager } from './ComboManager';
 import { PlayerStats, AchievementMetric } from './PlayerStats';
 import { AchievementManager } from './AchievementManager';
 import { SoundManager } from './SoundManager';
+import { Responsive } from './Responsive';
+import { GameLayout } from './GameLayout';
+import { EndScreenLayout } from './EndScreenLayout';
 import { RankingManager } from './RankingManager';
 import { PlayerData } from './PlayerData';
 const { ccclass, property } = _decorator;
 
 import { GameState } from './GameState';
 
-// Layout desenhado em 1280x720: SHOW_ALL mantem tudo visivel em telas largas (celular deitado) ou estreitas (retrato).
+// Layout responsivo (paisagem 1280x720 / retrato 720x1280): veja Responsive.ts.
 // Roda no carregamento do modulo, antes do Canvas da cena alinhar a camera.
-view.setDesignResolutionSize(1280, 720, ResolutionPolicy.SHOW_ALL);
+Responsive.install();
 
 @ccclass('GameManager')
 export class GameManager extends Component {
@@ -157,8 +160,15 @@ export class GameManager extends Component {
 
     public static instance: GameManager = null!;
 
+    private onResponsive = () => { if (this.node.parent) GameLayout.apply(this.node.parent); };
+
     onLoad() {
         GameManager.instance = this;
+        if (this.node.parent) {
+            Responsive.attach(this.node.parent);
+            GameLayout.apply(this.node.parent);
+        }
+        Responsive.onChange(this.onResponsive);
         PokiService.init();
         PokiService.isGameplayActive = () => this.currentState === GameState.Running || this.currentState === GameState.Tutorial;
         this.lastRealTime = performance.now();
@@ -173,6 +183,7 @@ export class GameManager extends Component {
     }
 
     onDestroy() {
+        Responsive.offChange(this.onResponsive);
         game.off(Game.EVENT_HIDE, this.keepRunning, this);
         clearInterval(this.backgroundTick);
     }
@@ -533,11 +544,13 @@ export class GameManager extends Component {
             if (this.victoryPrefab) {
                 const instance = instantiate(this.victoryPrefab);
                 instance.parent = this.node.parent;
+                EndScreenLayout.apply(instance);
             }
         } else if (state === GameState.Defeat) {
             if (this.defeatPrefab) {
                 const instance = instantiate(this.defeatPrefab);
                 instance.parent = this.node.parent;
+                EndScreenLayout.apply(instance);
                 this.defeatInstance = instance;
             }
         }

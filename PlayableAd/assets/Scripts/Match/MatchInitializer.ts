@@ -90,8 +90,14 @@ export class MatchInitializer extends Component {
         matchElement.Setup(type, this.elementSize);
 
         if (randomizePosition) {
-            const x = (Math.random() - this.anchorX) * this.width;
-            const y = (Math.random() - this.anchorY) * this.height;
+            // Le o tamanho na hora: a area do tabuleiro muda com a orientacao (veja GameLayout).
+            const ut = this.getComponent(UITransform);
+            const w = ut ? ut.width : this.width;
+            const h = ut ? ut.height : this.height;
+            // Margem de meio item em cada borda: nenhum item nasce por cima da prateleira/pedidos/barras vizinhas.
+            const inset = this.elementSize;
+            const x = (Math.random() - this.anchorX) * Math.max(0, w - inset);
+            const y = (Math.random() - this.anchorY) * Math.max(0, h - inset);
             instance.setPosition(new Vec3(x, y, 0));
         }
 

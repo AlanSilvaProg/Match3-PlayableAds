@@ -1,5 +1,6 @@
 import { WindowAnim } from './WindowAnim';
 import { SoundManager } from './SoundManager';
+import { Responsive } from './Responsive';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, UITransform, Vec3, Color, Sorting2D, UIOpacity, tween, Tween, sys, game } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -383,7 +384,7 @@ export class RankingManager extends Component {
         viewport.on(Node.EventType.TOUCH_MOVE, (e: any) => {
             if (!this.dragging) return;
             const y = e.getUILocation().y;
-            const dy = y - this.lastY;
+            const dy = (y - this.lastY) / WindowAnim.fitScale(); // a janela pode estar reduzida (retrato)
             this.lastY = y;
             this.setScroll(this.scroll + dy);
             const now = performance.now();
@@ -604,7 +605,7 @@ export class RankingManager extends Component {
         const canvas = game.canvas as HTMLCanvasElement | null;
         if (!el || !canvas) return;
         const r = canvas.getBoundingClientRect();
-        const sx = r.width / 1280, sy = r.height / 720;
+        const sx = r.width / Responsive.width, sy = r.height / Responsive.height; // o canvas mostra a area visivel inteira
         const w = 420, h = 64, y = 75; // centro do campo em coordenadas do jogo (y para cima)
         el.style.width = `${w * sx}px`;
         el.style.height = `${h * sy}px`;

@@ -1,4 +1,5 @@
 import { SoundManager } from './SoundManager';
+import { Responsive } from './Responsive';
 import { _decorator, Component, Node, Vec3, Color, Sprite, SpriteFrame, Label, Font, UITransform, Sorting2D, tween, Tween, UIOpacity } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -131,23 +132,23 @@ export class TutorialManager extends Component {
                 if (gm?.timerLabel) nodes.push(gm.timerLabel.node);
                 if (gm?.timerBar?.node.parent) nodes.push(gm.timerBar.node.parent);
                 this.highlight(nodes);
-                this.showCaption('This is your TIME!\nDon\'t let it hit zero.', new Vec3(60, 40, 0), true);
+                this.showCaption('This is your TIME!\nDon\'t let it hit zero.', this.capPos('timer', new Vec3(60, 40, 0)), true);
                 break;
             }
             case TutorialStep.Combo:
                 if (ComboManager.instance) this.highlight([ComboManager.instance.node]);
-                this.showCaption('Merge fast for COMBOS!\nBigger combo = more coins.', new Vec3(60, -110, 0), true);
+                this.showCaption('Merge fast for COMBOS!\nBigger combo = more coins.', this.capPos('combo', new Vec3(60, -110, 0)), true);
                 break;
             case TutorialStep.Orders:
                 if (OrderManager.instance) this.highlight([OrderManager.instance.node]);
-                this.showCaption('These are your ORDERS!\nCollect the exact amount before time runs out.', new Vec3(95, 120, 0), true);
+                this.showCaption('These are your ORDERS!\nCollect the exact amount before time runs out.', this.capPos('orders', new Vec3(95, 120, 0)), true);
                 break;
             case TutorialStep.Powerups:
                 if (PowerupManager.instance) {
                     PowerupManager.instance.tutorialBarVisible = true;
                     this.highlight([PowerupManager.instance.barNode!]);
                 }
-                this.showCaption('These are POWER-UPS!\nHover or hold one to see what it does.', new Vec3(100, -10, 0), true);
+                this.showCaption('These are POWER-UPS!\nHover or hold one to see what it does.', this.capPos('powerups', new Vec3(100, -10, 0)), true);
                 break;
             case TutorialStep.Click:
                 this.startClickStep();
@@ -193,7 +194,7 @@ export class TutorialManager extends Component {
     private ensureSkipButton() {
         if (!this.skipButton) {
             const w = 150, h = 56;
-            const node = this.makeNode('SkipButton', this.node, 540, 318, w, h);
+            const node = this.makeNode('SkipButton', this.node, Responsive.right - 90, Responsive.top - (Responsive.portrait ? 45 : 42), w, h);
             const sprite = this.makePanelSprite(node, new Color(255, 140, 40, 255));
             sprite.node.getComponent(Sorting2D)!.sortingOrder = TutorialManager.UI_ORDER + 60;
             this.makeLabel(node, 'SKIP', 32, w - 16, h - 10, 0, 2, 61);
@@ -201,6 +202,7 @@ export class TutorialManager extends Component {
             this.skipButton = node;
         }
         this.skipButton.active = true;
+        this.skipButton.setPosition(Responsive.right - 90, Responsive.top - (Responsive.portrait ? 45 : 42), 0);
         this.skipButton.setSiblingIndex(this.node.children.length - 1);
     }
 
@@ -280,7 +282,20 @@ export class TutorialManager extends Component {
                 s.sortingOrder = TutorialManager.UI_ORDER + 50 + s.sortingOrder;
             });
         }
-        this.showCaption('Tap the highlighted foods!', new Vec3(95, -300, 0), false);
+        this.showCaption('Tap the highlighted foods!', this.capPos('click', new Vec3(95, -300, 0)), false);
+    }
+
+    /** Posicao da legenda: em paisagem a posicao do editor; em retrato, junto ao elemento destacado. */
+    private capPos(kind: 'timer' | 'combo' | 'orders' | 'powerups' | 'click', land: Vec3): Vec3 {
+        if (!Responsive.portrait) return land;
+        const m = Responsive.portraitMetrics();
+        switch (kind) {
+            case 'timer': return new Vec3(0, m.timerBarY - 120, 0);
+            case 'combo': return new Vec3(0, m.comboY - 140, 0);
+            case 'orders': return new Vec3(0, m.ordersTop - m.ordersH - 95, 0);
+            case 'powerups': return new Vec3(0, m.barY + 150, 0);
+            default: return new Vec3(0, m.shelfY + 160, 0);
+        }
     }
 
     // ---------- Visual ----------
@@ -430,9 +445,10 @@ export class TutorialManager extends Component {
             this.rulesRoot = root;
         }
         this.rulesRoot.active = true;
-        this.rulesRoot.setScale(0.7, 0.7, 1);
+        const rulesScale = Responsive.portrait ? 0.85 : 1; // o painel (820px) precisa caber no retrato (720)
+        this.rulesRoot.setScale(0.7 * rulesScale, 0.7 * rulesScale, 1);
         Tween.stopAllByTarget(this.rulesRoot);
-        tween(this.rulesRoot).to(0.25, { scale: Vec3.ONE }, { easing: 'backOut' }).start();
+        tween(this.rulesRoot).to(0.25, { scale: new Vec3(rulesScale, rulesScale, 1) }, { easing: 'backOut' }).start();
     }
 
     /** Uma linha de regra: mini cartao de pedido, resultado no tempo e explicacao. */

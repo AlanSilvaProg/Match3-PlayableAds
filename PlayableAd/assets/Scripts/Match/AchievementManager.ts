@@ -1,5 +1,6 @@
 import { WindowAnim } from './WindowAnim';
 import { SoundManager } from './SoundManager';
+import { Responsive } from './Responsive';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, UITransform, Vec3, Color, Sorting2D, UIOpacity, tween, Tween, Enum, Rect, Size, Vec2 } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -353,6 +354,11 @@ export class AchievementManager extends Component {
         this.buildBannerPool();
     }
 
+    /** Posicao vertical do primeiro aviso: perto do topo visivel (em retrato o topo e bem mais alto). */
+    private bannerTopY(): number {
+        return Responsive.portrait ? Responsive.top - 90 : 300;
+    }
+
     private buildBannerPool() {
         const pm = this.pm;
         const parent = this.node.parent;
@@ -361,7 +367,7 @@ export class AchievementManager extends Component {
         const w = 560, h = 96;
 
         for (let i = 0; i < 4; i++) {
-            const banner = this.makeNode('AchievementBanner', parent, 0, 300 - i * (h + 10), w, h);
+            const banner = this.makeNode('AchievementBanner', parent, 0, this.bannerTopY() - i * (h + 10), w, h);
             this.makeSprite(banner, pm.pointsFrame, base, true);
 
             const iconHolder = this.makeNode('IconHolder', banner, -w / 2 + 62, 0, 70, 70);
@@ -394,7 +400,7 @@ export class AchievementManager extends Component {
         const entry = this.bannerPool[index];
         if (!entry) return;
         const h = 96;
-        const targetY = 300 - index * (h + 10);
+        const targetY = this.bannerTopY() - index * (h + 10);
 
         this.applyIcon(entry.icon, d, 52);
         entry.title.string = d.title;
@@ -703,7 +709,7 @@ export class AchievementManager extends Component {
     private onTouchMove(event: any) {
         if (!this.dragging) return;
         const y = event.getUILocation().y;
-        const dy = y - this.lastY;
+        const dy = (y - this.lastY) / WindowAnim.fitScale(); // a janela pode estar reduzida (retrato)
         this.lastY = y;
         this.dragMoved += Math.abs(dy);
         this.setScroll(this.scroll + dy);

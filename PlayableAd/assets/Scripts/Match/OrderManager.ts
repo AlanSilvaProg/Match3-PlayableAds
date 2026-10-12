@@ -1,4 +1,5 @@
 import { SoundManager } from './SoundManager';
+import { Responsive } from './Responsive';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, tween, Tween } from 'cc';
 const { ccclass, property } = _decorator;
 import { ElementType } from './ElementType';
@@ -95,6 +96,7 @@ export class OrderManager extends Component {
     private frozenFor: number = 0;
     /** Escala uniforme dos cartoes: diminui quando ha pedidos demais para a altura do painel. */
     private cardScale: number = 1;
+    private titleNode: Node | null = null;
     private selection: Map<ElementType, number> = new Map();
 
     private readonly cardColor = new Color(30, 36, 60, 235);
@@ -108,9 +110,25 @@ export class OrderManager extends Component {
     protected onLoad() {
         OrderManager.instance = this;
         this.createTitle();
+        Responsive.onChange(this.onResponsive);
+    }
+
+    private onResponsive = () => { this.relayout(); };
+
+    /** Orientacao mudou: reposiciona titulo e cartoes (coluna em paisagem, faixa em linhas no retrato). */
+    public relayout() {
+        if (!this.node || !this.node.isValid) return;
+        this.titleNode?.setPosition(0, this.titleLocalY(), 0);
+        this.layoutCards(false);
+    }
+
+    private titleLocalY(): number {
+        // Paisagem: titulo ancorado no topo visivel (titleY foi definido para a altura 720).
+        return Responsive.portrait ? 0 : this.titleY + Math.max(0, Responsive.height - Responsive.LAND_H) / 2;
     }
 
     protected onDestroy() {
+        Responsive.offChange(this.onResponsive);
         if (OrderManager.instance === this) OrderManager.instance = null!;
         const events = GameManager.instance?.events;
         events?.off(GameManager.EVENT_LEVEL_READY, this.onLevelReady, this);
@@ -363,7 +381,8 @@ export class OrderManager extends Component {
     }
 
     private createTitle() {
-        const n = this.makeNode('OrdersTitle', this.node, 0, this.titleY, this.cardWidth + 10, 44);
+        const n = this.makeNode('OrdersTitle', this.node, 0, this.titleLocalY(), this.cardWidth + 10, 44);
+        this.titleNode = n;
         const label = this.makeLabel(n, 38, 3, Color.WHITE, new Color(20, 70, 120, 255));
         label.string = this.titleText;
         label.isBold = true;
@@ -471,13 +490,15 @@ export class OrderManager extends Component {
 
     /** Empilha os cartoes de cima para baixo, animando a reacomodacao. Com muitos pedidos, todos encolhem para caber. */
     private layoutCards(animate: boolean) {
+        if (Responsive.portrait) { this.layoutCardsFlow(animate); return; }
         const total = this.usedHeight();
-        const newScale = total > this.cardsAreaHeight ? Math.max(0.5, this.cardsAreaHeight / total) : 1;
+        const areaH = this.cardsAreaHeight + Math.max(0, Responsive.height - Responsive.LAND_H);
+        const newScale = total > areaH ? Math.max(0.5, areaH / total) : 1;
         const rescaled = Math.abs(newScale - this.cardScale) > 0.001;
         this.cardScale = newScale;
         const cs = this.cardScale;
 
-        let y = this.titleY - 30;
+        let y = this.titleLocalY() - 30;
         for (const o of this.active) {
             const h = o.height * cs;
             const target = y - h / 2;
@@ -497,6 +518,66 @@ export class OrderManager extends Component {
                 o.node.setPosition(0, target, 0);
             }
             y -= h + 8 * cs;
+        }
+    }
+
+    /** Retrato: cartoes lado a lado, quebrando em linhas; todos encolhem para caber na faixa de pedidos. */
+    private layoutCardsFlow(animate: boolean) {
+        const m = Responsive.portraitMetrics();
+        const areaW = 700, areaH = m.ordersH, gap = 8;
+        const orders = this.active;
+        const w = this.cardWidth;
+
+        const plan = (scale: number) => {
+            const rows: { items: OrderView[], width: number, height: number }[] = [];
+            let row = { items: [] as OrderView[], width: 0, height: 0 };
+            for (const o of orders) {
+                const cw = w * scale;
+                const ch = o.height * scale;
+                if (row.items.length > 0 && row.width + gap + cw > areaW) {
+                    rows.push(row);
+                    row = { items: [], width: 0, height: 0 };
+                }
+                row.width += (row.items.length > 0 ? gap : 0) + cw;
+                row.height = Math.max(row.height, ch);
+                row.items.push(o);
+            }
+            if (row.items.length > 0) rows.push(row);
+            const total = rows.reduce((t, r) => t + r.height, 0) + Math.max(0, rows.length - 1) * gap;
+            return { rows, total };
+        };
+
+        let scale = 1;
+        let layout = plan(scale);
+        while (layout.total > areaH && scale > 0.45) {
+            scale = Math.max(0.45, scale - 0.05);
+            layout = plan(scale);
+        }
+        const rescaled = Math.abs(scale - this.cardScale) > 0.001;
+        this.cardScale = scale;
+
+        let y = -30;
+        for (const row of layout.rows) {
+            let x = -row.width / 2;
+            for (const o of row.items) {
+                const cw = w * scale;
+                const targetX = x + cw / 2;
+                const targetY = y - row.height / 2;
+                if (rescaled && !o.delivered && o.node.scale.x > 0) {
+                    Tween.stopAllByTarget(o.node);
+                    o.node.setScale(scale, scale, 1);
+                }
+                const pos = o.node.position;
+                const isNew = pos.y === 0 && pos.x === 0;
+                if (animate && o.node.activeInHierarchy && !isNew && o.node.scale.x > 0
+                    && (Math.abs(pos.x - targetX) > 0.5 || Math.abs(pos.y - targetY) > 0.5)) {
+                    tween(o.node).to(0.2, { position: new Vec3(targetX, targetY, 0) }, { easing: 'quadOut' }).start();
+                } else {
+                    o.node.setPosition(targetX, targetY, 0);
+                }
+                x += cw + gap;
+            }
+            y -= row.height + gap;
         }
     }
 }

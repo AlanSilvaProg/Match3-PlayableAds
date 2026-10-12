@@ -1,5 +1,6 @@
 import { WindowAnim } from './WindowAnim';
 import { SoundManager } from './SoundManager';
+import { Responsive } from './Responsive';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, tween, Tween, Prefab, instantiate } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -127,9 +128,24 @@ export class PowerupManager extends Component {
         PowerupManager.instance = this;
         PowerupCatalog.init(this.sheetFrame);
         this.remaining = PowerupCatalog.defs.map(() => 0);
+        Responsive.onChange(this.onResponsive);
+    }
+
+    private onResponsive = () => { this.layoutBar(); };
+
+    /** Barra: no retrato fica colada na base da tela, centralizada; em paisagem usa barX/barY do editor. */
+    public layoutBar() {
+        if (!this.bar || !this.bar.isValid) return;
+        if (Responsive.portrait) {
+            this.bar.setPosition(0, Responsive.portraitMetrics().barY, 0);
+        } else {
+            // Paisagem: a barra fica ancorada na base visivel (barY foi definido para a altura 720).
+            this.bar.setPosition(this.barX, this.barY - Math.max(0, Responsive.height - Responsive.LAND_H) / 2, 0);
+        }
     }
 
     protected onDestroy() {
+        Responsive.offChange(this.onResponsive);
         if (PowerupManager.instance === this) PowerupManager.instance = null!;
         GameManager.instance?.events?.off(GameManager.EVENT_REVIVED, this.onRevived, this);
     }
@@ -370,6 +386,7 @@ export class PowerupManager extends Component {
         const count = PowerupCatalog.defs.length;
         const total = count * size + (count - 1) * gap;
         this.bar = this.makeNode('PowerupBar', this.node, this.barX, this.barY, total, size);
+        this.layoutBar();
 
         this.slots = PowerupCatalog.defs.map((def, i) => {
             const x = -total / 2 + size / 2 + i * (size + gap);
@@ -841,7 +858,11 @@ export class PowerupManager extends Component {
         root.active = true;
         Tween.stopAllByTarget(root);
         // Com a janela aberta o aviso fica no espaco livre no rodape dela (nao cobre o titulo); em jogo, perto do topo.
-        const baseY = bottom || (this.windowRoot && this.windowRoot.active) ? -252 : 250;
+        const windowOpen = !!(this.windowRoot && this.windowRoot.active);
+        const portrait = Responsive.portrait;
+        const baseY = bottom || windowOpen
+            ? -252 * (portrait ? WindowAnim.fitScale() : 1)
+            : (portrait ? Responsive.portraitMetrics().boardY + 220 : 250);
         root.setPosition(0, baseY, 0);
         root.setScale(0.6, 0.6, 1);
         tween(root)
