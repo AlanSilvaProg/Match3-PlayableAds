@@ -244,14 +244,16 @@ export class SoundManager extends Component {
         const sm = SoundManager.instance;
         const a = sm?.heartSource;
         if (!sm || !a || !sm.heartBeatClip) return;
-        if (on) {
-            a.stop();
-            a.clip = sm.heartBeatClip;
-            a.volume = sm.heartBeatVolume;
-            a.play();
-        } else if (a.playing) {
-            a.stop();
-        }
+        try {
+            if (on) {
+                a.stop();
+                a.clip = sm.heartBeatClip;
+                a.volume = sm.heartBeatVolume;
+                a.play();
+            } else if (a.playing) {
+                a.stop();
+            }
+        } catch (e) { /* sem som */ }
     }
 
     public static playReducingTime() {
@@ -288,14 +290,16 @@ export class SoundManager extends Component {
     private applyAlarm(on: boolean) {
         const a = this.alarmSource;
         if (!a || !this.alarmClip) return;
-        if (on) {
-            if (a.playing) return;
-            a.clip = this.alarmClip;
-            a.volume = this.alarmVolume;
-            a.play();
-        } else if (a.playing) {
-            a.stop();
-        }
+        try {
+            if (on) {
+                if (a.playing) return;
+                a.clip = this.alarmClip;
+                a.volume = this.alarmVolume;
+                a.play();
+            } else if (a.playing) {
+                a.stop();
+            }
+        } catch (e) { /* sem som */ }
     }
 
     private play(key: string, clip: AudioClip | null, volume: number, minInterval: number) {
@@ -304,6 +308,10 @@ export class SoundManager extends Component {
         const last = this.lastPlayed.get(key);
         if (last !== undefined && now - last < minInterval) return;
         this.lastPlayed.set(key, now);
-        this.source.playOneShot(clip, volume);
+        // Audio nunca pode quebrar o jogo (ex.: navegadores de celular com o audio ainda bloqueado): erros sao ignorados.
+        try {
+            const r: any = this.source.playOneShot(clip, volume);
+            if (r && typeof r.catch === 'function') r.catch(() => { });
+        } catch (e) { /* sem som */ }
     }
 }

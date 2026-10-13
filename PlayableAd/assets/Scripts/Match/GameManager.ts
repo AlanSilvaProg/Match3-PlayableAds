@@ -99,11 +99,16 @@ export class GameManager extends Component {
 
     /** Recarrega a cena do jogo. Retorna false se o carregamento nao iniciou. */
     public static reloadScene(): boolean {
+        // Tela de carregamento da pagina por cima ate a nova cena ficar pronta (veja index.ejs / bootFlow).
+        (globalThis as any).__loading?.show(0);
         const name = GameManager.instance?.sceneName || director.getScene()?.name || 'PlayableAdMatch';
         const started = director.loadScene(name, (err) => {
             if (err) console.error(`[GameManager] Falha ao carregar a cena "${name}":`, err);
         });
-        if (!started) console.error(`[GameManager] director.loadScene("${name}") nao iniciou.`);
+        if (!started) {
+            console.error(`[GameManager] director.loadScene("${name}") nao iniciou.`);
+            (globalThis as any).__loading?.hide();
+        }
         return started;
     }
 
@@ -292,7 +297,10 @@ export class GameManager extends Component {
         }
 
         // Tudo pronto: a tela de carregamento da pagina (index.html) pode sumir.
-        this.scheduleOnce(() => { (globalThis as any).__gameReady = true; }, 0.15);
+        this.scheduleOnce(() => {
+            (globalThis as any).__gameReady = true;
+            (globalThis as any).__loading?.hide();
+        }, 0.15);
     }
 
     /** Chamado pelo botao Play: entra no jogo e mostra o tutorial apenas na primeira vez. */

@@ -14,6 +14,10 @@ export class PokiService {
 
     private static initPromise: Promise<boolean> | null = null;
     private static loadingFinished: boolean = false;
+    /** O init do SDK terminou (com sucesso ou nao) / estourou o limite de espera: as proximas chamadas nao esperam de novo. */
+    private static initDone: boolean = false;
+    private static initResult: boolean = false;
+    private static initTimedOut: boolean = false;
     private static playing: boolean = false;
     private static savedVolumes: Map<AudioSource, number> = new Map();
 
@@ -34,9 +38,22 @@ export class PokiService {
         }
 
         this.initPromise = Promise.resolve(sdk.init())
-            .then(() => true)
-            .catch(() => false); // bloqueador de anuncios etc.: o jogo continua mesmo assim
+            .then(() => { this.initDone = true; this.initResult = true; return true; })
+            .catch(() => { this.initDone = true; this.initResult = false; return false; }); // bloqueador de anuncios etc.: o jogo continua mesmo assim
         return this.initPromise;
+    }
+
+    /**
+     * `init` com limite de tempo: se o SDK demora demais (rede lenta no celular, bloqueio), segue como "sem SDK" em
+     * vez de deixar o jogo preso (selecao de nivel, Next/Restart e anuncios dependem disto).
+     */
+    private static initOrTimeout(timeoutMs: number = 2500): Promise<boolean> {
+        if (this.initDone) return Promise.resolve(this.initResult);
+        if (this.initTimedOut) { this.init(); return Promise.resolve(false); }
+        return Promise.race([
+            this.init(),
+            new Promise<boolean>(resolve => setTimeout(() => { if (!this.initDone) this.initTimedOut = true; resolve(false); }, timeoutMs)),
+        ]);
     }
 
     /**
@@ -44,9 +61,12 @@ export class PokiService {
      * nunca ficar preso se o SDK demorar ou estiver bloqueado.
      */
     public static ready(timeoutMs: number = 2500): Promise<void> {
+        // Depois da primeira vez (SDK pronto ou ja estourou o limite) nao espera de novo: cada recarga de cena
+        // (Restart/Next/Levels) pagava 2,5s a toa quando o SDK e lento no celular.
+        if (this.initDone || this.initTimedOut) return Promise.resolve();
         return Promise.race([
             this.init().then(() => undefined),
-            new Promise<void>(resolve => setTimeout(resolve, timeoutMs)),
+            new Promise<void>(resolve => setTimeout(() => { if (!this.initDone) this.initTimedOut = true; resolve(); }, timeoutMs)),
         ]);
     }
 
@@ -58,7 +78,7 @@ export class PokiService {
      */
     public static async getUser(): Promise<{ available: boolean, user: { username: string, avatarUrl: string } | null }> {
         if (this.userCache) return this.userCache;
-        const ready = await this.init();
+        const ready = await this.initOrTimeout();
         if (!ready || !this.sdk || typeof this.sdk.getUser !== 'function') return { available: false, user: null };
         try {
             const user = await this.sdk.getUser();
@@ -232,7 +252,7 @@ export class PokiService {
     /** Anuncio entre niveis. Silencia o jogo durante o anuncio. Sempre resolve. */
     public static commercialBreak(): Promise<void> {
         this.gameplayStop();
-        return this.init().then(ready => {
+        return this.initOrTimeout().then(ready => {
             if (!ready || !this.adsEnabled) return;
             return this.runBreak(onStart => this.sdk.commercialBreak(onStart)).then(() => undefined);
         });
@@ -241,7 +261,7 @@ export class PokiService {
     /** Anuncio com recompensa. Resolve true se o jogador assistiu ate o fim. */
     public static rewardedBreak(): Promise<boolean> {
         this.gameplayStop();
-        return this.init().then(ready => {
+        return this.initOrTimeout().then(ready => {
             if (!this.sdk) return this.devRewardBypass;
             if (!ready) return false; // bloqueador de anuncios: sem anuncio, sem recompensa
             if (!this.adsEnabled) return this.devRewardBypass;

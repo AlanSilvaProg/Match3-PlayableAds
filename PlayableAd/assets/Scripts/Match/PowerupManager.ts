@@ -618,7 +618,8 @@ export class PowerupManager extends Component {
         const dim = this.makeNode('Dim', root, 0, 0, 1400, 800);
         const dimSprite = this.makeSprite(dim, this.dimFrame, base);
         dimSprite.color = new Color(0, 0, 0, 190);
-        dim.on(Node.EventType.TOUCH_END, () => { });
+        // Tocar no fundo escuro fecha a janela.
+        dim.on(Node.EventType.TOUCH_END, () => { SoundManager.playMenuClick(); this.closeWindow(); });
 
         const W = 1000, H = 600;
         const win = this.makeNode('Window', root, 0, 0, W, H);
@@ -646,6 +647,14 @@ export class PowerupManager extends Component {
             const holder = this.makeNode('Holder', cell, 0, 52, 104, 104);
             this.makeSprite(holder, this.holderFrame, base + 3);
             this.attachTooltip(holder, def.type);
+            // Tocar no icone compra o power-up (igual ao botao de preco). Um toque longo so mostra a descricao.
+            holder.on(Node.EventType.TOUCH_START, () => holder.setScale(0.94, 0.94, 1));
+            holder.on(Node.EventType.TOUCH_CANCEL, () => holder.setScale(1, 1, 1));
+            holder.on(Node.EventType.TOUCH_END, () => {
+                holder.setScale(1, 1, 1);
+                if (this.longPressShown) { this.longPressShown = false; return; }
+                if (this.buy(def.type)) SoundManager.playMenuClick(); else SoundManager.playBlocked();
+            });
             const iconNode = this.makeNode('Icon', holder, 0, 3, 74, 74);
             const icon = iconNode.addComponent(Sprite);
             PowerupCatalog.applyFitted(icon, def.type, 74);

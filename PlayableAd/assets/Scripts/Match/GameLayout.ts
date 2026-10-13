@@ -80,7 +80,8 @@ export class GameLayout {
         if (nodes.ordersBg) {
             const bgH = m.ordersH + 65;
             nodes.ordersBg.setRotationFromEuler(0, 0, 0);
-            nodes.ordersBg.getComponent(UITransform)?.setContentSize(Responsive.PORT_W, bgH);
+            // Largura = a tela visivel inteira (em celulares com barras do navegador ela passa de 720).
+            nodes.ordersBg.getComponent(UITransform)?.setContentSize(Math.max(Responsive.PORT_W, Responsive.width) + 40, bgH);
             nodes.ordersBg.setPosition(0, -(m.ordersH + 15) / 2, 0);
         }
 

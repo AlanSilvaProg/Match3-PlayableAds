@@ -1,6 +1,6 @@
 import { SoundManager } from './SoundManager';
 import { Responsive } from './Responsive';
-import { _decorator, Component, Node, Vec3, Color, Sprite, SpriteFrame, Label, Font, UITransform, Sorting2D, tween, Tween, UIOpacity, sys } from 'cc';
+import { _decorator, Component, Node, Vec3, Color, Sprite, SpriteFrame, Label, Font, UITransform, Sorting2D, tween, Tween, UIOpacity, sys, input, Input } from 'cc';
 const { ccclass, property } = _decorator;
 
 import { MatchController } from './MatchController';
@@ -495,7 +495,9 @@ export class TutorialManager extends Component {
                 s.sortingOrder = TutorialManager.UI_ORDER + 50 + s.sortingOrder;
             });
         }
-        this.showCaption('Tap the highlighted foods!', this.capPos('click', new Vec3(95, -300, 0)), false);
+        // A legenda fica numa faixa SEM alimentos (nunca por cima dos itens destacados): em retrato, na linha do combo;
+        // em paisagem, na faixa acima do tabuleiro. E menor que as demais.
+        this.showCaption('Tap the highlighted foods!', this.capPos('click', new Vec3(100, Responsive.top - 55, 0)), false, Responsive.portrait ? 0.8 : 0.62);
     }
 
     /** Posicao da legenda: em paisagem a posicao do editor; em retrato, junto ao elemento destacado. */
@@ -507,7 +509,7 @@ export class TutorialManager extends Component {
             case 'combo': return new Vec3(0, m.comboY - 140, 0);
             case 'orders': return new Vec3(0, m.ordersTop - m.ordersH - 95, 0);
             case 'powerups': return new Vec3(0, m.barY + 150, 0);
-            default: return new Vec3(0, m.shelfY + 160, 0);
+            default: return new Vec3(0, m.comboY, 0);
         }
     }
 
@@ -598,7 +600,7 @@ export class TutorialManager extends Component {
     }
 
     /** Caixa de texto do tutorial, com "Touch to continue" quando o passo avanca por toque. */
-    private showCaption(text: string, position: Vec3, withContinue: boolean) {
+    private showCaption(text: string, position: Vec3, withContinue: boolean, scale: number = 1) {
         if (!this.captionRoot) {
             const root = this.makeNode('Caption', this.node, 0, 0, 500, 170);
             this.makePanel(root, 0, 0, 500, 170, 0, new Color(25, 30, 60, 240));
@@ -614,9 +616,9 @@ export class TutorialManager extends Component {
         this.continueLabel!.active = withContinue;
 
         root.getComponent(UIOpacity)?.destroy();
-        root.setScale(0.7, 0.7, 1);
+        root.setScale(0.7 * scale, 0.7 * scale, 1);
         Tween.stopAllByTarget(root);
-        tween(root).to(0.22, { scale: Vec3.ONE }, { easing: 'backOut' }).start();
+        tween(root).to(0.22, { scale: new Vec3(scale, scale, 1) }, { easing: 'backOut' }).start();
 
         // "Touch to continue" pulsa para chamar a atencao.
         Tween.stopAllByTarget(this.continueLabel!);

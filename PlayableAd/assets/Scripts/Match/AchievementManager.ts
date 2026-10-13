@@ -555,7 +555,8 @@ export class AchievementManager extends Component {
         const dim = this.makeNode('Dim', root, 0, 0, 1400, 800);
         const dimSprite = this.makeSprite(dim, pm.dimFrame, base);
         dimSprite.color = new Color(0, 0, 0, 190);
-        dim.on(Node.EventType.TOUCH_END, () => { });
+        // Tocar no fundo escuro fecha a janela.
+        dim.on(Node.EventType.TOUCH_END, () => { SoundManager.playMenuClick(); this.closeWindow(); });
 
         const W = 1000, H = 600;
         const win = this.makeNode('Window', root, 0, 0, W, H);

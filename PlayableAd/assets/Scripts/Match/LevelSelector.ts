@@ -687,9 +687,12 @@ export class LevelSelector extends Component {
             .call(() => {
                 GameManager.currentLevel = item.index;
                 // Intervalo comercial da Poki antes de comecar a jogar (so roda dentro da Poki; senao segue direto).
+                // Se a espera passar de ~250ms, a tela de carregamento da pagina aparece por cima.
+                (globalThis as any).__loading?.show(250);
                 PokiService.commercialBreak().then(() => {
                     this.node.active = false;
                     if (GameManager.instance) GameManager.instance.BeginPlay();
+                    this.scheduleOnce(() => (globalThis as any).__loading?.hide(), 0.2);
                 });
             })
             .start();

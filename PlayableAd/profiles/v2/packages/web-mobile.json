@@ -25,7 +25,7 @@
     "options": {
       "web-mobile": {
         "useWebGPU": false,
-        "orientation": "landscape",
+        "orientation": "auto",
         "embedWebDebugger": false,
         "__version__": "1.0.1"
       }
@@ -33,7 +33,7 @@
     "taskOptionsMap": {
       "1769191773348": {
         "useWebGPU": false,
-        "orientation": "landscape",
+        "orientation": "auto",
         "embedWebDebugger": false,
         "__version__": "1.0.1"
       }

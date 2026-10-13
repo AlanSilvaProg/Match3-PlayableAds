@@ -243,10 +243,11 @@ export class MatchElement extends Component {
             .to(this.movementDuration, { position: targetLocalPos, scale: this.selectedScale })
             .call(() => {
                 this.hasReachedSlot = true;
-                SoundManager.playAttach();
+                // Primeiro a logica (o merge depende dela), depois o som.
                 if (this.matchController) {
                     this.matchController.onElementReachedSlot(this);
                 }
+                SoundManager.playAttach();
             })
             .start();
 

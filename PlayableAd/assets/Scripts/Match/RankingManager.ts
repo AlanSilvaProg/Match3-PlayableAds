@@ -358,7 +358,8 @@ export class RankingManager extends Component {
 
         const dim = this.makeNode('Dim', root, 0, 0, 1400, 800);
         this.makeSprite(dim, pm.dimFrame, base).color = new Color(0, 0, 0, 190);
-        dim.on(Node.EventType.TOUCH_END, () => { });
+        // Tocar no fundo escuro fecha a janela.
+        dim.on(Node.EventType.TOUCH_END, () => { SoundManager.playMenuClick(); this.closeWindow(); });
 
         const W = 1000, H = 600;
         const win = this.makeNode('Window', root, 0, 0, W, H);
@@ -471,6 +472,7 @@ export class RankingManager extends Component {
         const parent = root.parent;
         root.active = true;
         if (parent) root.setSiblingIndex(parent.children.length - 1);
+        this.fitProfileDim();
 
         if (this.profileInfo) {
             this.profileInfo.string = this.user ? `Logged in as ${this.user.username}` : 'Save your progress on any device';
@@ -483,11 +485,18 @@ export class RankingManager extends Component {
         this.createInput(this.state.name || '');
     }
 
+    /** O fundo escuro do apelido cobre a tela visivel inteira (em retrato ela e bem mais alta que 800). */
+    private fitProfileDim() {
+        const dim = this.profileRoot?.getChildByName('Dim');
+        dim?.getComponent(UITransform)?.setContentSize(Responsive.width + 80, Responsive.height + 80);
+    }
+
     private buildProfile() {
         const pm = this.pm!;
         const base = pm.windowSortingBase + 30;
         const root = this.makeNode('ProfileWindow', this.node.parent || this.node, 0, 0, 1280, 720);
         this.profileRoot = root;
+        Responsive.onChange(() => { if (root.isValid) this.fitProfileDim(); });
 
         const dim = this.makeNode('Dim', root, 0, 0, 1400, 800);
         this.makeSprite(dim, pm.dimFrame, base).color = new Color(0, 0, 0, 200);

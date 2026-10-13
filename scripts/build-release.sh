@@ -19,6 +19,7 @@ LOG="$(mktemp)"
 "$COCOS" --project "$PROJECT" --build "platform=web-mobile;debug=false" >"$LOG" 2>&1 || true
 grep -q "build Task (web-mobile) Finished" "$LOG" || { echo "Build falhou. Log: $LOG"; tail -20 "$LOG"; exit 1; }
 [ -f "$BUILD/index.html" ] || { echo "index.html ausente em $BUILD"; exit 1; }
+grep -q '"orientation":"auto"' "$BUILD/src/settings.json" || { echo "orientation da build nao e auto (o motor giraria o jogo 90 graus no celular em retrato). Veja profiles/v2/packages/web-mobile.json"; exit 1; }
 grep -q "poki-sdk\|poki.com" "$BUILD/index.html" || { echo "Poki SDK ausente no index.html"; exit 1; }
 
 echo "==> Zip"
