@@ -136,7 +136,14 @@
             "Scripts/Match/EndScreenLayout.ts",
             "Scripts/Match/GameLayout.ts",
             "Scripts/Match/Responsive.ts",
-            "Scripts/Match/WinRewards.ts"
+            "Scripts/Match/WinRewards.ts",
+            "Scripts/Match/CelebrationFx.ts",
+            "Sounds/AMAZING.mp3",
+            "Sounds/AWESOME.mp3",
+            "Sounds/GREAT.mp3",
+            "Sounds/LEGENDARY.mp3",
+            "Sounds/NICE.mp3",
+            "Sounds/UNSTOPPABLE.mp3"
         ]
     }
 }

@@ -364,6 +364,8 @@ export class RankingManager extends Component {
         const W = 1000, H = 600;
         const win = this.makeNode('Window', root, 0, 0, W, H);
         this.makeSprite(win, pm.windowFrame, base + 1, true);
+        // A janela absorve os toques no proprio fundo: so o X e o fade escuro fecham.
+        [Node.EventType.TOUCH_START, Node.EventType.TOUCH_END].forEach(t => win.on(t, () => { }));
         this.makeLabel(win, 'RANKING', 46, 400, 60, 0, H / 2 - 62, base + 3, Color.WHITE, new Color(20, 70, 120, 255));
         this.myRankLabel = this.makeLabel(win, '', 24, 600, 32, 0, H / 2 - 112, base + 3, new Color(255, 230, 140, 255), new Color(40, 25, 0, 255));
 

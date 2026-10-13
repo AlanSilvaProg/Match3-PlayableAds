@@ -561,6 +561,8 @@ export class AchievementManager extends Component {
         const W = 1000, H = 600;
         const win = this.makeNode('Window', root, 0, 0, W, H);
         this.makeSprite(win, pm.windowFrame, base + 1, true);
+        // A janela absorve os toques no proprio fundo: so o X e o fade escuro fecham.
+        [Node.EventType.TOUCH_START, Node.EventType.TOUCH_END].forEach(t => win.on(t, () => { }));
         this.makeLabel(win, 'ACHIEVEMENTS', 46, 480, 60, 0, H / 2 - 62, base + 3, Color.WHITE, new Color(20, 70, 120, 255));
         this.windowBadge = pm.createPointsBadgeView(win, -W / 2 + 190, H / 2 - 62, base + 3, false);
         this.makeButton(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, new Color(255, 120, 120, 255), () => this.closeWindow());

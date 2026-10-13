@@ -4479,7 +4479,7 @@
     },
     "freeLevels": 3,
     "firstUnlockCost": 3,
-    "costPerLevel": 2,
+    "costPerLevel": 1.5,
     "customUnlockCosts": [],
     "spacingX": 230,
     "padding": 200,
@@ -4597,6 +4597,31 @@
       "__expectedType__": "cc.AudioClip"
     },
     "comboChangedVolume": 0.9,
+    "celebrationNiceClip": {
+      "__uuid__": "c69267c5-1a7f-44bf-b7fd-8074a9e63313",
+      "__expectedType__": "cc.AudioClip"
+    },
+    "celebrationGreatClip": {
+      "__uuid__": "079686f8-6146-4363-9b7c-38dd91a6a196",
+      "__expectedType__": "cc.AudioClip"
+    },
+    "celebrationAwesomeClip": {
+      "__uuid__": "5e671884-04d4-4d03-8f3a-32594d2b295b",
+      "__expectedType__": "cc.AudioClip"
+    },
+    "celebrationAmazingClip": {
+      "__uuid__": "48bf5a12-5c3d-4c08-bc8b-b47d547474fb",
+      "__expectedType__": "cc.AudioClip"
+    },
+    "celebrationUnstoppableClip": {
+      "__uuid__": "942d54e4-dfd2-485a-92c8-3e19f96f84d8",
+      "__expectedType__": "cc.AudioClip"
+    },
+    "celebrationLegendaryClip": {
+      "__uuid__": "2b128e72-298b-4576-b266-6a516b77ed92",
+      "__expectedType__": "cc.AudioClip"
+    },
+    "celebrationVolume": 0.9,
     "removedFromSelectedClip": {
       "__uuid__": "a162b1d0-2630-47d9-bb34-4c41e578b96f",
       "__expectedType__": "cc.AudioClip"

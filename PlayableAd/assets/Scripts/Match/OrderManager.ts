@@ -520,10 +520,7 @@ export class OrderManager extends Component {
             const h = o.height * cs;
             const target = y - h / 2;
             const pos = o.node.position;
-            if (rescaled && !o.delivered && o.node.scale.x > 0) {
-                Tween.stopAllByTarget(o.node);
-                o.node.setScale(cs, cs, 1);
-            }
+            if (rescaled && !o.delivered) this.applyCardScale(o, cs);
             if (animate && o.node.activeInHierarchy && Math.abs(pos.y - target) > 0.5 && o.node.scale.x > 0) {
                 const isNew = pos.y === 0 && pos.x === 0;
                 if (isNew) {
@@ -536,6 +533,13 @@ export class OrderManager extends Component {
             }
             y -= h + 8 * cs;
         }
+    }
+
+    /** Novo tamanho dos cartoes. Cartao que ainda esta aparecendo (escala 0) refaz a animacao de entrada ate o tamanho novo, senao ficaria no antigo e sobreporia os vizinhos. */
+    private applyCardScale(o: OrderView, s: number) {
+        Tween.stopAllByTarget(o.node);
+        if (o.node.scale.x > 0) { o.node.setScale(s, s, 1); return; }
+        tween(o.node).to(0.25, { scale: new Vec3(s, s, 1) }, { easing: 'backOut' }).start();
     }
 
     /** Retrato: cartoes lado a lado, quebrando em linhas; todos encolhem para caber na faixa de pedidos. */
@@ -580,10 +584,7 @@ export class OrderManager extends Component {
                 const cw = w * scale;
                 const targetX = x + cw / 2;
                 const targetY = y - row.height / 2;
-                if (rescaled && !o.delivered && o.node.scale.x > 0) {
-                    Tween.stopAllByTarget(o.node);
-                    o.node.setScale(scale, scale, 1);
-                }
+                if (rescaled && !o.delivered) this.applyCardScale(o, scale);
                 const pos = o.node.position;
                 const isNew = pos.y === 0 && pos.x === 0;
                 if (animate && o.node.activeInHierarchy && !isNew && o.node.scale.x > 0

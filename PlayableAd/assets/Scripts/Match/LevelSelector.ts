@@ -304,7 +304,8 @@ export class LevelSelector extends Component {
         if (level < this.freeLevels) return 0;
         const custom = this.customUnlockCosts[level];
         if (custom !== undefined && custom > 0) return custom;
-        return this.firstUnlockCost + (level - this.freeLevels) * this.costPerLevel;
+        // Arredonda para cima: costPerLevel pode ser fracionario (1,5 = ~1,5 estrela por nivel jogado).
+        return Math.ceil(this.firstUnlockCost + (level - this.freeLevels) * this.costPerLevel);
     }
 
     public isUnlocked(level: number): boolean {

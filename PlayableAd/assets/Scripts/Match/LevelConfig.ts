@@ -47,36 +47,36 @@ export class LevelConfig {
 
         // ---- Variedade de alimentos ----
         baseTypes: 3,
-        typesPerLevels: 4,
+        typesPerLevels: 3,
         specialExtraTypes: 2,
         maxTypes: 9,
 
         // ---- Pedidos ----
         /** Quantidade de pedidos: base + nivel * ordersPerLevel + faixa + bonus especial. */
         baseOrders: 4,
-        ordersPerLevel: 0.3,
+        ordersPerLevel: 0.65,
         specialExtraOrders: 2,
         maxOrders: 12,
         /** Teto de itens no tabuleiro: pedidos do fim da fila sao descartados acima disso. */
         maxBoardItems: 100,
         /** Itens por pedido: limite = base + nivel * porNivel (ate o maximo). */
-        maxItemsPerOrderBase: 4,
-        maxItemsPerOrderPerLevel: 0.3,
+        maxItemsPerOrderBase: 3.5,
+        maxItemsPerOrderPerLevel: 0.5,
         maxItemsPerOrderCap: 12,
         /** Chance de um pedido ter uma 2a linha (outro alimento): base + nivel * porNivel. */
-        secondLineChance: 0.2,
-        secondLineChancePerLevel: 0.02,
+        secondLineChance: 0.25,
+        secondLineChancePerLevel: 0.03,
         /** A partir deste nivel os pedidos podem ter 3 linhas. */
-        thirdLineFromLevel: 10,
+        thirdLineFromLevel: 6,
         thirdLineChance: 0.1,
-        thirdLineChancePerLevel: 0.008,
+        thirdLineChancePerLevel: 0.01,
         specialExtraLineChance: 0.15,
         /** Quantidade pedida por linha: minimo 1 nos primeiros niveis, 2 depois; maximo cresce com o nivel (ate 4). */
         minQuantityEarly: 1,
-        minQuantityFromLevel: 5,
+        minQuantityFromLevel: 3,
         minQuantity: 2,
         baseMaxQuantity: 2,
-        maxQuantityEveryLevels: 6,
+        maxQuantityEveryLevels: 3,
         maxQuantityCap: 4,
         specialExtraQuantity: 1,
         /** Pedidos minimos sempre visiveis enquanto houver fila. */
@@ -85,22 +85,22 @@ export class LevelConfig {
         decoyRatio: 0.3,
         minDecoys: 6,
         /** Teto de itens no tabuleiro contando os extras. */
-        maxBoardTotal: 110,
+        maxBoardTotal: 120,
 
         // ---- Tempo ----
         /** Segundos por item no tempo do nivel: comeca em base e cai por nivel/faixa ate o minimo. */
-        baseSecondsPerItem: 1.55,
-        secondsPerItemDropPerLevel: 0.018,
+        baseSecondsPerItem: 2.0,
+        secondsPerItemDropPerLevel: 0.035,
         secondsPerItemDropPerTier: 0.05,
-        minSecondsPerItem: 0.85,
-        fixedTimeBonus: 12,
+        minSecondsPerItem: 1.25,
+        fixedTimeBonus: 14,
         specialTimeFactor: 0.9,
-        minDuration: 30,
-        maxDuration: 180,
+        minDuration: 45,
+        maxDuration: 150,
         /** Prazo de cada pedido = itens * segundos por item * deliverFactor + deliverPadding. */
-        deliverFactor: 1.35,
+        deliverFactor: 2.1,
         deliverPadding: 10,
-        minDeliverTime: 15,
+        minDeliverTime: 16,
         /** Os pedidos aparecem espalhados ate esta fracao da duracao do nivel. */
         spawnSpreadRatio: 0.55,
     };

@@ -856,6 +856,12 @@
         "054ccc49-949a-4c5c-a124-cb9ef04c0b7d",
         "af1f299e-a1b4-44ac-a134-dcdc8512aed1",
         "c479ddc4-aa62-4341-adc2-c6ebd99f07b2",
+        "c69267c5-1a7f-44bf-b7fd-8074a9e63313",
+        "079686f8-6146-4363-9b7c-38dd91a6a196",
+        "5e671884-04d4-4d03-8f3a-32594d2b295b",
+        "48bf5a12-5c3d-4c08-bc8b-b47d547474fb",
+        "942d54e4-dfd2-485a-92c8-3e19f96f84d8",
+        "2b128e72-298b-4576-b266-6a516b77ed92",
         "a162b1d0-2630-47d9-bb34-4c41e578b96f",
         "8c387cb6-bbbb-4200-ae26-afacecefdead",
         "891a75e3-bb08-4515-ac19-59b512a306c5",
@@ -2173,6 +2179,53 @@
   "dad88ccd-4d24-43c4-8214-afb1436e28a7": {
     "url": "db://assets/Scripts/Match/WinRewards.ts",
     "value": {},
+    "versionCode": 1
+  },
+  "a16f2a87-75e3-4d25-85e8-7239e1a9f321": {
+    "url": "db://assets/Scripts/Match/CelebrationFx.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "48bf5a12-5c3d-4c08-bc8b-b47d547474fb": {
+    "url": "db://assets/Sounds/AMAZING.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "5e671884-04d4-4d03-8f3a-32594d2b295b": {
+    "url": "db://assets/Sounds/AWESOME.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "079686f8-6146-4363-9b7c-38dd91a6a196": {
+    "url": "db://assets/Sounds/GREAT.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "2b128e72-298b-4576-b266-6a516b77ed92": {
+    "url": "db://assets/Sounds/LEGENDARY.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "c69267c5-1a7f-44bf-b7fd-8074a9e63313": {
+    "url": "db://assets/Sounds/NICE.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "942d54e4-dfd2-485a-92c8-3e19f96f84d8": {
+    "url": "db://assets/Sounds/UNSTOPPABLE.mp3",
+    "value": {
+      "depends": []
+    },
     "versionCode": 1
   }
 }

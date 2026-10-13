@@ -1,5 +1,6 @@
 import { SoundManager } from './SoundManager';
-import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Prefab, instantiate, tween, Tween, Vec3, math, Color } from 'cc';
+import { CelebrationFx, CelebrationTier } from './CelebrationFx';
+import { _decorator, director, Component, Node, Sprite, SpriteFrame, Label, Prefab, instantiate, tween, Tween, Vec3, math, Color } from 'cc';
 import { GameManager } from './GameManager';
 import { PlayerStats, AchievementMetric } from './PlayerStats';
 const { ccclass, property } = _decorator;
@@ -38,6 +39,23 @@ export class ComboManager extends Component {
 
     @property({ range: [0.05, 1, 0.05], tooltip: 'Fracao dos pontos de cada merge que vira moeda (placar, voo de moedas e saldo). Menor = economia mais lenta. A barra do combo continua enchendo pelos pontos cheios.' })
     public coinRewardFactor: number = 0.3;
+
+    // ---------- Parabenizacao por combos rapidos ----------
+    @property({ tooltip: 'Janela (s) entre dois merges para a sequencia contar como "rapida". Cada merge dentro dela soma 1 na sequencia.' })
+    public fastMatchWindow: number = 5;
+
+    @property({ tooltip: 'Liga os textos animados e particulas que parabenizam sequencias rapidas de merges.' })
+    public celebrateFastCombos: boolean = true;
+
+    private fastStreak: number = 0;
+    private static readonly CELEBRATIONS: CelebrationTier[] = [
+        { streak: 1, text: 'NICE!', color: new Color(255, 225, 70, 255), outline: new Color(120, 70, 0, 255), size: 76, bursts: 1 },
+        { streak: 3, text: 'GREAT!', color: new Color(255, 160, 40, 255), outline: new Color(120, 40, 0, 255), size: 86, bursts: 2 },
+        { streak: 5, text: 'AWESOME!', color: new Color(255, 90, 210, 255), outline: new Color(100, 10, 90, 255), size: 96, bursts: 3 },
+        { streak: 7, text: 'AMAZING!', color: new Color(90, 225, 255, 255), outline: new Color(10, 60, 120, 255), size: 106, bursts: 4 },
+        { streak: 9, text: 'UNSTOPPABLE!', color: new Color(255, 85, 70, 255), outline: new Color(110, 10, 10, 255), size: 112, bursts: 5 },
+        { streak: 11, text: 'LEGENDARY!', color: new Color(255, 215, 60, 255), outline: new Color(90, 20, 140, 255), size: 120, bursts: 6 },
+    ];
 
     // ---------- Barra ----------
     @property({ tooltip: 'Drenagem da barra por segundo (0..1) no nivel base.' })
@@ -187,6 +205,7 @@ export class ComboManager extends Component {
         // A barra do combo enche pelos pontos cheios; o jogador recebe so uma fracao deles em moedas.
         const gained = Math.max(1, Math.round(rawPoints * this.coinRewardFactor));
         this.score += gained;
+        this.registerFastStreak();
 
         const speed = this.comboActive
             ? math.clamp01(1 - this.sinceLastMatch / Math.max(0.01, this.speedBonusWindow))
@@ -272,7 +291,28 @@ export class ComboManager extends Component {
 
     // ---------- Estado ----------
 
+    /** Merge dentro da janela do anterior = sequencia rapida; nos degraus (3, 5, 7, 10, 14, 20...) comemora. */
+    private registerFastStreak() {
+        const fast = this.comboActive && this.sinceLastMatch <= this.fastMatchWindow;
+        this.fastStreak = fast ? this.fastStreak + 1 : 1;
+        if (!this.celebrateFastCombos) return;
+        const tiers = ComboManager.CELEBRATIONS;
+        let tierIndex = tiers.findIndex(t => t.streak === this.fastStreak);
+        let tier = tierIndex >= 0 ? tiers[tierIndex] : null;
+        // Depois do ultimo degrau, repete a comemoracao maxima a cada 6 merges.
+        const top = tiers[tiers.length - 1];
+        if (!tier && this.fastStreak > top.streak && (this.fastStreak - top.streak) % 2 === 0) { tier = top; tierIndex = tiers.length - 1; }
+        if (!tier) return;
+        SoundManager.playCelebration(tierIndex);
+        const canvas = director.getScene()?.getChildByName('GameCanvas') ?? null;
+        if (!canvas) return;
+        const board = canvas.getChildByName('MatchSpace');
+        const at = board ? new Vec3(board.position.x, board.position.y + 130, 0) : new Vec3(0, 150, 0);
+        CelebrationFx.show(canvas, at, tier, this.fastStreak, this.levelUpEffectPrefab);
+    }
+
     private dropCombo() {
+        this.fastStreak = 0;
         // So avisa que o combo acabou se ele chegou a subir de nivel (gatilho do tutorial de Max Combo).
         const hadRisen = this.peakLevel >= 1;
         this.peakLevel = 0;

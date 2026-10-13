@@ -63,6 +63,27 @@ export class SoundManager extends Component {
     @property({ range: [0, 1, 0.05], tooltip: 'Volume do som de combo.' })
     public comboChangedVolume: number = 0.9;
 
+    @property({ type: AudioClip, tooltip: 'Voz da comemoracao NICE! (combo rapido).' })
+    public celebrationNiceClip: AudioClip | null = null;
+
+    @property({ type: AudioClip, tooltip: 'Voz da comemoracao GREAT! (combo rapido).' })
+    public celebrationGreatClip: AudioClip | null = null;
+
+    @property({ type: AudioClip, tooltip: 'Voz da comemoracao AWESOME! (combo rapido).' })
+    public celebrationAwesomeClip: AudioClip | null = null;
+
+    @property({ type: AudioClip, tooltip: 'Voz da comemoracao AMAZING! (combo rapido).' })
+    public celebrationAmazingClip: AudioClip | null = null;
+
+    @property({ type: AudioClip, tooltip: 'Voz da comemoracao UNSTOPPABLE! (combo rapido).' })
+    public celebrationUnstoppableClip: AudioClip | null = null;
+
+    @property({ type: AudioClip, tooltip: 'Voz da comemoracao LEGENDARY! (combo rapido).' })
+    public celebrationLegendaryClip: AudioClip | null = null;
+
+    @property({ range: [0, 1, 0.05], tooltip: 'Volume das vozes de comemoracao de combo rapido.' })
+    public celebrationVolume: number = 0.9;
+
     @property({ type: AudioClip, tooltip: 'Item da prateleira devolvido ao tabuleiro.' })
     public removedFromSelectedClip: AudioClip | null = null;
 
@@ -197,6 +218,15 @@ export class SoundManager extends Component {
     public static playComboChanged() {
         const sm = SoundManager.instance;
         if (sm) sm.play('comboChanged', sm.comboChangedClip, sm.comboChangedVolume, 0.2);
+    }
+
+    /** Voz do degrau de comemoracao (0 = NICE ... 5 = LEGENDARY). */
+    public static playCelebration(tier: number) {
+        const sm = SoundManager.instance;
+        if (!sm) return;
+        const clips = [sm.celebrationNiceClip, sm.celebrationGreatClip, sm.celebrationAwesomeClip,
+            sm.celebrationAmazingClip, sm.celebrationUnstoppableClip, sm.celebrationLegendaryClip];
+        sm.play('celebration', clips[Math.max(0, Math.min(clips.length - 1, tier))], sm.celebrationVolume, 0.3);
     }
 
     public static playRemovedFromSelected() {
