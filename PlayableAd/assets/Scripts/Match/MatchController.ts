@@ -34,6 +34,13 @@ export class MatchController extends Component {
         GameManager.instance?.events?.off(GameManager.EVENT_DEMAND_CHANGED, this.checkMatch, this);
     }
 
+    /** Troca de fase: esquece itens selecionados e merges em andamento (os itens foram removidos do tabuleiro). */
+    public ResetState() {
+        this.selectedElements = [];
+        this.pendingMatches = [];
+        this.emitSelection();
+    }
+
     /** O item faz parte de um merge ja reservado (esperando chegar a prateleira ou animando)? */
     public isInPendingMerge(element: MatchElement): boolean {
         return this.pendingMatches.some(m => m.elements.indexOf(element) !== -1);

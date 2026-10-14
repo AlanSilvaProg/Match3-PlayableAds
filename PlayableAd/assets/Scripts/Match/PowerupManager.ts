@@ -169,7 +169,7 @@ export class PowerupManager extends Component {
         const gm = GameManager.instance;
 
         // A barra so aparece com a partida em andamento (nao no menu, no tutorial nem nas telas de fim).
-        if (this.bar) this.bar.active = (!!gm && gm.IsRunning()) || this.tutorialBarVisible;
+        if (this.bar) this.bar.active = (!!gm && (gm.IsRunning() || gm.IsTransition())) || this.tutorialBarVisible;
 
         // Tempos restantes dos efeitos ativos (para o contador nos botoes).
         const r = this.remaining;

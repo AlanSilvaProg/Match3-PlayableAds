@@ -1,7 +1,8 @@
-import { _decorator, Component, Label, Prefab, instantiate, Node, Sprite, find, director, sys, EventTarget, Color, Vec3, tween, Tween, game, Game, UIOpacity, UITransform, Sorting2D, ParticleSystem2D, view, ResolutionPolicy } from 'cc';
+import { _decorator, Component, Label, Prefab, instantiate, Node, Sprite, SpriteFrame, find, director, sys, EventTarget, Color, Vec3, tween, Tween, game, Game, UIOpacity, UITransform, Sorting2D, ParticleSystem2D, view, ResolutionPolicy } from 'cc';
 import { MatchElement } from './MatchElement';
 import { LevelProgress } from './LevelProgress';
-import { LevelPlan } from './LevelConfig';
+import { LevelPlan, LevelConfig, Meal } from './LevelConfig';
+import { PhaseFlow } from './PhaseFlow';
 import { OrderManager } from './OrderManager';
 import { PokiService } from './PokiService';
 import { PlayerWallet, PowerupInventory } from './PlayerInventory';
@@ -121,7 +122,7 @@ export class GameManager extends Component {
     /** Nivel (indice, 0 = primeiro) escolhido no seletor; preservado ao reiniciar a cena. */
     public static currentLevel: number = 0;
 
-    @property({ tooltip: 'Estrelas: 3 = todos os pedidos entregues no prazo; 2 = ate esta fracao dos pedidos atrasados; 1 = vitoria com mais atrasos.' })
+    @property({ tooltip: 'Estrelas: 2 = ate esta fracao dos pedidos do nivel inteiro atrasados; 1 = vitoria com mais atrasos (veja threeStarLateRatio).' })
     public twoStarLateRatio: number = 0.34;
 
     @property({ type: Prefab, tooltip: 'Efeito de brilho tocado no timer quando o tempo aumenta (verde) ou diminui (vermelho). Use o MergeEffect.' })
@@ -132,6 +133,18 @@ export class GameManager extends Component {
 
     @property({ tooltip: 'Cor da penalidade de tempo (pedido atrasado).' })
     public penaltyColor: Color = new Color(255, 55, 55, 255);
+
+    @property({ type: SpriteFrame, tooltip: 'Fundo do jantar (background_night). Cafe da manha e almoco usam o fundo da cena.' })
+    public nightBackground: SpriteFrame | null = null;
+
+    @property({ tooltip: 'Troca de fase: fracao do tempo que sobrou que passa para a proxima fase.' })
+    public carryTimeFactor: number = 0.5;
+
+    @property({ tooltip: 'Troca de fase: maximo de segundos que passam para a proxima fase.' })
+    public carryTimeMax: number = 15;
+
+    @property({ tooltip: 'Estrelas: 3 = ate esta fracao dos pedidos do nivel inteiro atrasados.' })
+    public threeStarLateRatio: number = 0.12;
 
     @property({ tooltip: 'Segundos de tempo dados ao continuar depois da derrota (anuncio com recompensa).' })
     public reviveSeconds: number = 20;
@@ -155,6 +168,8 @@ export class GameManager extends Component {
 
     /** Durante o tutorial guiado: so estes itens aceitam clique (null = todos liberados). */
     public tutorialAllowed: MatchElement[] | null = null;
+    /** Esta partida e a do tutorial inicial: a tela de vitoria mostra so o botao LEVELS. */
+    public tutorialRun: boolean = false;
 
     /** Tutoriais de power-up: enquanto true, o cronometro, os prazos dos pedidos e o combo ficam parados. */
     public timeHeld: boolean = false;
@@ -180,6 +195,9 @@ export class GameManager extends Component {
     private defeatInstance: Node | null = null;
     private pointsBanked: number = 0;
     private revived: boolean = false;
+    /** Plano do nivel inteiro (com todas as fases) e fase atual. */
+    private levelPlan: LevelPlan | null = null;
+    private currentPhase: number = 0;
 
     public static instance: GameManager = null!;
 
@@ -193,7 +211,7 @@ export class GameManager extends Component {
         }
         Responsive.onChange(this.onResponsive);
         PokiService.init();
-        PokiService.isGameplayActive = () => this.currentState === GameState.Running || this.currentState === GameState.Tutorial;
+        PokiService.isGameplayActive = () => this.currentState === GameState.Running || this.currentState === GameState.Tutorial || this.currentState === GameState.Transition;
         this.lastRealTime = performance.now();
 
         // Fora de foco o engine pausa o loop (Game.EVENT_HIDE); aqui ele e retomado para o jogo continuar.
@@ -310,6 +328,7 @@ export class GameManager extends Component {
 
         const firstTime = !this.readHasPlayed();
         if (firstTime) this.writeHasPlayed();
+        this.tutorialRun = firstTime;
 
         this.currentState = firstTime ? GameState.Tutorial : GameState.Running;
         // gameplayStart so no primeiro INPUT de jogo: no tutorial (sem jogo ainda) ele sai ao terminar o tutorial.
@@ -342,19 +361,35 @@ export class GameManager extends Component {
         return this.currentState === GameState.Running;
     }
 
+    /** Troca de fase em andamento (itens saindo/entrando): cronometro e cliques parados. */
+    public IsTransition(): boolean {
+        return this.currentState === GameState.Transition;
+    }
+
+    public get phaseIndex(): number { return this.currentPhase; }
+    public get phaseCount(): number { return this.levelPlan ? this.levelPlan.phases.length : 1; }
+    /** Plano da fase atual (null antes do nivel comecar). */
+    public get phasePlan(): LevelPlan | null { return this.levelPlan ? LevelConfig.phase(this.levelPlan, this.currentPhase) : null; }
+
     public IsTutorialRunning(): boolean {
         return this.currentState === GameState.Tutorial;
     }
 
     /** Aplica a duracao do nivel (chamado pelo MatchInitializer ao montar o tabuleiro). */
-    public ApplyLevelPlan(plan: LevelPlan) {
-        this.duration = plan.duration;
-        this.timer = plan.duration;
+    public ApplyLevelPlan(plan: LevelPlan, carrySeconds: number = 0) {
+        this.levelPlan = plan;
+        this.currentPhase = plan.phaseIndex;
+        this.duration = plan.duration + carrySeconds;
+        this.timer = this.duration;
+        this.timerFrozenFor = 0;
         this.lastRealTime = performance.now();
         this.lastWarningSecond = -1;
         this.pendingDisplayDelta = 0;
         this.updateTimerUI();
         this.events.emit(GameManager.EVENT_LEVEL_READY, plan);
+        if (carrySeconds > 0) SoundManager.playTimeIncreasing();
+        // Faixa com o nome da refeicao da fase (so se a partida ja esta rodando, sem prompts por cima).
+        PhaseFlow.introBanner(this, plan);
     }
 
     // ---------- Power-ups / continuar ----------
@@ -419,11 +454,78 @@ export class GameManager extends Component {
         this.events.emit(GameManager.EVENT_REVIVED, this.revivePowerups);
     }
 
-    /** O nivel termina quando todos os pedidos foram entregues (chamado pelo OrderManager). */
+    /**
+     * Voltar depois da derrota numa fase com checkpoint (2a fase em diante), assistindo ao anuncio: a fase atual
+     * recomeca do inicio (itens novos, tempo cheio). Como o Revive, ganha power-ups e so vale uma vez por fase.
+     */
+    public RetryFromCheckpoint() {
+        if (this.currentState !== GameState.Defeat || this.revived || !this.levelPlan) return;
+        this.revived = true;
+        PlayerStats.increment(AchievementMetric.Revives);
+
+        if (this.defeatInstance && this.defeatInstance.isValid) this.defeatInstance.destroy();
+        this.defeatInstance = null;
+        this.nodesToDeactivate.forEach(node => { if (node) node.active = true; });
+
+        const plan = LevelConfig.phase(this.levelPlan, this.currentPhase);
+        this.victoryPending = true; // nenhuma derrota/vitoria durante a troca
+        this.timerFrozenFor = 0;
+        this.currentState = GameState.Transition;
+        for (let i = 0; i < this.revivePowerups; i++) {
+            PowerupInventory.add(Math.floor(Math.random() * 8) as PowerupType, 1);
+        }
+        PhaseFlow.change(this, plan, { sweep: true, banner: true, background: false }, () => {
+            this.ApplyLevelPlan(plan);
+            this.victoryPending = false;
+            this.lastRealTime = performance.now();
+            this.currentState = GameState.Running;
+            PokiService.gameplayStart();
+            this.events.emit(GameManager.EVENT_REVIVED, this.revivePowerups);
+        });
+    }
+
+    /** As telas de vitoria/derrota (que tem o fundo diurno no Fade) usam o fundo da noite quando a fase atual e o jantar. */
+    private applyEndScreenBackground(screen: Node) {
+        const plan = this.phasePlan;
+        if (!plan || plan.meal !== Meal.Dinner || !this.nightBackground) return;
+        const sprite = screen.getChildByName('Fade')?.getComponent(Sprite);
+        if (sprite) sprite.spriteFrame = this.nightBackground;
+    }
+
+    /** Nome da refeicao do checkpoint (fase atual), usado no texto do botao da tela de derrota. */
+    public get checkpointMeal(): string {
+        const p = this.phasePlan;
+        return p ? ['BREAKFAST', 'LUNCH', 'DINNER'][p.meal] : '';
+    }
+
+    /** A fase termina quando todos os pedidos foram entregues (chamado pelo OrderManager); a ultima fase termina o nivel. */
     public CompleteLevel() {
         if (this.victoryPending) return;
         this.victoryPending = true;
+        if (this.levelPlan && this.currentPhase < this.levelPlan.phases.length - 1) {
+            this.scheduleOnce(() => this.beginNextPhase(), this.victoryDelay + 0.35);
+            return;
+        }
         this.scheduleOnce(() => this.SetState(GameState.Victory), this.victoryDelay);
+    }
+
+    /** Passa para a proxima fase (almoco -> jantar...): varre os itens, mostra a faixa e faz o burst da nova leva. */
+    private beginNextPhase() {
+        if (!this.levelPlan || this.currentState !== GameState.Running) { this.victoryPending = false; return; }
+        const plan = LevelConfig.phase(this.levelPlan, this.currentPhase + 1);
+        // Parte do tempo que sobrou passa para a proxima fase (premia a velocidade).
+        const carry = Math.round(Math.min(this.carryTimeMax, Math.max(0, this.timer) * this.carryTimeFactor));
+        this.currentState = GameState.Transition;
+        SoundManager.setAlarm(false);
+        SoundManager.setHeartBeat(false);
+        if (this.warningNode) this.warningNode.active = false;
+        PhaseFlow.change(this, plan, { sweep: true, banner: true, background: true }, () => {
+            this.revived = false; // checkpoint novo: um novo "voltar" disponivel
+            this.ApplyLevelPlan(plan, carry);
+            this.victoryPending = false;
+            this.lastRealTime = performance.now();
+            this.currentState = GameState.Running;
+        });
     }
 
     /**
@@ -572,13 +674,15 @@ export class GameManager extends Component {
             if (this.victoryPrefab) {
                 const instance = instantiate(this.victoryPrefab);
                 instance.parent = this.node.parent;
-                WinRewards.setup(instance); // NEXT, moedas ganhas e botao de dobrar (antes do layout)
+                this.applyEndScreenBackground(instance);
+                WinRewards.setup(instance, this.tutorialRun); // NEXT, moedas ganhas e botao de dobrar (antes do layout)
                 EndScreenLayout.apply(instance);
             }
         } else if (state === GameState.Defeat) {
             if (this.defeatPrefab) {
                 const instance = instantiate(this.defeatPrefab);
                 instance.parent = this.node.parent;
+                this.applyEndScreenBackground(instance);
                 WinRewards.setupFail(instance);
                 EndScreenLayout.apply(instance);
                 this.defeatInstance = instance;
@@ -645,9 +749,11 @@ export class GameManager extends Component {
     /** 3 estrelas = terminar com bastante tempo sobrando; 1 estrela = qualquer vitoria. */
     private calculateStars(): number {
         const orders = OrderManager.instance;
-        if (!orders || orders.totalOrders === 0) return 1;
-        if (orders.lateOrders === 0) return 3;
-        if (orders.lateOrders <= Math.ceil(orders.totalOrders * this.twoStarLateRatio)) return 2;
+        if (!orders || orders.levelTotalOrders === 0) return 1;
+        // Conta o nivel inteiro (todas as fases): com mais pedidos, 3 estrelas toleram uma pequena fracao de atrasos.
+        const total = orders.levelTotalOrders, late = orders.levelLateOrders;
+        if (late <= Math.floor(total * this.threeStarLateRatio)) return 3;
+        if (late <= Math.ceil(total * this.twoStarLateRatio)) return 2;
         return 1;
     }
 

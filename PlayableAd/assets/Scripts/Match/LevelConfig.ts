@@ -21,18 +21,36 @@ export interface OrderPlan {
     lines: OrderLine[];
 }
 
-export interface LevelPlan {
-    level: number;
-    special: boolean;
-    /** Faixa de dificuldade: sobe a cada 10 niveis. */
-    tier: number;
-    /** Tempo inicial do nivel (os pedidos entregues cedo somam, os atrasados subtraem). */
+/** Momento do dia de uma fase do nivel: cada um tem seus alimentos e desafios. */
+export enum Meal { Breakfast, Lunch, Dinner }
+
+export const MEAL_NAMES = ['BREAKFAST', 'LUNCH', 'DINNER'];
+
+/** Uma fase do nivel (cafe da manha, almoco ou jantar): tem seus proprios pedidos, alimentos e tempo. */
+export interface PhasePlan {
+    meal: Meal;
+    /** Tempo inicial da fase (os pedidos entregues cedo somam, os atrasados subtraem). */
     duration: number;
     orders: OrderPlan[];
     /** Enquanto houver pedidos na fila, ao menos este numero fica na tela (o proximo aparece antes da hora). Nao ha limite maximo. */
     minActiveOrders: number;
     /** Itens totais por tipo, derivados dos pedidos: define o que o tabuleiro precisa ter. */
     groups: LevelGroup[];
+}
+
+/**
+ * Plano do nivel. Os campos duration/orders/minActiveOrders/groups/meal sempre descrevem a FASE ATUAL (phaseIndex):
+ * o plano devolvido por LevelConfig.get() e o da 1a fase; LevelConfig.phase(plan, i) devolve o da fase i.
+ */
+export interface LevelPlan extends PhasePlan {
+    level: number;
+    special: boolean;
+    /** Faixa de dificuldade: sobe a cada 10 niveis. */
+    tier: number;
+    /** Indice da fase atual em `phases`. */
+    phaseIndex: number;
+    /** Todas as fases do nivel: niveis normais = almoco + jantar; especiais = cafe da manha + almoco + jantar. */
+    phases: PhasePlan[];
 }
 
 /**
@@ -45,11 +63,23 @@ export class LevelConfig {
         /** A cada N niveis ha um nivel especial (mais dificil, botao especial). */
         specialEvery: 10,
 
+        // ---- Curva de quantidade x tempo ----
+        /** A quantidade (pedidos, itens por pedido, linhas) sobe logo: do nivel 2 em diante usa no minimo a dificuldade desta "nivel equivalente". */
+        minQuantityLevel: 20,
+        /** O 1o nivel e um aquecimento: usa esta dificuldade equivalente. */
+        firstLevelQuantityLevel: 4,
+        /** Tempo extra nos primeiros niveis: o tempo por item/pedido e multiplicado por 1 + earlyTimeBonus, caindo a 1 ate o nivel earlyTimeLevels. */
+        earlyTimeBonus: 0.5,
+        earlyTimeLevels: 20,
+        /** Cada fase seguinte do nivel tem este tanto a menos de tempo (a 1a fase e a mais folgada). */
+        phaseTimeDrop: 0.08,
+
         // ---- Variedade de alimentos ----
         baseTypes: 3,
-        typesPerLevels: 3,
+        /** Tipos por nivel = fracao dos alimentos ja liberados (com os novos entrando em grupos: 3 no nivel 2, 5 no nivel 5...). */
+        typeShare: 0.8,
         specialExtraTypes: 2,
-        maxTypes: 9,
+        maxTypes: 11,
 
         // ---- Pedidos ----
         /** Quantidade de pedidos: base + nivel * ordersPerLevel + faixa + bonus especial. */
@@ -79,6 +109,13 @@ export class LevelConfig {
         maxQuantityEveryLevels: 3,
         maxQuantityCap: 4,
         specialExtraQuantity: 1,
+        /** Fases: cada uma recebe esta fracao da quantidade de pedidos do nivel (normal 2 fases, especial 3). */
+        phaseOrderShare: 0.7,
+        phaseOrderShareSpecial: 0.5,
+        minPhaseOrders: 3,
+        maxPhaseOrders: 9,
+        /** Fracao dos tipos disponiveis que cada fase usa (janelas deslizantes: fases vizinhas tem alimentos diferentes). */
+        phaseTypeRatio: 0.6,
         /** Pedidos minimos sempre visiveis enquanto houver fila. */
         minActiveOrders: 2,
         /** Itens extras no tabuleiro (sem pedido): fracao dos itens pedidos, com minimo, para o tabuleiro nao ficar vazio. */
@@ -109,34 +146,66 @@ export class LevelConfig {
         return (level + 1) % this.TUNING.specialEvery === 0;
     }
 
+    /** Plano da fase `index` de um nivel (o mesmo objeto com os campos da fase aplicados). */
+    public static phase(plan: LevelPlan, index: number): LevelPlan {
+        const i = Math.max(0, Math.min(plan.phases.length - 1, index));
+        return { ...plan, ...plan.phases[i], phaseIndex: i };
+    }
+
     public static get(level: number): LevelPlan {
         const T = this.TUNING;
         const rng = this.rng(level * 7919 + 13);
         const special = this.isSpecial(level);
-        const tier = Math.floor(level / T.specialEvery);
+        // Dificuldade de quantidade (equivalente): sobe rapido; a variedade de alimentos continua seguindo o nivel real.
+        const qLevel = level === 0 ? T.firstLevelQuantityLevel : Math.max(level, T.minQuantityLevel);
+        const tier = Math.floor(qLevel / T.specialEvery);
 
         const available = ElementCatalog.defs.filter(d => d.unlockLevel <= level).map(d => d.type);
 
         // Quantidade de tipos diferentes (a cada 3 niveis um "respiro" com um tipo a menos).
-        let typeCount = T.baseTypes + Math.floor(level / T.typesPerLevels) + (special ? T.specialExtraTypes : 0);
+        let typeCount = Math.round(available.length * T.typeShare) + (special ? T.specialExtraTypes : 0);
         if (!special && level % 3 === 2) typeCount -= 1;
         typeCount = Math.max(T.baseTypes, Math.min(typeCount, T.maxTypes, available.length));
 
-        // Escolha dos tipos: o item mais novo liberado entra sempre; o resto varia por nivel.
+        // Escolha dos tipos: o item mais novo liberado entra sempre (e abre a lista); o resto varia por nivel.
         const chosen: ElementType[] = [];
         const newest = ElementCatalog.defs
             .filter(d => d.unlockLevel <= level)
             .sort((a, b) => b.unlockLevel - a.unlockLevel)[0];
-        if (newest) chosen.push(newest.type);
+        if (newest) {
+            // No nivel em que um grupo de alimentos e liberado, TODOS os novos entram (o jogador conhece o grupo inteiro).
+            const group = ElementCatalog.defs.filter(d => d.unlockLevel === newest.unlockLevel && newest.unlockLevel === level);
+            (group.length > 0 ? group : [newest]).forEach(d => chosen.push(d.type));
+        }
         const pool = available.filter(t => chosen.indexOf(t) === -1);
         while (chosen.length < typeCount && pool.length > 0) {
             chosen.push(pool.splice(Math.floor(rng() * pool.length), 1)[0]);
         }
-        chosen.sort((a, b) => a - b);
 
-        // ---- Pedidos ----
-        let orderCount = T.baseOrders + Math.floor(level * T.ordersPerLevel) + tier + (special ? T.specialExtraOrders : 0);
-        orderCount = Math.max(T.baseOrders, Math.min(orderCount, T.maxOrders));
+        // Fases: normal = almoco + jantar; especial = cafe da manha + almoco + jantar.
+        const meals = special ? [Meal.Breakfast, Meal.Lunch, Meal.Dinner] : [Meal.Lunch, Meal.Dinner];
+        const baseOrders = T.baseOrders + Math.floor(qLevel * T.ordersPerLevel) + tier + (special ? T.specialExtraOrders : 0);
+        const share = special ? T.phaseOrderShareSpecial : T.phaseOrderShare;
+        const phaseOrders = Math.max(T.minPhaseOrders,
+            Math.min(T.maxPhaseOrders, Math.round(Math.max(T.baseOrders, Math.min(baseOrders, T.maxOrders)) * share)));
+
+        // Cada fase usa uma janela dos tipos escolhidos: as fases vizinhas tem alimentos diferentes.
+        const n = chosen.length;
+        const windowSize = Math.max(Math.min(2, n), Math.min(n, Math.round(n * T.phaseTypeRatio)));
+        const phases: PhasePlan[] = meals.map((meal, i) => {
+            const start = meals.length > 1 ? Math.floor(i * (n - windowSize) / (meals.length - 1)) : 0;
+            const types = chosen.slice(start, start + windowSize).sort((a, b) => a - b);
+            // A cada fase a dificuldade sobe um pouco (como se fosse um nivel a frente).
+            return this.buildPhase(qLevel + i, level, i, special, tier, rng, types, phaseOrders, meal);
+        });
+
+        return { level, special, tier, phaseIndex: 0, phases, ...phases[0] };
+    }
+
+    /** Monta os pedidos, o tempo e os itens de uma fase usando so os `types` dados. */
+    private static buildPhase(level: number, realLevel: number, phaseIdx: number, special: boolean, tier: number, rng: () => number,
+        chosen: ElementType[], orderCount: number, meal: Meal): PhasePlan {
+        const T = this.TUNING;
 
         const maxLines = Math.min(chosen.length, special ? 4 : 3);
         const bag: ElementType[] = [];
@@ -187,8 +256,12 @@ export class LevelConfig {
             totalItems -= itemsOf(draft.pop()!);
         }
 
+        // Tempo por item: cai com a dificuldade, mas os primeiros niveis ganham folga extra (que some ate o nivel
+        // earlyTimeLevels) e a 1a fase de cada nivel e mais folgada que as seguintes.
+        const earlyFactor = 1 + T.earlyTimeBonus * Math.max(0, 1 - realLevel / T.earlyTimeLevels);
+        const phaseFactor = Math.max(0.5, 1 - T.phaseTimeDrop * phaseIdx);
         const perItem = Math.max(T.minSecondsPerItem,
-            T.baseSecondsPerItem - T.secondsPerItemDropPerLevel * level - T.secondsPerItemDropPerTier * tier);
+            T.baseSecondsPerItem - T.secondsPerItemDropPerLevel * level - T.secondsPerItemDropPerTier * tier) * earlyFactor * phaseFactor;
 
         let duration = totalItems * perItem + T.fixedTimeBonus;
         if (special) duration *= T.specialTimeFactor;
@@ -220,7 +293,7 @@ export class LevelConfig {
             if (g) g.count++;
         }
 
-        return { level, special, tier, duration, orders, minActiveOrders: T.minActiveOrders, groups };
+        return { meal, duration, orders, minActiveOrders: T.minActiveOrders, groups };
     }
 
     /** Gerador pseudo-aleatorio deterministico (mulberry32). */

@@ -77,7 +77,7 @@ export class CelebrationFx {
         fx.getComponentsInChildren(Sorting2D).forEach(s => { s.sortingOrder = 480; });
     }
 
-    private static makeLabel(parent: Node, text: string, size: number, x: number, y: number, color: Color, outline: Color, order: number): Label {
+    public static makeLabel(parent: Node, text: string, size: number, x: number, y: number, color: Color, outline: Color, order: number): Label {
         const n = new Node('Text');
         n.layer = parent.layer;
         n.parent = parent;

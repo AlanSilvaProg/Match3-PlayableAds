@@ -86,6 +86,15 @@ export class OrderManager extends Component {
     public totalOrders: number = 0;
     public deliveredOrders: number = 0;
     public lateOrders: number = 0;
+    /** Pedidos das fases ja concluidas deste nivel (as estatisticas acima sao so da fase atual). */
+    private carryTotal: number = 0;
+    private carryDelivered: number = 0;
+    private carryLate: number = 0;
+    private phaseIdx: number = -1;
+    /** Totais do nivel inteiro (fases anteriores + fase atual): usados no calculo de estrelas e nos tutoriais. */
+    public get levelTotalOrders(): number { return this.carryTotal + this.totalOrders; }
+    public get levelDeliveredOrders(): number { return this.carryDelivered + this.deliveredOrders; }
+    public get levelLateOrders(): number { return this.carryLate + this.lateOrders; }
 
     private plan: LevelPlan | null = null;
     private nextIndex: number = 0;
@@ -142,6 +151,19 @@ export class OrderManager extends Component {
     }
 
     private onLevelReady(plan: LevelPlan) {
+        // Estatisticas do nivel: acumulam ao avancar de fase; repetir a mesma fase (checkpoint) mantem o acumulado anterior.
+        if (plan.phaseIndex === 0) {
+            this.carryTotal = this.carryDelivered = this.carryLate = 0;
+        } else if (plan.phaseIndex !== this.phaseIdx) {
+            this.carryTotal += this.totalOrders;
+            this.carryDelivered += this.deliveredOrders;
+            this.carryLate += this.lateOrders;
+        }
+        this.phaseIdx = plan.phaseIndex;
+
+        // Cartoes de uma tentativa anterior (checkpoint) somem antes da nova fase.
+        this.active.forEach(o => { Tween.stopAllByTarget(o.node); if (o.node.isValid) o.node.destroy(); });
+        this.frozenFor = 0;
         this.plan = plan;
         this.nextIndex = 0;
         this.elapsed = 0;
@@ -222,6 +244,12 @@ export class OrderManager extends Component {
         // Com menos itens exigidos, o que ja esta na prateleira pode completar pedidos na hora.
         if (changed) GameManager.instance?.events.emit(GameManager.EVENT_DEMAND_CHANGED);
         return changed;
+    }
+
+    /** Primeiro cartao de pedido atrasado (prazo negativo) ainda nao entregue, ou null. Usado pelo tutorial de pedido atrasado. */
+    public firstLateOrderNode(): Node | null {
+        for (const o of this.active) if (!o.delivered && o.timeLeft < 0 && o.node.isValid) return o.node;
+        return null;
     }
 
     /** Menor prazo (s) entre os pedidos abertos ainda no tempo (Infinity se nao ha). Usado pelos tutoriais de power-up. */

@@ -82,7 +82,7 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 640,
+      "x": 721.9148936170212,
       "y": 360,
       "z": 1000
     },
@@ -219,7 +219,7 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 640,
+      "x": 721.9148936170212,
       "y": 360,
       "z": 0
     },
@@ -1489,6 +1489,10 @@
         "__id__": 44
       }
     ],
+    "coinRewardFactor": 0.3,
+    "phaseCoinScale": 0.78,
+    "fastMatchWindow": 5,
+    "celebrateFastCombos": true,
     "baseDrainPerSecond": 0.12,
     "speedBonusWindow": 2,
     "maxSpeedBonus": 0.5,
@@ -1864,6 +1868,13 @@
       "b": 55,
       "a": 255
     },
+    "nightBackground": {
+      "__uuid__": "1d4919d3-9280-4dbd-b571-87c8061e7938@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    },
+    "carryTimeFactor": 0.5,
+    "carryTimeMax": 15,
+    "threeStarLateRatio": 0.12,
     "reviveSeconds": 20,
     "revivePowerups": 2,
     "timeFxFontSize": 46,
@@ -5690,6 +5701,8 @@
     "fadeOpacity": 185,
     "continueText": "Touch to continue",
     "tapDelay": 0.35,
+    "lowTimeSeconds": 20,
+    "slowStartSeconds": 8,
     "_id": "f6R345VNJJfKUjDOpoEW0o"
   },
   {
@@ -6401,7 +6414,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 1280,
+      "width": 1443.8297872340424,
       "height": 720
     },
     "_anchorPoint": {

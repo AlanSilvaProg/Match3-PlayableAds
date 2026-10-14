@@ -40,6 +40,9 @@ export class ComboManager extends Component {
     @property({ range: [0.05, 1, 0.05], tooltip: 'Fracao dos pontos de cada merge que vira moeda (placar, voo de moedas e saldo). Menor = economia mais lenta. A barra do combo continua enchendo pelos pontos cheios.' })
     public coinRewardFactor: number = 0.3;
 
+    @property({ tooltip: 'Niveis agora tem 2-3 fases (mais merges por nivel): as moedas por merge diminuem nesta proporcao para a renda do nivel nao disparar.' })
+    public phaseCoinScale: number = 0.78;
+
     // ---------- Parabenizacao por combos rapidos ----------
     @property({ tooltip: 'Janela (s) entre dois merges para a sequencia contar como "rapida". Cada merge dentro dela soma 1 na sequencia.' })
     public fastMatchWindow: number = 5;
@@ -203,7 +206,7 @@ export class ComboManager extends Component {
         const rawPoints = Math.round((this.basePointsPerMatch + level.multiplier) * weight * (1 + 0.2 * (quantity - 1))
             * (this.scoreMultiplierRemaining > 0 ? this.scoreMultiplier : 1));
         // A barra do combo enche pelos pontos cheios; o jogador recebe so uma fracao deles em moedas.
-        const gained = Math.max(1, Math.round(rawPoints * this.coinRewardFactor));
+        const gained = Math.max(1, Math.round(rawPoints * this.coinRewardFactor * this.phaseCoinScale));
         this.score += gained;
         this.registerFastStreak();
 

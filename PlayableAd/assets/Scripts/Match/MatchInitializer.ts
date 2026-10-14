@@ -65,16 +65,23 @@ export class MatchInitializer extends Component {
         if (this.built) return;
         this.built = true;
 
-        for (const group of plan.groups) {
-            const total = group.count; // itens = soma das quantidades pedidas
-            for (let i = 0; i < total; i++) {
-                this.CreateMatchElement(group.type, true);
-            }
-        }
-
+        this.BuildPhase(plan);
         if (GameManager.instance) {
             GameManager.instance.ApplyLevelPlan(plan);
         }
+    }
+
+    /** Cria os itens da fase (plano da fase atual). Devolve os itens criados. */
+    public BuildPhase(plan: LevelPlan): MatchElement[] {
+        const created: MatchElement[] = [];
+        for (const group of plan.groups) {
+            const total = group.count; // itens = soma das quantidades pedidas
+            for (let i = 0; i < total; i++) {
+                const el = this.CreateMatchElement(group.type, true);
+                if (el) created.push(el);
+            }
+        }
+        return created;
     }
 
     public CreateMatchElement(type: ElementType, randomizePosition: boolean): MatchElement | null {

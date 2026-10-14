@@ -5,7 +5,9 @@ export enum GameState {
     Running,
     Defeat,
     Victory,
-    Menu
+    Menu,
+    /** Troca de fase do nivel (itens varridos e nova leva de alimentos): tempo e cliques parados. */
+    Transition
 }
 
 Enum(GameState);

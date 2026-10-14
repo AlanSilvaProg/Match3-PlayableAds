@@ -93,6 +93,8 @@ export class MatchElement extends Component {
     private pulsing: boolean = false;
     private pulseClock: number = 0;
     private merging: boolean = false;
+    /** A entrada do item e animada por fora (burst de troca de fase): o start() nao forca a escala. */
+    public spawnAnimated: boolean = false;
 
     private touchId: number = -1;
     private dragging: boolean = false;
@@ -108,7 +110,7 @@ export class MatchElement extends Component {
 
     start() {
         if (!this.hasReachedSlot) {
-            this.node.setScale(this.availableScale);
+            if (!this.spawnAnimated) this.node.setScale(this.availableScale);
             this.SetSortingOrder(this.defaultSortingOrder);
         }
 

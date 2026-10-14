@@ -20,7 +20,7 @@ export class WinRewards {
     private static readonly FAIL_BUTTON_SCALE = 0.9;
     private static readonly GOLD = new Color(255, 214, 51, 255);
 
-    public static setup(screen: Node) {
+    public static setup(screen: Node, levelsOnly: boolean = false) {
         const nextBtn = screen.getChildByName('RestartBtn');
         const levelsBtn = screen.getChildByName('LevelsBtn');
         const pm = PowerupManager.instance;
@@ -63,8 +63,11 @@ export class WinRewards {
             so.sortingOrder = 2;
         }
 
+        // Apos o tutorial so resta o botao LEVELS: o jogador vai ao menu de selecao de fases.
+        if (levelsOnly) nextBtn.active = false;
+
         let doubleBtn: Node | null = null;
-        if (coins > 0) {
+        if (coins > 0 && !levelsOnly) {
             doubleBtn = instantiate(levelsBtn);
             doubleBtn.name = 'DoubleBtn';
             doubleBtn.parent = screen;
@@ -120,7 +123,7 @@ export class WinRewards {
 
         // Entrada dos botoes (depois da animacao de logo/estrelas do prefab).
         [nextBtn, doubleBtn, levelsBtn].forEach((b, i) => {
-            if (!b) return;
+            if (!b || !b.active) return;
             b.setScale(0, 0, 1);
             tween(b).delay(0.75 + i * 0.12)
                 .to(0.2, { scale: new Vec3(this.BUTTON_SCALE, this.BUTTON_SCALE, 1) }, { easing: 'backOut' })
@@ -143,6 +146,26 @@ export class WinRewards {
                 .to(0.2, { scale: new Vec3(this.FAIL_BUTTON_SCALE, this.FAIL_BUTTON_SCALE, 1) }, { easing: 'backOut' })
                 .start();
         });
+
+        // Botao do anuncio: 1a fase = CONTINUE (segue de onde parou); 2a fase em diante = volta ao CHECKPOINT da fase.
+        const gm = GameManager.instance;
+        const cont = screen.getChildByName('ContinueBtn');
+        const contLabel = cont?.getComponentInChildren(Label);
+        if (gm && cont && contLabel && !gm.hasRevived) {
+            const checkpoint = gm.phaseIndex > 0;
+            contLabel.string = checkpoint ? 'CHECKPOINT' : 'CONTINUE';
+            const text = checkpoint
+                ? `Watch an ad to restart ${gm.checkpointMeal} from the beginning!`
+                : 'Watch an ad to keep playing from where you stopped!';
+            // A legenda fica logo abaixo do botao; o LEVELS desce para abrir espaco.
+            const levels = screen.getChildByName('LevelsBtn');
+            if (levels) levels.setPosition(levels.position.x, levels.position.y - 50, levels.position.z);
+            const caption = this.makeLabel(screen, cont, screen, text, 26, 520, 64, -265, cont.position.y - 62);
+            caption.node.name = 'ReviveCaption';
+            caption.overflow = Label.Overflow.SHRINK;
+            caption.enableWrapText = true;
+            caption.color = this.GOLD;
+        }
     }
 
     /** Coluna (esquerda em paisagem, central em retrato): estrelas, moedas, NEXT, x2 COINS, LEVELS. */
@@ -154,6 +177,10 @@ export class WinRewards {
             if (n) n.setPosition(x, y, n.position.z);
         };
         place('CoinsRow', 15);
+        if (!screen.getChildByName('RestartBtn')?.active) {
+            place('LevelsBtn', -100); // so o LEVELS (apos o tutorial)
+            return;
+        }
         place('RestartBtn', -80);
         place('DoubleBtn', -180);
         place('LevelsBtn', -280);

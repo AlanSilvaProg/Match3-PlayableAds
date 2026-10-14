@@ -4,7 +4,10 @@ const { ccclass, property } = _decorator;
 import { GameManager } from './GameManager';
 import { PokiService } from './PokiService';
 
-/** Botao da tela de derrota: assistir anuncio com recompensa para continuar a partida de onde parou. */
+/**
+ * Botao da tela de derrota (anuncio com recompensa). Na 1a fase do nivel ele CONTINUA a partida de onde parou (+tempo);
+ * da 2a fase em diante volta ao CHECKPOINT (comeco da fase atual). Os textos ficam em WinRewards.setupFail.
+ */
 @ccclass('ReviveButton')
 export class ReviveButton extends Component {
 
@@ -22,8 +25,9 @@ export class ReviveButton extends Component {
         this.busy = true;
         SoundManager.playMenuClick();
         PokiService.rewardedBreak().then(ok => {
-            if (ok && GameManager.instance) {
-                GameManager.instance.Revive();
+            const gm = GameManager.instance;
+            if (ok && gm) {
+                if (gm.phaseIndex === 0) gm.Revive(); else gm.RetryFromCheckpoint();
             } else {
                 this.busy = false;
             }

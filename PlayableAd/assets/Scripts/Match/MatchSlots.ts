@@ -86,6 +86,11 @@ export class MatchSlots extends Component {
         }
     }
 
+    /** Esvazia todos os encaixes (troca de fase: os itens da prateleira foram removidos). */
+    public ResetSlots() {
+        this.slotElements.fill(null);
+    }
+
     public CompactSlots() {
         const remainingElements = this.slotElements.filter(el => el !== null) as MatchElement[];
 
