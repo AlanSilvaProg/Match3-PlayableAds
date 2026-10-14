@@ -3,6 +3,7 @@ import { _decorator, Component } from 'cc';
 const { ccclass, property } = _decorator;
 import { GameManager } from './GameManager';
 import { PokiService } from './PokiService';
+import { RankingManager } from './RankingManager';
 
 /**
  * Botao da tela de derrota (anuncio com recompensa). Na 1a fase do nivel ele CONTINUA a partida de onde parou (+tempo);
@@ -22,6 +23,7 @@ export class ReviveButton extends Component {
 
     public Revive() {
         if (this.busy) return;
+        if (RankingManager.gate(() => this.Revive())) return;
         this.busy = true;
         SoundManager.playMenuClick();
         PokiService.rewardedBreak().then(ok => {

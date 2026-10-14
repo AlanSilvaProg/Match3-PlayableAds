@@ -9,6 +9,7 @@ import { RestartGame } from './RestartGame';
 import { ReturnToLevels } from './ReturnToLevels';
 import { ScaleSequence } from './ScaleSequence';
 import { Responsive } from './Responsive';
+import { RankingManager } from './RankingManager';
 
 /**
  * Tela de vitoria: o botao RESTART vira NEXT (proximo nivel direto), as moedas da rodada aparecem abaixo das estrelas
@@ -95,8 +96,9 @@ export class WinRewards {
                 so.sortingOrder = 2;
             }
             let used = false;
-            doubleBtn.on(Button.EventType.CLICK, () => {
+            const onDouble = () => {
                 if (used) return;
+                if (RankingManager.gate(onDouble)) return; // 1o fim de rodada: pede o login antes
                 SoundManager.playMenuClick();
                 PokiService.rewardedBreak().then(ok => {
                     if (!ok || used || !screen.isValid) return; // sem anuncio/recompensa: nada acontece
@@ -118,7 +120,8 @@ export class WinRewards {
                     if (sprite) sprite.color = new Color(150, 150, 150, 255);
                     iconOff(doubleBtn!);
                 });
-            });
+            };
+            doubleBtn.on(Button.EventType.CLICK, onDouble);
         }
 
         // Entrada dos botoes (depois da animacao de logo/estrelas do prefab).

@@ -3,6 +3,7 @@ import { _decorator, Component } from 'cc';
 const { ccclass } = _decorator;
 import { GameManager } from './GameManager';
 import { LevelSelector } from './LevelSelector';
+import { RankingManager } from './RankingManager';
 
 @ccclass('RestartGame')
 export class RestartGame extends Component {
@@ -11,6 +12,7 @@ export class RestartGame extends Component {
 
     public Restart() {
         if (this.busy) return;
+        if (RankingManager.gate(() => this.Restart())) return; // 1o fim de rodada: pede o login antes
         this.busy = true;
         SoundManager.playMenuClick();
 
@@ -30,6 +32,7 @@ export class RestartGame extends Component {
      */
     public NextLevel() {
         if (this.busy) return;
+        if (RankingManager.gate(() => this.NextLevel())) return;
         this.busy = true;
         SoundManager.playMenuClick();
 

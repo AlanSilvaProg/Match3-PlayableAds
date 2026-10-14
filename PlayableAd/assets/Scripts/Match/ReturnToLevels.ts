@@ -2,6 +2,7 @@ import { SoundManager } from './SoundManager';
 import { _decorator, Component } from 'cc';
 const { ccclass } = _decorator;
 import { GameManager } from './GameManager';
+import { RankingManager } from './RankingManager';
 
 /**
  * Recarrega a cena abrindo direto o seletor de niveis. Sem commercialBreak: a Poki so quer o intervalo comercial
@@ -14,6 +15,7 @@ export class ReturnToLevels extends Component {
 
     public GoToLevels() {
         if (this.busy) return;
+        if (RankingManager.gate(() => this.GoToLevels())) return;
         this.busy = true;
         SoundManager.playMenuClick();
 

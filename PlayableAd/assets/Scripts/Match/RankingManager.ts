@@ -161,7 +161,8 @@ export class RankingManager extends Component {
      */
     public async SyncScore(): Promise<void> {
         const stars = LevelProgress.getTotalStars();
-        if (!this.available || this.syncing || stars <= 0) return;
+        // Sem perfil ainda (apelido/login): o ranking fica pendente e e enviado assim que o jogador o cadastrar.
+        if (!this.available || this.syncing || stars <= 0 || this.NeedsProfile()) return;
         if (this.state.synced === stars && this.state.syncedName === this.state.name) return;
         this.syncing = true;
         try {
@@ -454,6 +455,17 @@ export class RankingManager extends Component {
     }
 
     /**
+     * Porta dos botoes das telas de vitoria/derrota: se o jogador ainda nao tem perfil, mostra o login/apelido e SO ENTAO
+     * repete a acao (`retry`); o ranking pendente e enviado ao confirmar. Devolve true se a acao ficou adiada.
+     */
+    public static gate(retry: () => void): boolean {
+        const r = RankingManager.instance;
+        if (!r || !r.NeedsProfile() || r.profileRoot?.active) return !!r && !!r.profileRoot?.active;
+        r.PromptProfile(() => retry());
+        return true;
+    }
+
+    /**
      * Janela de apelido (campo de texto HTML por cima do jogo, pois o EditBox do Cocos nao esta no build) e, se as
      * contas da Poki estiverem disponiveis, botao de login. `onDone` roda ao confirmar.
      */
@@ -474,6 +486,8 @@ export class RankingManager extends Component {
         const parent = root.parent;
         root.active = true;
         if (parent) root.setSiblingIndex(parent.children.length - 1);
+        // As telas de vitoria/derrota ficam na camada de ordenacao 1: a janela precisa estar nela para aparecer por cima.
+        root.getComponentsInChildren(Sorting2D).forEach(so => { so.sortingLayer = 1; });
         this.fitProfileDim();
 
         if (this.profileInfo) {

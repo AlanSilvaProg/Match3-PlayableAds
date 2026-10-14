@@ -7,6 +7,7 @@ import { MatchController } from './MatchController';
 import { MatchElement } from './MatchElement';
 import { MatchInitializer } from './MatchInitializer';
 import { OrderManager } from './OrderManager';
+import { ElementCatalog } from './ElementCatalog';
 import { PowerupManager } from './PowerupManager';
 import { RankingManager } from './RankingManager';
 import { PowerupType } from './PowerupCatalog';
@@ -62,6 +63,7 @@ export class TutorialManager extends Component {
     private static readonly UI_ORDER = 300;
     private static readonly FLAG_TIME = 'match3_tut_low_time';
     private static readonly FLAG_LATE = 'match3_tut_late_order';
+    private static readonly FLAG_WRONG = 'match3_tut_wrong_many';
 
     private canTap: boolean = false;
     /** Introducao da 1a partida: 1 = explica os pedidos, 2 = clique guiado ate entregar o 1o pedido, 0 = fora dela. */
@@ -73,7 +75,7 @@ export class TutorialManager extends Component {
     private continueLabel: Node | null = null;
 
     /** Aviso de fade em andamento (tempo baixo / pedido atrasado) e o power-up que vem em seguida. */
-    private focusKind: 'time' | 'late' | null = null;
+    private focusKind: 'time' | 'late' | 'wrong' | null = null;
     private focusChain: PowerupType | null = null;
 
     /** Dica "toque no item da prateleira para remove-lo": mostrada uma unica vez, na primeira selecao errada. */
@@ -208,7 +210,7 @@ export class TutorialManager extends Component {
         }
     }
 
-    /** Depois da introducao: apelido (e login da Poki, se disponivel) antes do cronometro comecar a correr. */
+    /** Depois da introducao: o cronometro comeca (o login/apelido so e pedido no fim da 1a rodada, veja RankingManager.gate). */
     private finishIntro() {
         this.introStep = 0;
         this.whitelist = [];
@@ -220,15 +222,8 @@ export class TutorialManager extends Component {
         const gm = GameManager.instance;
         if (!gm) return;
         gm.tutorialAllowed = null;
-        // "Agora e a sua vez!" e so depois o apelido/login e o inicio do cronometro.
-        this.showYourTurn(() => {
-            const ranking = RankingManager.instance;
-            if (ranking && ranking.NeedsProfile()) {
-                ranking.PromptProfile(() => GameManager.instance?.StartGame());
-            } else {
-                GameManager.instance?.StartGame();
-            }
-        });
+        // "Agora e a sua vez!" e so depois o inicio do cronometro.
+        this.showYourTurn(() => GameManager.instance?.StartGame());
     }
 
     /** Texto grande "NOW IT'S YOUR TURN!" que pula, fica um instante e esvaece. `done` roda quando some. */
@@ -398,6 +393,7 @@ export class TutorialManager extends Component {
         this.showFade(false);
         this.clearHighlight();
         if (this.captionRoot) this.captionRoot.active = false;
+        if (this.tutorialIndicator) this.tutorialIndicator.active = false;
         const gm = GameManager.instance;
         if (gm) gm.timeHeld = false;
         // Em seguida, o tutorial do power-up relacionado (se o jogador ainda nao o conhece).
@@ -461,7 +457,57 @@ export class TutorialManager extends Component {
         try { return !!sys.localStorage.getItem(TutorialManager.REMOVE_HINT_KEY); } catch (e) { return false; }
     }
 
+    /** Itens errados (que nenhum pedido pede) parados na prateleira agora. */
+    private wrongInTray(): MatchElement[] {
+        const orders = OrderManager.instance, mc = this.matchController;
+        if (!orders || !mc) return [];
+        return mc.selectedElements.filter(e => e.isValid && e.hasReachedSlot && !mc.isInPendingMerge(e) && orders.NextQuantityFor(e.type) === 0);
+    }
+
+    /** Mais de 1 item errado na prateleira (primeira vez): reforca o pedido atual e destaca os alimentos certos. */
+    private tryWrongManyTutorial(): boolean {
+        const gm = GameManager.instance, orders = OrderManager.instance;
+        if (!gm || !orders || !gm.IsRunning() || this.focusKind || this.guideType !== null) return false;
+        if (this.flagSet(TutorialManager.FLAG_WRONG) || this.wrongInTray().length < 2) return false;
+        const line = orders.GetNextPendingLine();
+        if (!line) return false;
+
+        const mc = this.matchController;
+        const board = this.initializer ? this.initializer.node.getComponentsInChildren(MatchElement) : [];
+        const picks = board.filter(e => e.isValid && e.isAvailable && e.type === line.type && (!mc || mc.selectedElements.indexOf(e) === -1))
+            .slice(0, line.quantity);
+        if (picks.length === 0) return false;
+
+        this.setFlag(TutorialManager.FLAG_WRONG);
+        if (this.hintElement) this.endHint();
+        this.focusKind = 'wrong';
+        this.focusChain = null;
+        gm.timeHeld = true;
+        SoundManager.playTutorialStep();
+        this.showFade(true);
+        this.fadeNode?.targetOff(this);
+        this.fadeNode?.on(Node.EventType.TOUCH_END, this.onFocusTap, this);
+        this.highlight([orders.node, ...picks.map(e => e.node)]);
+        const name = ElementCatalog.getDef(line.type).name;
+        this.showCaption(`Those foods are not in your orders!\nYour first order needs ${line.quantity}x ${name}.\nPick the highlighted ones.`,
+            this.capPos('orders', new Vec3(95, 120, 0)), true);
+        if (this.tutorialIndicator) {
+            if (!this.handRaised) {
+                this.handRaised = true;
+                this.tutorialIndicator.getComponentsInChildren(Sorting2D).forEach(sp => {
+                    sp.sortingOrder = TutorialManager.UI_ORDER + 50 + sp.sortingOrder;
+                });
+            }
+            this.tutorialIndicator.active = true;
+            this.tutorialIndicator.setWorldPosition(picks[0].node.worldPosition);
+        }
+        this.canTap = false;
+        this.scheduleOnce(() => { this.canTap = true; }, this.tapDelay);
+        return true;
+    }
+
     private onWrongSelected(element: MatchElement) {
+        if (this.tryWrongManyTutorial()) return;
         // So uma vez na vida, fora do tutorial guiado, e sem outra dica em andamento.
         if (this.hintElement || this.focusKind || this.guideType !== null || this.hintSeen()) return;
         if (!element || !element.isValid || element.isAvailable || !element.hasReachedSlot) return;

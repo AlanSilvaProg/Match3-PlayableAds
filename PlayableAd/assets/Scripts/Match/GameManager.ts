@@ -675,7 +675,7 @@ export class GameManager extends Component {
                 const instance = instantiate(this.victoryPrefab);
                 instance.parent = this.node.parent;
                 this.applyEndScreenBackground(instance);
-                WinRewards.setup(instance, this.tutorialRun); // NEXT, moedas ganhas e botao de dobrar (antes do layout)
+                WinRewards.setup(instance); // NEXT, moedas ganhas e botao de dobrar (antes do layout)
                 EndScreenLayout.apply(instance);
             }
         } else if (state === GameState.Defeat) {

@@ -201,14 +201,14 @@
       "time": 1791206513732.255
     },
     "Scripts/Match": {
-      "time": 1792016200019.0237,
+      "time": 1792020422326.6719,
       "uuid": "e3c2ab47-56e3-45b6-a059-8f621df9046e"
     },
     "Scripts/Match/MatchElement.ts.meta": {
       "time": 1791206513733.2612
     },
     "Scripts/Match/MatchElement.ts": {
-      "time": 1792005410532.4219,
+      "time": 1792019788562.6052,
       "uuid": "63fc03d9-c22e-4d18-850b-8e6fc39bf560"
     },
     "Scripts/Match/MatchSlots.ts.meta": {
@@ -263,7 +263,7 @@
       "time": 1791206513734.03
     },
     "Scripts/Match/GameManager.ts": {
-      "time": 1792007078054.6238,
+      "time": 1792020422326.4426,
       "uuid": "7066c457-7c2b-417b-8779-338dab7721ee"
     },
     "Scripts/Match/GameState.ts": {
@@ -271,7 +271,7 @@
       "uuid": "ab0f4b0a-633f-4e33-b9b5-63fef39dc9d2"
     },
     "Scripts/Match/RestartGame.ts": {
-      "time": 1791842811859.498,
+      "time": 1792020537387.7993,
       "uuid": "c9c4b8b3-5ed2-4ddc-94d0-1de5c8f13462"
     },
     "Prefabs/MergeEffect.prefab.meta": {
@@ -327,7 +327,7 @@
       "time": 1791206513734.441
     },
     "Scripts/Match/TutorialManager.ts": {
-      "time": 1792015955653.0286,
+      "time": 1792020537389.7205,
       "uuid": "fdb05417-a2c0-4ac9-83f0-aaa156c58ec0"
     },
     "extra_assets/white_rect.jpg.meta": {
@@ -537,7 +537,7 @@
       "time": 1791306754945.5142
     },
     "Scripts/Match/ReturnToLevels.ts": {
-      "time": 1791552419992.8547,
+      "time": 1792020537388.1252,
       "uuid": "8511e72e-99c1-4e7b-8ea6-96cdd8d6dcd4"
     },
     "Scripts/Match/WinStars.ts.meta": {
@@ -649,7 +649,7 @@
       "uuid": "39f5cacb-184b-4a99-94dd-51497df88dd6"
     },
     "Scripts/Match/ReviveButton.ts": {
-      "time": 1792005572201.6882,
+      "time": 1792020537388.6265,
       "uuid": "0e3e8ab1-deb7-44ad-a881-e5e774e01d7b"
     },
     "UI/points-holder.png.meta": {
@@ -726,7 +726,7 @@
       "time": 1791511046886.3008
     },
     "Scripts/Match/RankingManager.ts": {
-      "time": 1791924737895.557,
+      "time": 1792020639284.8997,
       "uuid": "ed373575-27ac-4644-92aa-d9096f8ee670"
     },
     "Scripts/Match/PlayerData.ts.meta": {
@@ -943,7 +943,7 @@
       "time": 1791842817633.3872
     },
     "Scripts/Match/WinRewards.ts": {
-      "time": 1792005683321.414,
+      "time": 1792020537389.1177,
       "uuid": "dad88ccd-4d24-43c4-8214-afb1436e28a7"
     },
     "Scripts/Match/CelebrationFx.ts.meta": {

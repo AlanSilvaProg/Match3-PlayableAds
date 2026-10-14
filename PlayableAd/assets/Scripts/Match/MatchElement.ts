@@ -1,5 +1,5 @@
 import { SoundManager } from './SoundManager';
-import { _decorator, Component, Button, Sprite, Enum, Vec3, tween, Tween, Node, AudioSource, Sorting2D, Color, EventTouch } from 'cc';
+import { _decorator, Component, Button, Sprite, Enum, Vec3, tween, Tween, Node, AudioSource, Sorting2D, Color, EventTouch, UITransform } from 'cc';
 const { ccclass, property } = _decorator;
 
 import { MatchSlots } from './MatchSlots';
@@ -96,6 +96,15 @@ export class MatchElement extends Component {
     /** A entrada do item e animada por fora (burst de troca de fase): o start() nao forca a escala. */
     public spawnAnimated: boolean = false;
 
+    // ---------- Vizinhos se acomodando (ao selecionar um item) ----------
+    private wiggleT: number = -1;
+    private wiggleDir: Vec3 = new Vec3();
+    private wiggleAmp: number = 0;
+    private wiggleApplied: Vec3 = new Vec3();
+    private wiggleAppliedRot: number = 0;
+    /** Ponto de onde o item saiu ao ser selecionado por arrasto (os vizinhos se acomodam em torno dele). */
+    private wiggleOrigin: Vec3 | null = null;
+
     private touchId: number = -1;
     private dragging: boolean = false;
     private dragMoved: number = 0;
@@ -152,6 +161,7 @@ export class MatchElement extends Component {
             if (this.dragMoved < this.dragThreshold) return;
             // Comeca o arrasto: o item sobe para a frente de todos e cresce um pouco.
             this.dragging = true;
+            this.cancelWiggle();
             Tween.stopAllByTarget(this.node);
             this.SetSortingOrder(6);
             this.node.setScale(this.dragScale, this.dragScale, 1);
@@ -171,11 +181,20 @@ export class MatchElement extends Component {
         this.dragging = false;
         this.dragOrigin = null;
 
-        // Soltar fora do item sem ter arrastado nao e um clique (igual ao Button); arrastado, o item e sempre selecionado.
+        // Soltar fora do item sem ter arrastado nao e um clique (igual ao Button).
         if (event.type === Node.EventType.TOUCH_CANCEL && !wasDragged) return;
-        this.OnClick();
 
-        if (wasDragged && origin) {
+        if (!wasDragged) {
+            this.OnClick(); // toque simples: seleciona
+            return;
+        }
+        if (!origin) return;
+
+        // Arrastado: so seleciona se foi solto em cima da area dos selecionados; no board, apenas muda de lugar.
+        if (this.isOverTray()) {
+            this.wiggleOrigin = origin;
+            this.OnClick();
+            this.wiggleOrigin = null;
             if (this.isAvailable) {
                 // Nao foi selecionado (prateleira cheia, tutorial...): volta ao lugar de onde saiu.
                 Tween.stopAllByTarget(this.node);
@@ -188,7 +207,99 @@ export class MatchElement extends Component {
                 // Selecionado: se for devolvido ao tabuleiro, volta ao lugar de origem (nao ao ponto onde soltou).
                 this.boardPosition = origin;
             }
+        } else {
+            this.dropOnBoard();
         }
+    }
+
+    /** O centro do item esta sobre a area dos encaixes (selecionados)? */
+    private isOverTray(): boolean {
+        const slots = this.matchSlots ? this.matchSlots.slots : null;
+        if (!slots || slots.length === 0) return false;
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        slots.forEach(n => {
+            const p = n.worldPosition;
+            minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
+            minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
+        });
+        const margin = 70;
+        const w = this.node.worldPosition;
+        return w.x >= minX - margin && w.x <= maxX + margin && w.y >= minY - margin && w.y <= maxY + margin;
+    }
+
+    /** Solto no tabuleiro: fica onde foi largado (dentro da area do tabuleiro), sem ser selecionado. */
+    private dropOnBoard() {
+        const parent = this.node.parent;
+        const ut = parent ? parent.getComponent(UITransform) : null;
+        const p = this.node.position;
+        let x = p.x, y = p.y;
+        if (ut) {
+            const inset = 90;
+            const halfW = Math.max(0, ut.width - inset) / 2, halfH = Math.max(0, ut.height - inset) / 2;
+            const cx = (0.5 - ut.anchorX) * ut.width, cy = (0.5 - ut.anchorY) * ut.height;
+            x = Math.max(cx - halfW, Math.min(cx + halfW, x));
+            y = Math.max(cy - halfH, Math.min(cy + halfH, y));
+        }
+        Tween.stopAllByTarget(this.node);
+        // Fica na frente dos demais itens do tabuleiro (ordem acima do padrao e por ultimo na hierarquia).
+        this.SetSortingOrder(this.defaultSortingOrder + 1);
+        if (parent) this.node.setSiblingIndex(parent.children.length - 1);
+        tween(this.node)
+            .to(0.12, { position: new Vec3(x, y, p.z), scale: this.availableScale }, { easing: 'quadOut' })
+            .start();
+    }
+
+    // ---------- Vizinhos se acomodando ----------
+
+    /** Ao selecionar um item, os vizinhos no tabuleiro se afastam um pouco e voltam (como se reorganizando). */
+    private wiggleNeighbors(origin: Vec3) {
+        const parent = this.node.parent;
+        if (!parent) return;
+        const radius = 190;
+        parent.children.forEach(c => {
+            const el = c.getComponent(MatchElement);
+            if (!el || el === this || !el.isAvailable || el.merging || el.isRejecting || el.dragging) return;
+            const dx = c.position.x - origin.x, dy = c.position.y - origin.y;
+            const d = Math.hypot(dx, dy);
+            if (d > radius) return;
+            el.startWiggle(d < 1 ? 1 : dx / d, d < 1 ? 0 : dy / d, 5 + 13 * (1 - d / radius));
+        });
+    }
+
+    private startWiggle(dx: number, dy: number, amp: number) {
+        this.cancelWiggle();
+        this.wiggleDir.set(dx, dy, 0);
+        this.wiggleAmp = amp;
+        this.wiggleT = 0;
+    }
+
+    /** Desfaz o deslocamento do balanco (o item volta exatamente ao lugar de antes). */
+    private cancelWiggle() {
+        if (this.wiggleT < 0) return;
+        this.wiggleT = -1;
+        if (this.node && this.node.isValid) {
+            const p = this.node.position;
+            this.node.setPosition(p.x - this.wiggleApplied.x, p.y - this.wiggleApplied.y, p.z);
+            this.node.setRotationFromEuler(0, 0, this.node.eulerAngles.z - this.wiggleAppliedRot);
+        }
+        this.wiggleApplied.set(0, 0, 0);
+        this.wiggleAppliedRot = 0;
+    }
+
+    private updateWiggle(dt: number) {
+        if (this.wiggleT < 0) return;
+        this.wiggleT += dt;
+        const p = this.wiggleT / 0.5;
+        if (p >= 1) { this.cancelWiggle(); return; }
+        // Afasta e volta com uma pequena oscilacao no fim.
+        const f = Math.sin(Math.PI * p) * (1 - 0.35 * Math.sin(Math.PI * 2 * p));
+        const nx = this.wiggleDir.x * this.wiggleAmp * f, ny = this.wiggleDir.y * this.wiggleAmp * f;
+        const rot = (this.wiggleDir.x >= 0 ? 1 : -1) * 4 * Math.sin(Math.PI * 2 * p);
+        const pos = this.node.position;
+        this.node.setPosition(pos.x + nx - this.wiggleApplied.x, pos.y + ny - this.wiggleApplied.y, pos.z);
+        this.node.setRotationFromEuler(0, 0, this.node.eulerAngles.z + rot - this.wiggleAppliedRot);
+        this.wiggleApplied.set(nx, ny, 0);
+        this.wiggleAppliedRot = rot;
     }
 
     OnClick() {
@@ -213,6 +324,7 @@ export class MatchElement extends Component {
         }
 
         // Power-up Focus pode ter deixado o item pulsando/escurecido: limpa antes de mover para a prateleira.
+        this.cancelWiggle();
         Tween.stopAllByTarget(this.node);
         const sprite = this.spriteComponent || this.getComponent(Sprite);
         if (sprite) sprite.color = Color.WHITE;
@@ -220,6 +332,8 @@ export class MatchElement extends Component {
         this.isAvailable = false;
         this.boardPosition = this.node.position.clone();
         this.currentSlot = slot;
+        // Os vizinhos se acomodam (ao arrastar, a partir do ponto de origem do item, ja que ele sai de la).
+        this.wiggleNeighbors(this.wiggleOrigin || this.boardPosition);
 
         this.SetSortingOrder(3);
 
@@ -261,6 +375,7 @@ export class MatchElement extends Component {
     /** Prateleira cheia: balanca o item sem registra-lo como selecionado. */
     private PlayRejectedFeedback() {
         if (this.isRejecting) return;
+        this.cancelWiggle();
         this.isRejecting = true;
         SoundManager.playBlocked();
         const origin = this.node.position.clone();
@@ -302,6 +417,7 @@ export class MatchElement extends Component {
     }
 
     public MoveToSlot(slot: Node) {
+        this.cancelWiggle();
         this.currentSlot = slot;
         this.hasReachedSlot = false;
         Tween.stopAllByTarget(this.node);
@@ -354,6 +470,7 @@ export class MatchElement extends Component {
     }
 
     public Merge(targetSlot: Node | null = null, isMiddle: boolean = false) {
+        this.cancelWiggle();
         this.merging = true;
         this.StopWrongPulse(false);
         if (this.currentSlot && this.matchSlots) {
@@ -450,6 +567,7 @@ export class MatchElement extends Component {
     }
 
     update(deltaTime: number) {
+        this.updateWiggle(deltaTime);
         const inTray = !this.isAvailable && this.hasReachedSlot && !this.merging;
         if (!inTray) {
             // Saiu da prateleira (voltou ao tabuleiro, esta se movendo ou entrou em merge): zera o relogio.
