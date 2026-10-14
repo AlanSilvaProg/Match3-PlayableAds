@@ -301,7 +301,7 @@ export class OrderManager extends Component {
         if (order.delivered || line.done) return;
         line.done = true;
         line.reserved = false;
-        this.refreshLine(line);
+        this.refreshAllLines();
 
         Tween.stopAllByTarget(line.row);
         tween(line.row)
@@ -335,7 +335,10 @@ export class OrderManager extends Component {
             spawned = true;
         }
         // Novo pedido: se os itens ja estiverem na prateleira, o merge acontece automaticamente.
-        if (spawned) GameManager.instance?.events.emit(GameManager.EVENT_DEMAND_CHANGED);
+        if (spawned) {
+            this.refreshAllLines();
+            GameManager.instance?.events.emit(GameManager.EVENT_DEMAND_CHANGED);
+        }
     }
 
     private deliver(order: OrderView) {
@@ -376,6 +379,7 @@ export class OrderManager extends Component {
                 order.node.destroy();
                 this.layoutCards(true);
                 this.spawnDueOrders();
+                this.refreshAllLines(); // a prioridade passa para o proximo pedido
             })
             .start();
 
@@ -481,6 +485,20 @@ export class OrderManager extends Component {
         return view;
     }
 
+    /** Esta linha e a que recebe os itens selecionados do tipo (primeira linha pendente na ordem da tela)? */
+    private isPriorityLine(line: OrderLineView): boolean {
+        for (const order of this.active) {
+            if (order.delivered) continue;
+            const first = order.lines.find(l => l.type === line.type && !l.done && !l.reserved);
+            if (first) return first === line;
+        }
+        return false;
+    }
+
+    private refreshAllLines() {
+        this.active.forEach(o => o.lines.forEach(l => this.refreshLine(l)));
+    }
+
     /** "x3" = quantidade pedida; com itens ja na prateleira vira "1/3", "2/3"... */
     private refreshLine(line: OrderLineView) {
         if (line.done) {
@@ -492,7 +510,8 @@ export class OrderManager extends Component {
             line.countLabel.color = this.okColor;
             line.countLabel.fontSize = 26;
         } else {
-            const have = Math.min(this.selection.get(line.type) || 0, line.quantity);
+            // A selecao conta so para o pedido prioritario (o 1o na tela que ainda quer este alimento): e ele que vai completar.
+            const have = this.isPriorityLine(line) ? Math.min(this.selection.get(line.type) || 0, line.quantity) : 0;
             line.countLabel.string = have > 0 ? `${have}/${line.quantity}` : `x${line.quantity}`;
             line.countLabel.color = have > 0 ? this.warnColor : Color.WHITE;
             line.countLabel.fontSize = have > 0 ? 26 : 30;

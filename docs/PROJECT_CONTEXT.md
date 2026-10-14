@@ -19,7 +19,7 @@
 
 ## 2. Fluxo do jogo
 `PokiService.ready()` → `GameManager.bootFlow()`:
-- 1ª vez do jogador: pula menu e vai ao nível 1 **sem tutorial introdutório** (os ensinamentos são graduais, veja 'Tutoriais graduais'); só pede o nickname (`RankingManager.PromptProfile`) antes de `StartGame`.
+- 1ª vez do jogador: pula menu e vai ao nível 1 com uma **introdução curta** (`TutorialManager.introOrders/introClick`: explica os PEDIDOS com fade, depois clique guiado — só os alimentos do 1º pedido aceitam toque via `GameManager.tutorialAllowed` — até entregá-lo), mostra "NOW IT'S YOUR TURN!" (`showYourTurn`) e só então pede o nickname (`RankingManager.PromptProfile`) antes de `StartGame`; os demais ensinamentos são graduais (veja 'Tutoriais graduais').
 - Quem já jogou: vai direto à **seleção de fases** (`LevelSelector`). `StartScreen` (botão Play) só aparece quando configurado.
 - `chooseLevel` → `PokiService.commercialBreak()` (só ao entrar em gameplay) → `BeginPlay`. `gameplayStart` dispara no primeiro input (Tutorial→Running); `gameplayStop` em vitória/derrota/foco perdido.
 - Vitória/derrota: prefabs `WinnerScreen`/`FailScreen` (sorting layer 1). Fail: Restart, Continue (anúncio, vermelho, ícone play) , Levels. Restart usa `GameManager.reloadWithBreak()`; Levels usa `reloadScene()` (sem anúncio).

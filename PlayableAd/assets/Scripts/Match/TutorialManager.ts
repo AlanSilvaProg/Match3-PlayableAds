@@ -12,9 +12,11 @@ import { RankingManager } from './RankingManager';
 import { PowerupType } from './PowerupCatalog';
 import { PowerupInventory } from './PlayerInventory';
 import { GameManager } from './GameManager';
+import { CelebrationFx } from './CelebrationFx';
 
 /**
- * Tutoriais graduais (sem introducao longa): cada ensinamento aparece na hora em que faz sentido.
+ * Primeira partida (antes do pedido de apelido/login): explica os PEDIDOS e guia o jogador a juntar o primeiro pedido.
+ * Depois, tutoriais graduais (sem introducao longa): cada ensinamento aparece na hora em que faz sentido.
  *  1) tempo abaixo de 20s: fade no cronometro ("zerou = fracasso") e em seguida o tutorial do power-up +15s;
  *  2) pedido atrasado (prazo negativo): fade no pedido (o atraso e descontado do tempo total) e em seguida o
  *     tutorial do power-up Freeze Orders;
@@ -62,6 +64,9 @@ export class TutorialManager extends Component {
     private static readonly FLAG_LATE = 'match3_tut_late_order';
 
     private canTap: boolean = false;
+    /** Introducao da 1a partida: 1 = explica os pedidos, 2 = clique guiado ate entregar o 1o pedido, 0 = fora dela. */
+    private introStep: 0 | 1 | 2 = 0;
+    private whitelist: MatchElement[] = [];
     private raised: { sorting: Sorting2D, original: number }[] = [];
     private captionRoot: Node | null = null;
     private captionLabel: Label | null = null;
@@ -114,24 +119,146 @@ export class TutorialManager extends Component {
         if (PowerupManager.instance) PowerupManager.instance.forcedType = null;
         // Na troca de cena o no do fade pode ja ter sido destruido.
         if (this.fadeNode && this.fadeNode.isValid) this.fadeNode.targetOff(this);
+        events?.off(GameManager.EVENT_ORDER_DELIVERED, this.onOrderDelivered, this);
+        if (GameManager.instance) GameManager.instance.tutorialAllowed = null;
     }
 
     private onPlay(firstTime: boolean) {
         this.runTime = 0;
         this.idleTime = 0;
         if (!firstTime) return;
-        // Primeira vez: apelido (e login da Poki, se disponivel) antes do cronometro comecar a correr.
-        this.scheduleOnce(() => {
-            const gm = GameManager.instance;
-            if (!gm) return;
+        // Primeira vez: introducao dos pedidos antes do apelido/login e do cronometro.
+        GameManager.instance?.events.on(GameManager.EVENT_ORDER_DELIVERED, this.onOrderDelivered, this);
+        this.scheduleOnce(() => this.introOrders(), 0.4);
+    }
+
+    // ---------- Introducao da primeira partida ----------
+
+    private introOrders() {
+        if (!OrderManager.instance) { this.finishIntro(); return; }
+        this.introStep = 1;
+        SoundManager.playTutorialStep();
+        this.showFade(true);
+        this.fadeNode?.targetOff(this);
+        this.fadeNode?.on(Node.EventType.TOUCH_END, this.onIntroTap, this);
+        this.highlight([OrderManager.instance.node]);
+        this.showCaption('These are your ORDERS!\nCollect the exact amount before time runs out.', this.capPos('orders', new Vec3(95, 120, 0)), true);
+        this.canTap = false;
+        this.scheduleOnce(() => { this.canTap = true; }, this.tapDelay);
+    }
+
+    private onIntroTap() {
+        if (!this.canTap || this.introStep !== 1) return;
+        SoundManager.playMenuClick();
+        this.introClick();
+    }
+
+    /** Clique guiado: so os alimentos do 1o pedido aceitam toque ate ele ser entregue. */
+    private introClick() {
+        this.introStep = 2;
+        this.canTap = false;
+        SoundManager.playTutorialStep();
+        // Fade visivel mas sem capturar toques: os cliques chegam aos alimentos liberados.
+        this.fadeNode?.targetOff(this);
+        this.showFade(true);
+
+        const order = OrderManager.instance?.GetFirstOrderLines() || [];
+        const board = this.initializer ? this.initializer.node.getComponentsInChildren(MatchElement) : [];
+        this.whitelist = [];
+        for (const line of order) {
+            const picks = board.filter(el => el.isAvailable && el.type === line.type && this.whitelist.indexOf(el) === -1)
+                .slice(0, line.quantity);
+            this.whitelist.push(...picks);
+        }
+        if (GameManager.instance) GameManager.instance.tutorialAllowed = this.whitelist;
+
+        // A ordem de toque segue a hierarquia: os liberados vao para o topo para que nenhum item bloqueado
+        // sobreposto a eles roube o clique.
+        this.whitelist.forEach(el => el.node.setSiblingIndex(el.node.parent!.children.length - 1));
+
+        const nodes: Node[] = this.whitelist.map(el => el.node);
+        if (OrderManager.instance) nodes.push(OrderManager.instance.node);
+        this.highlight(nodes);
+
+        if (this.tutorialIndicator && !this.handRaised) {
+            this.handRaised = true;
+            this.tutorialIndicator.getComponentsInChildren(Sorting2D).forEach(sp => {
+                sp.sortingOrder = TutorialManager.UI_ORDER + 50 + sp.sortingOrder;
+            });
+        }
+        // A legenda fica numa faixa SEM alimentos: em retrato, na linha do combo; em paisagem, acima do tabuleiro.
+        this.showCaption('Tap the highlighted foods!', this.capPos('click', new Vec3(100, Responsive.top - 55, 0)), false, Responsive.portrait ? 0.8 : 0.62);
+    }
+
+    private onOrderDelivered() {
+        // O 1o pedido foi entregue: fim da introducao.
+        if (this.introStep === 2) this.scheduleOnce(() => this.finishIntro(), 0.9);
+    }
+
+    /** A mao segue o proximo alimento a clicar. */
+    private updateIntro() {
+        if (this.introStep !== 2 || !this.tutorialIndicator) return;
+        const selected = this.matchController ? this.matchController.selectedElements : [];
+        const next = this.whitelist.find(el => el.isValid && el.node && el.isAvailable && selected.indexOf(el) === -1);
+        if (next) {
+            this.tutorialIndicator.active = true;
+            this.tutorialIndicator.setWorldPosition(next.node.worldPosition);
+        } else {
+            this.tutorialIndicator.active = false;
+        }
+    }
+
+    /** Depois da introducao: apelido (e login da Poki, se disponivel) antes do cronometro comecar a correr. */
+    private finishIntro() {
+        this.introStep = 0;
+        this.whitelist = [];
+        this.fadeNode?.targetOff(this);
+        this.showFade(false);
+        this.clearHighlight();
+        if (this.captionRoot) this.captionRoot.active = false;
+        if (this.tutorialIndicator) this.tutorialIndicator.active = false;
+        const gm = GameManager.instance;
+        if (!gm) return;
+        gm.tutorialAllowed = null;
+        // "Agora e a sua vez!" e so depois o apelido/login e o inicio do cronometro.
+        this.showYourTurn(() => {
             const ranking = RankingManager.instance;
             if (ranking && ranking.NeedsProfile()) {
                 ranking.PromptProfile(() => GameManager.instance?.StartGame());
             } else {
-                gm.StartGame();
+                GameManager.instance?.StartGame();
             }
-        }, 0.4);
+        });
     }
+
+    /** Texto grande "NOW IT'S YOUR TURN!" que pula, fica um instante e esvaece. `done` roda quando some. */
+    private showYourTurn(done: () => void) {
+        const parent = this.node.parent;
+        if (!parent) { done(); return; }
+        SoundManager.playTutorialStep();
+        const root = new Node('YourTurn');
+        root.layer = parent.layer;
+        root.parent = parent;
+        root.addComponent(UITransform).setContentSize(10, 10);
+        const board = parent.getChildByName('MatchSpace');
+        const at = board ? new Vec3(board.position.x, board.position.y + 20, 0) : new Vec3(0, 60, 0);
+        root.setPosition(at);
+        const op = root.addComponent(UIOpacity);
+        const size = Responsive.portrait ? 64 : 84;
+        const gold = new Color(255, 214, 51, 255), outline = new Color(120, 70, 0, 255);
+        CelebrationFx.makeLabel(root, "NOW IT'S", size, 0, size * 0.55, Color.WHITE, new Color(20, 30, 60, 255), 2);
+        CelebrationFx.makeLabel(root, 'YOUR TURN!', Math.round(size * 1.25), 0, -size * 0.5, gold, outline, 3);
+        root.setScale(0.2, 0.2, 1);
+        tween(root)
+            .to(0.3, { scale: new Vec3(1.2, 1.2, 1) }, { easing: 'backOut' })
+            .to(0.12, { scale: Vec3.ONE })
+            .delay(1.2)
+            .call(() => { root.destroy(); done(); })
+            .start();
+        tween(op).delay(1.35).to(0.3, { opacity: 0 }).start();
+    }
+
+    // ---------- Tutoriais contextuais de power-up ----------
 
     private readonly guideTexts: { [k: number]: string } = {
         [PowerupType.MaxCombo]: 'Your combo ran out!\nMAX COMBO fills it to the top.\nHere is one FREE: tap it now!',
@@ -382,12 +509,13 @@ export class TutorialManager extends Component {
     protected update(dt: number) {
         if (this.hintElement) this.updateHint();
         this.updateGuides(dt);
+        this.updateIntro();
     }
 
     // ---------- Posicao da legenda ----------
 
     /** Posicao da legenda: em paisagem a posicao do editor; em retrato, junto ao elemento destacado. */
-    private capPos(kind: 'timer' | 'orders' | 'powerups', land: Vec3): Vec3 {
+    private capPos(kind: 'timer' | 'orders' | 'powerups' | 'click', land: Vec3): Vec3 {
         if (!Responsive.portrait) return land;
         const m = Responsive.portraitMetrics();
         switch (kind) {
