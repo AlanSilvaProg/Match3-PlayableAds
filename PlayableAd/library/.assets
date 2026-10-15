@@ -145,7 +145,14 @@
             "Sounds/NICE.mp3",
             "Sounds/UNSTOPPABLE.mp3",
             "extra_assets/background_night.png",
-            "Scripts/Match/PhaseFlow.ts"
+            "Scripts/Match/PhaseFlow.ts",
+            "extra_assets/ray-icon.png",
+            "Scripts/Match/RayPickup.ts",
+            "Scripts/Match/GoldenTime.ts",
+            "Sounds/coin-switch.wav",
+            "Sounds/golden-time.wav",
+            "Sounds/element-selected-by-ray.mp3",
+            "Sounds/ray-enabled.mp3"
         ]
     }
 }

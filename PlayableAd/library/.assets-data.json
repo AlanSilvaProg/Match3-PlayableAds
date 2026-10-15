@@ -833,6 +833,7 @@
         "6584e6d4-14e2-4cd0-9204-bbc880fb3d18",
         "d49c5b5f-4aa5-432f-b100-30cc895ec194",
         "1d4919d3-9280-4dbd-b571-87c8061e7938@f9941",
+        "74021592-f88e-491d-9762-5b04fda796c1@f9941",
         "002d8685-dbe7-4fff-a8e5-ac080ec35277@f9941",
         "2cd97e8d-a9c7-454c-a5a5-ee38376852ac@f9941",
         "1584ad8b-6473-4a13-a6c1-d9ec39d463e1@f9941",
@@ -863,6 +864,10 @@
         "48bf5a12-5c3d-4c08-bc8b-b47d547474fb",
         "942d54e4-dfd2-485a-92c8-3e19f96f84d8",
         "2b128e72-298b-4576-b266-6a516b77ed92",
+        "9e3c10a9-8e2a-484e-9348-454268295900",
+        "93662788-4c25-4e2d-b578-9b7897bf7719",
+        "c5e5ae96-b6fc-42f7-9243-fb4ce389e0b4",
+        "dd8db944-8f35-4d86-880d-d0c44fbb5cc0",
         "a162b1d0-2630-47d9-bb34-4c41e578b96f",
         "8c387cb6-bbbb-4200-ae26-afacecefdead",
         "891a75e3-bb08-4515-ac19-59b512a306c5",
@@ -2257,6 +2262,69 @@
   "d377fbb9-bec6-4405-9e26-d272f4381b43": {
     "url": "db://assets/Scripts/Match/PhaseFlow.ts",
     "value": {},
+    "versionCode": 1
+  },
+  "74021592-f88e-491d-9762-5b04fda796c1": {
+    "url": "db://assets/extra_assets/ray-icon.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "74021592-f88e-491d-9762-5b04fda796c1@6c48a": {
+    "url": "db://assets/extra_assets/ray-icon.png@6c48a",
+    "value": {
+      "depends": [
+        "74021592-f88e-491d-9762-5b04fda796c1"
+      ]
+    },
+    "versionCode": 1
+  },
+  "74021592-f88e-491d-9762-5b04fda796c1@f9941": {
+    "url": "db://assets/extra_assets/ray-icon.png@f9941",
+    "value": {
+      "depends": [
+        "74021592-f88e-491d-9762-5b04fda796c1@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "5f870be3-0e39-4d74-9399-44e51ba3efe8": {
+    "url": "db://assets/Scripts/Match/RayPickup.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "57cb1a8a-09fe-4855-a579-93f1b06c3850": {
+    "url": "db://assets/Scripts/Match/GoldenTime.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "93662788-4c25-4e2d-b578-9b7897bf7719": {
+    "url": "db://assets/Sounds/coin-switch.wav",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "9e3c10a9-8e2a-484e-9348-454268295900": {
+    "url": "db://assets/Sounds/golden-time.wav",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "dd8db944-8f35-4d86-880d-d0c44fbb5cc0": {
+    "url": "db://assets/Sounds/element-selected-by-ray.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "c5e5ae96-b6fc-42f7-9243-fb4ce389e0b4": {
+    "url": "db://assets/Sounds/ray-enabled.mp3",
+    "value": {
+      "depends": []
+    },
     "versionCode": 1
   }
 }

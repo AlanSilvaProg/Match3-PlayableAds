@@ -195,7 +195,7 @@ export class ComboManager extends Component {
     public get scoreMultiplierSecondsLeft(): number { return this.scoreMultiplierRemaining; }
 
     /** Registra um merge e devolve os pontos ganhos. */
-    public RegisterMatch(weight: number = 1, quantity: number = 1): number {
+    public RegisterMatch(weight: number = 1, quantity: number = 1, noCoins: boolean = false): number {
         const gm = GameManager.instance;
         if (gm && !gm.IsRunning()) return 0;
         if (this.levels.length === 0) return 0;
@@ -206,7 +206,8 @@ export class ComboManager extends Component {
         const rawPoints = Math.round((this.basePointsPerMatch + level.multiplier) * weight * (1 + 0.2 * (quantity - 1))
             * (this.scoreMultiplierRemaining > 0 ? this.scoreMultiplier : 1));
         // A barra do combo enche pelos pontos cheios; o jogador recebe so uma fracao deles em moedas.
-        const gained = Math.max(1, Math.round(rawPoints * this.coinRewardFactor * this.phaseCoinScale));
+        // Pedido de ouro: o combo conta normalmente, mas o merge nao rende moedas.
+        const gained = noCoins ? 0 : Math.max(1, Math.round(rawPoints * this.coinRewardFactor * this.phaseCoinScale));
         this.score += gained;
         this.registerFastStreak();
 
@@ -240,6 +241,18 @@ export class ComboManager extends Component {
         }
 
         this.refreshBar();
+        this.refreshScore(false);
+        return gained;
+    }
+
+    @property({ tooltip: 'Golden Time: moedas por alimento coletado = moedas base de um merge x este fator (~2x o ganho medio por item).' })
+    public goldenItemFactor: number = 0.85;
+
+    /** Golden Time: um alimento coletado (vira moeda). Devolve as moedas ganhas e mantem o combo vivo. */
+    public RegisterGoldenItem(): number {
+        const gained = Math.max(2, Math.round(this.basePointsPerMatch * this.coinRewardFactor * this.phaseCoinScale * this.goldenItemFactor));
+        this.score += gained;
+        this.sinceLastMatch = 0;
         this.refreshScore(false);
         return gained;
     }

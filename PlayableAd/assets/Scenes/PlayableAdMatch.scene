@@ -1533,6 +1533,7 @@
     },
     "noComboSwayDegrees": 4,
     "noComboSwaySpeed": 1.5,
+    "goldenItemFactor": 0.85,
     "_id": "0aKwgfrFxEp7k56MUQGIIe"
   },
   {
@@ -1872,6 +1873,13 @@
       "__uuid__": "1d4919d3-9280-4dbd-b571-87c8061e7938@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
+    "rayIcon": {
+      "__uuid__": "74021592-f88e-491d-9762-5b04fda796c1@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    },
+    "rayChance": 0.2,
+    "rayCooldown": 25,
+    "goldenSeconds": 5,
     "carryTimeFactor": 0.5,
     "carryTimeMax": 15,
     "threeStarLateRatio": 0.12,
@@ -4633,6 +4641,26 @@
       "__expectedType__": "cc.AudioClip"
     },
     "celebrationVolume": 0.9,
+    "goldenTimeClip": {
+      "__uuid__": "9e3c10a9-8e2a-484e-9348-454268295900",
+      "__expectedType__": "cc.AudioClip"
+    },
+    "goldenTimeVolume": 0.9,
+    "coinSwitchClip": {
+      "__uuid__": "93662788-4c25-4e2d-b578-9b7897bf7719",
+      "__expectedType__": "cc.AudioClip"
+    },
+    "coinSwitchVolume": 0.9,
+    "rayEnabledClip": {
+      "__uuid__": "c5e5ae96-b6fc-42f7-9243-fb4ce389e0b4",
+      "__expectedType__": "cc.AudioClip"
+    },
+    "rayEnabledVolume": 0.29,
+    "raySelectClip": {
+      "__uuid__": "dd8db944-8f35-4d86-880d-d0c44fbb5cc0",
+      "__expectedType__": "cc.AudioClip"
+    },
+    "raySelectVolume": 1,
     "removedFromSelectedClip": {
       "__uuid__": "a162b1d0-2630-47d9-bb34-4c41e578b96f",
       "__expectedType__": "cc.AudioClip"

@@ -1,4 +1,5 @@
 import { SoundManager } from './SoundManager';
+import { GoldenTime } from './GoldenTime';
 import { Responsive } from './Responsive';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, tween, Tween } from 'cc';
 const { ccclass, property } = _decorator;
@@ -108,6 +109,8 @@ export class OrderManager extends Component {
     private titleNode: Node | null = null;
     private selection: Map<ElementType, number> = new Map();
 
+    private readonly goldenCard = new Color(255, 185, 30, 255);
+    private readonly goldenCardLight = new Color(255, 232, 110, 255);
     private readonly cardColor = new Color(30, 36, 60, 235);
     private readonly lateColor = new Color(150, 20, 25, 240);
     private readonly okColor = new Color(60, 220, 90, 255);
@@ -279,6 +282,30 @@ export class OrderManager extends Component {
         return null;
     }
 
+    /** Alimentos ainda necessarios para fechar a fase: linhas abertas (nao reservadas) + pedidos que ainda vao aparecer. */
+    public RemainingDemand(): Map<ElementType, number> {
+        const demand = new Map<ElementType, number>();
+        const add = (t: ElementType, n: number) => { if (n > 0) demand.set(t, (demand.get(t) || 0) + n); };
+        for (const o of this.active) {
+            if (o.delivered) continue;
+            o.lines.forEach(l => { if (!l.done && !l.reserved) add(l.type, l.quantity); });
+        }
+        if (this.plan) {
+            for (let i = this.nextIndex; i < this.plan.orders.length; i++) this.plan.orders[i].lines.forEach(l => add(l.type, l.quantity));
+        }
+        return demand;
+    }
+
+    /** Linhas pendentes (nao cumpridas nem reservadas) do primeiro pedido ainda nao entregue na tela: o proximo pedido a completar. */
+    public GetPriorityOrderLines(): { type: ElementType, quantity: number }[] {
+        for (const order of this.active) {
+            if (order.delivered) continue;
+            const lines = order.lines.filter(l => !l.done && !l.reserved).map(l => ({ type: l.type, quantity: l.quantity }));
+            if (lines.length > 0) return lines;
+        }
+        return [];
+    }
+
     /** Linhas (alimento + quantidade) do primeiro pedido aberto: usado pelo tutorial guiado. */
     public GetFirstOrderLines(): { type: ElementType, quantity: number }[] {
         const order = this.active[0];
@@ -385,6 +412,11 @@ export class OrderManager extends Component {
 
         gm?.events.emit(GameManager.EVENT_ORDER_DELIVERED, this.deliveredOrders);
 
+        // Pedido de ouro entregue no prazo e que NAO e o ultimo da fase: Golden Time.
+        if (order.plan.golden && !late && gm && gm.IsRunning() && this.deliveredOrders < this.totalOrders) {
+            GoldenTime.start();
+        }
+
         if (this.deliveredOrders >= this.totalOrders) {
             this.allDelivered = true;
             gm?.CompleteLevel();
@@ -452,7 +484,7 @@ export class OrderManager extends Component {
             if (f.insetLeft === 0) { f.insetLeft = f.insetRight = f.insetTop = f.insetBottom = 24; }
             bg.spriteFrame = f;
         }
-        bg.color = this.cardColor;
+        bg.color = plan.golden ? this.goldenCard : this.cardColor;
         bgNode.addComponent(Sorting2D).sortingOrder = this.sortingBase;
 
         const timerNode = this.makeNode('Timer', node, 0, h / 2 - 20, w - 12, 30);
@@ -519,6 +551,13 @@ export class OrderManager extends Component {
         line.countLabel.lineHeight = line.countLabel.fontSize;
     }
 
+    /** Cor normal do cartao: azul escuro; pedidos de ouro brilham em dourado. */
+    private baseCard(order: OrderView): Color {
+        if (!order.plan.golden) return this.cardColor;
+        const k = 0.5 + 0.5 * Math.sin(this.clock * 4);
+        return Color.lerp(new Color(), this.goldenCard, this.goldenCardLight, k);
+    }
+
     private refreshTimer(order: OrderView) {
         if (order.delivered) return;
         const t = order.timeLeft;
@@ -541,14 +580,14 @@ export class OrderManager extends Component {
             const pulse = 0.5 + 0.5 * Math.sin(this.clock * 12);
             const s = (1 + 0.05 * pulse) * this.cardScale;
             order.node.setScale(s, s, 1);
-            order.bg.color = Color.lerp(new Color(), this.cardColor, this.lateColor, 0.35 + 0.65 * pulse);
+            order.bg.color = Color.lerp(new Color(), this.baseCard(order), this.lateColor, 0.35 + 0.65 * pulse);
             order.timerLabel.node.setScale(1 + 0.15 * pulse, 1 + 0.15 * pulse, 1);
         } else if (t / order.plan.deliverTime <= this.warnRatio) {
             order.timerLabel.color = t / order.plan.deliverTime <= this.warnRatio / 2 ? this.badColor : this.warnColor;
-            order.bg.color = this.cardColor;
+            order.bg.color = this.baseCard(order);
         } else {
             order.timerLabel.color = Color.WHITE;
-            order.bg.color = this.cardColor;
+            order.bg.color = this.baseCard(order);
         }
     }
 

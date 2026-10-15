@@ -18,6 +18,8 @@ export interface OrderPlan {
     spawnTime: number;
     /** Segundos para entregar o pedido a partir do momento em que ele aparece. */
     deliverTime: number;
+    /** Pedido de ouro: nao rende moedas, tem prazo menor e, se entregue no prazo, liga o Golden Time. */
+    golden?: boolean;
     lines: OrderLine[];
 }
 
@@ -110,12 +112,12 @@ export class LevelConfig {
         maxQuantityCap: 4,
         specialExtraQuantity: 1,
         /** Fases: cada uma recebe esta fracao da quantidade de pedidos do nivel (normal 2 fases, especial 3). */
-        phaseOrderShare: 0.7,
-        phaseOrderShareSpecial: 0.5,
+        phaseOrderShare: 0.5,
         minPhaseOrders: 3,
         maxPhaseOrders: 9,
         /** Fracao dos tipos disponiveis que cada fase usa (janelas deslizantes: fases vizinhas tem alimentos diferentes). */
-        phaseTypeRatio: 0.6,
+        basePhaseTypes: 4,
+        phaseTypesEvery: 6,
         /** Pedidos minimos sempre visiveis enquanto houver fila. */
         minActiveOrders: 2,
         /** Itens extras no tabuleiro (sem pedido): fracao dos itens pedidos, com minimo, para o tabuleiro nao ficar vazio. */
@@ -132,12 +134,16 @@ export class LevelConfig {
         minSecondsPerItem: 1.25,
         fixedTimeBonus: 14,
         specialTimeFactor: 0.9,
-        minDuration: 45,
-        maxDuration: 150,
+        /** Cada fase (cafe, almoco, jantar) dura em media 1 minuto: entre estes limites. Pedidos demais para caber no maximo sao cortados. */
+        minDuration: 55,
+        maxDuration: 75,
         /** Prazo de cada pedido = itens * segundos por item * deliverFactor + deliverPadding. */
         deliverFactor: 2.1,
         deliverPadding: 10,
         minDeliverTime: 16,
+        /** Chance de cada pedido (a partir do 3o da fase) ser de ouro e o quanto o prazo dele e menor. */
+        goldenChance: 0.05,
+        goldenTimeFactor: 0.7,
         /** Os pedidos aparecem espalhados ate esta fracao da duracao do nivel. */
         spawnSpreadRatio: 0.55,
     };
@@ -162,10 +168,11 @@ export class LevelConfig {
 
         const available = ElementCatalog.defs.filter(d => d.unlockLevel <= level).map(d => d.type);
 
-        // Quantidade de tipos diferentes (a cada 3 niveis um "respiro" com um tipo a menos).
-        let typeCount = Math.round(available.length * T.typeShare) + (special ? T.specialExtraTypes : 0);
-        if (!special && level % 3 === 2) typeCount -= 1;
-        typeCount = Math.max(T.baseTypes, Math.min(typeCount, T.maxTypes, available.length));
+        // Fases: toda fase tem cafe da manha, almoco e jantar (a partir do 1o nivel).
+        const meals = [Meal.Breakfast, Meal.Lunch, Meal.Dinner];
+        // Alimentos por fase (em media 4 no inicio, sobe com o nivel) e no nivel inteiro (as janelas das fases se sobrepoem).
+        const windowTarget = T.basePhaseTypes + Math.floor(level / T.phaseTypesEvery) + (special ? 1 : 0);
+        const typeCount = Math.max(T.baseTypes, Math.min(windowTarget + 2 * (meals.length - 1), T.maxTypes, available.length));
 
         // Escolha dos tipos: o item mais novo liberado entra sempre (e abre a lista); o resto varia por nivel.
         const chosen: ElementType[] = [];
@@ -182,16 +189,14 @@ export class LevelConfig {
             chosen.push(pool.splice(Math.floor(rng() * pool.length), 1)[0]);
         }
 
-        // Fases: normal = almoco + jantar; especial = cafe da manha + almoco + jantar.
-        const meals = special ? [Meal.Breakfast, Meal.Lunch, Meal.Dinner] : [Meal.Lunch, Meal.Dinner];
         const baseOrders = T.baseOrders + Math.floor(qLevel * T.ordersPerLevel) + tier + (special ? T.specialExtraOrders : 0);
-        const share = special ? T.phaseOrderShareSpecial : T.phaseOrderShare;
+        const share = T.phaseOrderShare;
         const phaseOrders = Math.max(T.minPhaseOrders,
             Math.min(T.maxPhaseOrders, Math.round(Math.max(T.baseOrders, Math.min(baseOrders, T.maxOrders)) * share)));
 
         // Cada fase usa uma janela dos tipos escolhidos: as fases vizinhas tem alimentos diferentes.
         const n = chosen.length;
-        const windowSize = Math.max(Math.min(2, n), Math.min(n, Math.round(n * T.phaseTypeRatio)));
+        const windowSize = Math.max(Math.min(2, n), Math.min(n, windowTarget));
         const phases: PhasePlan[] = meals.map((meal, i) => {
             const start = meals.length > 1 ? Math.floor(i * (n - windowSize) / (meals.length - 1)) : 0;
             const types = chosen.slice(start, start + windowSize).sort((a, b) => a - b);
@@ -263,6 +268,11 @@ export class LevelConfig {
         const perItem = Math.max(T.minSecondsPerItem,
             T.baseSecondsPerItem - T.secondsPerItemDropPerLevel * level - T.secondsPerItemDropPerTier * tier) * earlyFactor * phaseFactor;
 
+        // A fase precisa caber no tempo maximo (~1 minuto): corta pedidos do fim da fila (mantendo o minimo).
+        while (draft.length > T.minPhaseOrders && totalItems * perItem + T.fixedTimeBonus > T.maxDuration) {
+            totalItems -= itemsOf(draft.pop()!);
+        }
+
         let duration = totalItems * perItem + T.fixedTimeBonus;
         if (special) duration *= T.specialTimeFactor;
         duration = Math.max(T.minDuration, Math.min(T.maxDuration, Math.round(duration)));
@@ -272,10 +282,14 @@ export class LevelConfig {
         const orders: OrderPlan[] = draft.map((lines, i) => {
             let deliver = itemsOf(lines) * perItem * T.deliverFactor + T.deliverPadding;
             if (special) deliver *= T.specialTimeFactor;
+            // Pedido de ouro (raro): prazo menor; nunca um dos 2 primeiros da fase.
+            const golden = i >= 2 && rng() < T.goldenChance;
+            if (golden) deliver *= T.goldenTimeFactor;
             return {
                 spawnTime: orderTotal > 1 ? Math.round((spread * i) / (orderTotal - 1)) : 0,
-                deliverTime: Math.max(T.minDeliverTime, Math.round(deliver)),
+                deliverTime: Math.max(golden ? 8 : T.minDeliverTime, Math.round(deliver)),
                 lines,
+                golden: golden || undefined,
             };
         });
 

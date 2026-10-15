@@ -18,7 +18,7 @@
       "uuid": "fddeb92d-097c-4299-ba88-970f7721873c"
     },
     "Sounds": {
-      "time": 1791923077383.8076,
+      "time": 1792091306056.1472,
       "uuid": "8bb2ebca-6ac1-483e-a977-06eeaa496d79"
     },
     "UI": {
@@ -26,7 +26,7 @@
       "uuid": "422b06ed-a41e-4bf6-9453-a6e69a59d850"
     },
     "extra_assets": {
-      "time": 1792005210185.0996,
+      "time": 1792082500958.4265,
       "uuid": "97d238bb-3a2a-47d4-be4f-8be109e1af2b"
     },
     "Sounds/AlarmLoop.mp3.meta": {
@@ -201,21 +201,21 @@
       "time": 1791206513732.255
     },
     "Scripts/Match": {
-      "time": 1792020422326.6719,
+      "time": 1792087808047.9976,
       "uuid": "e3c2ab47-56e3-45b6-a059-8f621df9046e"
     },
     "Scripts/Match/MatchElement.ts.meta": {
       "time": 1791206513733.2612
     },
     "Scripts/Match/MatchElement.ts": {
-      "time": 1792019788562.6052,
+      "time": 1792085334136.0898,
       "uuid": "63fc03d9-c22e-4d18-850b-8e6fc39bf560"
     },
     "Scripts/Match/MatchSlots.ts.meta": {
       "time": 1791206513733.6562
     },
     "Scripts/Match/MatchSlots.ts": {
-      "time": 1792005410531.6353,
+      "time": 1792083029415.6606,
       "uuid": "38af9b55-b6e0-4600-a305-7f16f772b343"
     },
     "Scripts/Match/MatchInitializer.ts.meta": {
@@ -229,7 +229,7 @@
       "time": 1791206513732.98
     },
     "Scripts/Match/MatchController.ts": {
-      "time": 1792005410531.874,
+      "time": 1792085306150.1472,
       "uuid": "ef137c72-8446-49a0-90d6-bf3455356caa"
     },
     "Scenes.meta": {
@@ -263,7 +263,7 @@
       "time": 1791206513734.03
     },
     "Scripts/Match/GameManager.ts": {
-      "time": 1792020422326.4426,
+      "time": 1792086654132.504,
       "uuid": "7066c457-7c2b-417b-8779-338dab7721ee"
     },
     "Scripts/Match/GameState.ts": {
@@ -327,7 +327,7 @@
       "time": 1791206513734.441
     },
     "Scripts/Match/TutorialManager.ts": {
-      "time": 1792020537389.7205,
+      "time": 1792087614292.4458,
       "uuid": "fdb05417-a2c0-4ac9-83f0-aaa156c58ec0"
     },
     "extra_assets/white_rect.jpg.meta": {
@@ -341,7 +341,7 @@
       "time": 1791206513731.8757
     },
     "Scenes/PlayableAdMatch.scene": {
-      "time": 1792007570885.2717,
+      "time": 1792092214173.1802,
       "uuid": "e04ca93c-f472-474b-bec4-ef3ccf980601"
     },
     "Animations/HandAnimation.anim.meta": {
@@ -402,7 +402,7 @@
       "uuid": "8e2ab00e-7fad-47dc-b43f-33d690ede0ac"
     },
     "Scripts/Match/ComboManager.ts": {
-      "time": 1792005493088.3699,
+      "time": 1792085306149.337,
       "uuid": "7f157597-9213-4a48-842c-722380101aa3"
     },
     "UI/Combo/combo_2x.png": {
@@ -568,11 +568,11 @@
       "time": 1791404030007.4736
     },
     "Scripts/Match/ElementCatalog.ts": {
-      "time": 1792008390623.3867,
+      "time": 1792082561571.398,
       "uuid": "4ba7881f-4d11-4400-97b5-cf05f1fa6296"
     },
     "Scripts/Match/LevelConfig.ts": {
-      "time": 1792008390623.7378,
+      "time": 1792087808047.7053,
       "uuid": "77d6091a-81f7-4b61-a1f3-d881d0d1d244"
     },
     "Prefabs/FoodElement.prefab.meta": {
@@ -593,7 +593,7 @@
       "time": 1791405604863.5935
     },
     "Scripts/Match/OrderManager.ts": {
-      "time": 1792016200018.7095,
+      "time": 1792087614290.9917,
       "uuid": "6e105072-af44-4db7-86a0-e934805b3005"
     },
     "Scripts/Match/PokiService.ts.meta": {
@@ -789,7 +789,7 @@
       "time": 1791551543475.4749
     },
     "Scripts/Match/SoundManager.ts": {
-      "time": 1791923073972.7327,
+      "time": 1792092016699.2378,
       "uuid": "f26d4f9b-2212-4455-8975-fda240fd3cfc"
     },
     "Sounds/drop-order-to-one.mp3.meta": {
@@ -1006,8 +1006,57 @@
       "time": 1792005583540.01
     },
     "Scripts/Match/PhaseFlow.ts": {
-      "time": 1792005493087.8635,
+      "time": 1792085334135.473,
       "uuid": "d377fbb9-bec6-4405-9e26-d272f4381b43"
+    },
+    "extra_assets/ray-icon.png.meta": {
+      "time": 1792082511573.9531
+    },
+    "extra_assets/ray-icon.png": {
+      "time": 1792082266063.2012,
+      "uuid": "74021592-f88e-491d-9762-5b04fda796c1"
+    },
+    "Scripts/Match/RayPickup.ts.meta": {
+      "time": 1792083035425.6772
+    },
+    "Scripts/Match/RayPickup.ts": {
+      "time": 1792091305968.868,
+      "uuid": "5f870be3-0e39-4d74-9399-44e51ba3efe8"
+    },
+    "Scripts/Match/GoldenTime.ts.meta": {
+      "time": 1792085380574.004
+    },
+    "Scripts/Match/GoldenTime.ts": {
+      "time": 1792087614292.8198,
+      "uuid": "57cb1a8a-09fe-4855-a579-93f1b06c3850"
+    },
+    "Sounds/coin-switch.wav.meta": {
+      "time": 1792087317782.4265
+    },
+    "Sounds/golden-time.wav.meta": {
+      "time": 1792087317782.6277
+    },
+    "Sounds/coin-switch.wav": {
+      "time": 1792087223008.926,
+      "uuid": "93662788-4c25-4e2d-b578-9b7897bf7719"
+    },
+    "Sounds/golden-time.wav": {
+      "time": 1792087163176.7925,
+      "uuid": "9e3c10a9-8e2a-484e-9348-454268295900"
+    },
+    "Sounds/element-selected-by-ray.mp3.meta": {
+      "time": 1792091306139.4558
+    },
+    "Sounds/ray-enabled.mp3.meta": {
+      "time": 1792091306139.1423
+    },
+    "Sounds/ray-enabled.mp3": {
+      "time": 1792091030454.6538,
+      "uuid": "c5e5ae96-b6fc-42f7-9243-fb4ce389e0b4"
+    },
+    "Sounds/element-selected-by-ray.mp3": {
+      "time": 1792092016524.6711,
+      "uuid": "dd8db944-8f35-4d86-880d-d0c44fbb5cc0"
     }
   },
   "missing": {}

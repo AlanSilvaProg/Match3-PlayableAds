@@ -8,6 +8,7 @@ import { ElementCatalog } from './ElementCatalog';
 import { OrderManager, OrderClaim } from './OrderManager';
 import { PowerupManager } from './PowerupManager';
 import { PlayerStats, AchievementMetric } from './PlayerStats';
+import { RayPickup } from './RayPickup';
 
 @ccclass('MatchController')
 export class MatchController extends Component {
@@ -148,6 +149,7 @@ export class MatchController extends Component {
         const mergedType = match.elements[0].type;
         const comboWeight = ElementCatalog.comboWeight(mergedType);
         const claim = match.claim;
+        const golden = !!claim.order.plan.golden; // pedido de ouro: sem moedas
         let gained = 0;       // pontos deste merge (definidos mais abaixo, antes do callback abaixo rodar)
         let holding = false;  // se o placar esta segurando esses pontos ate as moedas chegarem
 
@@ -157,13 +159,14 @@ export class MatchController extends Component {
             }
 
             PlayerStats.increment(AchievementMetric.Merges);
+            RayPickup.maybeSpawn(); // raro: o raio cai no tabuleiro depois de um merge
 
             if (OrderManager.instance) {
                 OrderManager.instance.CompleteLine(claim);
             }
 
             // Moedas do merge voam ate o placar de pontos da partida.
-            if (PowerupManager.instance && middleSlot && middleSlot.isValid) {
+            if (!golden && PowerupManager.instance && middleSlot && middleSlot.isValid) {
                 PowerupManager.instance.FlyCoins(middleSlot.worldPosition, Math.min(14, 5 + mergedCount * 2), holding ? gained : 0);
             } else if (holding && ComboManager.instance) {
                 ComboManager.instance.ReleaseDisplay(gained); // sem como voar as moedas: libera o placar na hora
@@ -181,7 +184,7 @@ export class MatchController extends Component {
         }, 0.3);
 
         if (ComboManager.instance) {
-            gained = ComboManager.instance.RegisterMatch(comboWeight, mergedCount);
+            gained = ComboManager.instance.RegisterMatch(comboWeight, mergedCount, golden);
             // O texto do placar so sobe quando as moedas chegarem ao holder.
             if (gained > 0 && PowerupManager.instance && PowerupManager.instance.canFlyCoins) {
                 ComboManager.instance.HoldDisplay(gained);

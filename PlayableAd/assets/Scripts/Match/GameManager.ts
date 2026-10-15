@@ -3,6 +3,7 @@ import { MatchElement } from './MatchElement';
 import { LevelProgress } from './LevelProgress';
 import { LevelPlan, LevelConfig, Meal } from './LevelConfig';
 import { PhaseFlow } from './PhaseFlow';
+import { GoldenTime } from './GoldenTime';
 import { OrderManager } from './OrderManager';
 import { PokiService } from './PokiService';
 import { PlayerWallet, PowerupInventory } from './PlayerInventory';
@@ -136,6 +137,18 @@ export class GameManager extends Component {
 
     @property({ type: SpriteFrame, tooltip: 'Fundo do jantar (background_night). Cafe da manha e almoco usam o fundo da cena.' })
     public nightBackground: SpriteFrame | null = null;
+
+    @property({ type: SpriteFrame, tooltip: 'Icone do Raio (ray-icon): item raro que seleciona sozinho o proximo pedido inteiro.' })
+    public rayIcon: SpriteFrame | null = null;
+
+    @property({ range: [0, 1, 0.01], tooltip: 'Chance do Raio aparecer no tabuleiro depois de cada merge.' })
+    public rayChance: number = 0.1;
+
+    @property({ tooltip: 'Intervalo minimo (s) entre dois Raios.' })
+    public rayCooldown: number = 25;
+
+    @property({ tooltip: 'Golden Time: duracao (s). Todos os alimentos viram moedas (2x) e valem para qualquer pedido.' })
+    public goldenSeconds: number = 5;
 
     @property({ tooltip: 'Troca de fase: fracao do tempo que sobrou que passa para a proxima fase.' })
     public carryTimeFactor: number = 0.5;
@@ -502,16 +515,24 @@ export class GameManager extends Component {
     public CompleteLevel() {
         if (this.victoryPending) return;
         this.victoryPending = true;
+        // A fase (ou o nivel) so termina depois do Golden Time (se houver um em andamento).
         if (this.levelPlan && this.currentPhase < this.levelPlan.phases.length - 1) {
             this.scheduleOnce(() => this.beginNextPhase(), this.victoryDelay + 0.35);
             return;
         }
-        this.scheduleOnce(() => this.SetState(GameState.Victory), this.victoryDelay);
+        this.scheduleOnce(() => this.finishLevel(), this.victoryDelay);
     }
 
     /** Passa para a proxima fase (almoco -> jantar...): varre os itens, mostra a faixa e faz o burst da nova leva. */
+    private finishLevel() {
+        if (GoldenTime.active) { this.scheduleOnce(() => this.finishLevel(), 0.25); return; }
+        this.SetState(GameState.Victory);
+    }
+
     private beginNextPhase() {
+        if (GoldenTime.active) { this.scheduleOnce(() => this.beginNextPhase(), 0.25); return; } // espera o Golden Time acabar
         if (!this.levelPlan || this.currentState !== GameState.Running) { this.victoryPending = false; return; }
+        GoldenTime.abort();
         const plan = LevelConfig.phase(this.levelPlan, this.currentPhase + 1);
         // Parte do tempo que sobrou passa para a proxima fase (premia a velocidade).
         const carry = Math.round(Math.min(this.carryTimeMax, Math.max(0, this.timer) * this.carryTimeFactor));
@@ -658,6 +679,7 @@ export class GameManager extends Component {
         }
 
         if (state === GameState.Victory || state === GameState.Defeat) {
+            GoldenTime.abort();
             PokiService.gameplayStop();
             // Pontos da partida (merges e combos) viram saldo do jogador.
             this.bankPoints();
@@ -707,6 +729,7 @@ export class GameManager extends Component {
     }
 
     update(deltaTime: number) {
+        GoldenTime.tick(deltaTime);
         if (this.tickRealTime()) {
             this.updateTimerUI();
             this.updateWarningFeedback();

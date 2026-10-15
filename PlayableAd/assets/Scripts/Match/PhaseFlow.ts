@@ -3,6 +3,8 @@ import { GameManager } from './GameManager';
 import { MatchElement } from './MatchElement';
 import { LevelPlan, Meal } from './LevelConfig';
 import { CelebrationFx } from './CelebrationFx';
+import { RayPickup } from './RayPickup';
+import { GoldenTime } from './GoldenTime';
 import { SoundManager } from './SoundManager';
 import { Responsive } from './Responsive';
 
@@ -57,6 +59,8 @@ export class PhaseFlow {
         const initializer: any = scene ? scene.getComponentInChildren('MatchInitializer') : null;
         if (!canvas || !initializer) { done(); return; }
 
+        RayPickup.clear();
+        GoldenTime.abort();
         const sweepTime = opts.sweep ? this.sweep(gm, canvas) : 0;
         tween(canvas).delay(sweepTime).call(() => {
             this.resetBoardState(scene);

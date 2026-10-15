@@ -14,6 +14,7 @@ import { PowerupType } from './PowerupCatalog';
 import { PowerupInventory } from './PlayerInventory';
 import { GameManager } from './GameManager';
 import { CelebrationFx } from './CelebrationFx';
+import { GoldenTime } from './GoldenTime';
 
 /**
  * Primeira partida (antes do pedido de apelido/login): explica os PEDIDOS e guia o jogador a juntar o primeiro pedido.
@@ -64,6 +65,7 @@ export class TutorialManager extends Component {
     private static readonly FLAG_TIME = 'match3_tut_low_time';
     private static readonly FLAG_LATE = 'match3_tut_late_order';
     private static readonly FLAG_WRONG = 'match3_tut_wrong_many';
+    private static readonly FLAG_GOLDEN = 'match3_tut_golden';
 
     private canTap: boolean = false;
     /** Introducao da 1a partida: 1 = explica os pedidos, 2 = clique guiado ate entregar o 1o pedido, 0 = fora dela. */
@@ -75,7 +77,8 @@ export class TutorialManager extends Component {
     private continueLabel: Node | null = null;
 
     /** Aviso de fade em andamento (tempo baixo / pedido atrasado) e o power-up que vem em seguida. */
-    private focusKind: 'time' | 'late' | 'wrong' | null = null;
+    private focusKind: 'time' | 'late' | 'wrong' | 'golden' | null = null;
+    private goldenDone: (() => void) | null = null;
     private focusChain: PowerupType | null = null;
 
     /** Dica "toque no item da prateleira para remove-lo": mostrada uma unica vez, na primeira selecao errada. */
@@ -279,7 +282,7 @@ export class TutorialManager extends Component {
     /** O tutorial deste power-up pode comecar agora? (nivel <= 10, nunca comprou/usou, nada mais em andamento) */
     private canStartGuide(type: PowerupType, ignoreCooldown: boolean = false): boolean {
         const gm = GameManager.instance;
-        if (!gm || !gm.IsRunning() || this.guideType !== null || this.hintElement || this.focusKind) return false;
+        if (!gm || !gm.IsRunning() || this.guideType !== null || this.hintElement || this.focusKind || GoldenTime.active) return false;
         if (GameManager.currentLevel >= TutorialManager.GUIDE_MAX_LEVEL) return false;
         if (PowerupInventory.hasSeen(type)) return false;
         return ignoreCooldown || performance.now() - this.lastGuideEnd >= TutorialManager.GUIDE_COOLDOWN_MS;
@@ -307,7 +310,7 @@ export class TutorialManager extends Component {
             return;
         }
 
-        if (!gm.IsRunning() || gm.timeHeld) return;
+        if (!gm.IsRunning() || gm.timeHeld || GoldenTime.active) return;
         this.runTime += dt;
         this.idleTime += dt;
         this.guideCheck -= dt;
@@ -396,6 +399,9 @@ export class TutorialManager extends Component {
         if (this.tutorialIndicator) this.tutorialIndicator.active = false;
         const gm = GameManager.instance;
         if (gm) gm.timeHeld = false;
+        const gd = this.goldenDone;
+        this.goldenDone = null;
+        if (gd) gd();
         // Em seguida, o tutorial do power-up relacionado (se o jogador ainda nao o conhece).
         if (chain && next !== null && this.canStartGuide(next, true)) this.startGuide(next);
     }
@@ -457,6 +463,33 @@ export class TutorialManager extends Component {
         try { return !!sys.localStorage.getItem(TutorialManager.REMOVE_HINT_KEY); } catch (e) { return false; }
     }
 
+    /**
+     * Primeiro Golden Time: aviso de que todo alimento virou moeda e que e para pegar o maximo possivel.
+     * Para o tempo ate o toque e entao chama `done` (que comeca a contagem do Golden Time). Aparece 1x.
+     */
+    public showGoldenIntro(done: () => void) {
+        const gm = GameManager.instance;
+        if (!gm || this.flagSet(TutorialManager.FLAG_GOLDEN) || this.focusKind) { done(); return; }
+        this.setFlag(TutorialManager.FLAG_GOLDEN);
+        if (this.hintElement) this.endHint();
+        this.focusKind = 'golden';
+        this.focusChain = null;
+        this.goldenDone = done;
+        gm.timeHeld = true;
+        SoundManager.playTutorialStep();
+        this.showFade(true);
+        this.fadeNode?.targetOff(this);
+        this.fadeNode?.on(Node.EventType.TOUCH_END, this.onFocusTap, this);
+        this.showCaption('GOLDEN TIME!\nEvery food is a COIN now!\nTap as many as you can!', this.capPos('orders', new Vec3(95, 120, 0)), true);
+        this.canTap = false;
+        this.scheduleOnce(() => { this.canTap = true; }, this.tapDelay);
+    }
+
+    /** Algum tutorial/dica esta na tela agora? (o Golden Time nao comeca por cima dele) */
+    public isBusy(): boolean {
+        return !!this.focusKind || this.guideType !== null || !!this.hintElement || this.introStep !== 0;
+    }
+
     /** Itens errados (que nenhum pedido pede) parados na prateleira agora. */
     private wrongInTray(): MatchElement[] {
         const orders = OrderManager.instance, mc = this.matchController;
@@ -467,7 +500,7 @@ export class TutorialManager extends Component {
     /** Mais de 1 item errado na prateleira (primeira vez): reforca o pedido atual e destaca os alimentos certos. */
     private tryWrongManyTutorial(): boolean {
         const gm = GameManager.instance, orders = OrderManager.instance;
-        if (!gm || !orders || !gm.IsRunning() || this.focusKind || this.guideType !== null) return false;
+        if (!gm || !orders || !gm.IsRunning() || this.focusKind || this.guideType !== null || GoldenTime.active) return false;
         if (this.flagSet(TutorialManager.FLAG_WRONG) || this.wrongInTray().length < 2) return false;
         const line = orders.GetNextPendingLine();
         if (!line) return false;
@@ -509,7 +542,7 @@ export class TutorialManager extends Component {
     private onWrongSelected(element: MatchElement) {
         if (this.tryWrongManyTutorial()) return;
         // So uma vez na vida, fora do tutorial guiado, e sem outra dica em andamento.
-        if (this.hintElement || this.focusKind || this.guideType !== null || this.hintSeen()) return;
+        if (this.hintElement || this.focusKind || this.guideType !== null || GoldenTime.active || this.hintSeen()) return;
         if (!element || !element.isValid || element.isAvailable || !element.hasReachedSlot) return;
         try { sys.localStorage.setItem(TutorialManager.REMOVE_HINT_KEY, '1'); } catch (e) { }
 

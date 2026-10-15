@@ -1,4 +1,5 @@
 import { SoundManager } from './SoundManager';
+import { GoldenTime } from './GoldenTime';
 import { _decorator, Component, Button, Sprite, Enum, Vec3, tween, Tween, Node, AudioSource, Sorting2D, Color, EventTouch, UITransform } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -142,6 +143,7 @@ export class MatchElement extends Component {
         if (gm && !gm.IsRunning() && !gm.IsTutorialRunning()) return false;
         const allowed = gm ? gm.tutorialAllowed : null;
         if (allowed && allowed.indexOf(this) === -1) return false;
+        if (GoldenTime.active) return false;
         return this.isAvailable && !this.hasReachedSlot && !this.isRejecting;
     }
 
@@ -308,6 +310,12 @@ export class MatchElement extends Component {
         const allowed = GameManager.instance ? GameManager.instance.tutorialAllowed : null;
         if (allowed && allowed.indexOf(this) === -1) {
             if (this.isAvailable) this.PlayRejectedFeedback();
+            return;
+        }
+
+        // Golden Time: o alimento virou moeda; tocar nele o coleta (vale para qualquer pedido, em dobro).
+        if (GoldenTime.active && this.isAvailable) {
+            GoldenTime.collect(this);
             return;
         }
 

@@ -84,6 +84,30 @@ export class SoundManager extends Component {
     @property({ range: [0, 1, 0.05], tooltip: 'Volume das vozes de comemoracao de combo rapido.' })
     public celebrationVolume: number = 0.9;
 
+    @property({ type: AudioClip, tooltip: 'Ativacao do Golden Time (toca com a explosao dourada).' })
+    public goldenTimeClip: AudioClip | null = null;
+
+    @property({ range: [0, 1, 0.05], tooltip: 'Volume do som do Golden Time.' })
+    public goldenTimeVolume: number = 0.9;
+
+    @property({ type: AudioClip, tooltip: 'Alimentos virando moedas / moedas voltando a ser alimentos (Golden Time).' })
+    public coinSwitchClip: AudioClip | null = null;
+
+    @property({ range: [0, 1, 0.05], tooltip: 'Volume do som de troca alimento <-> moeda.' })
+    public coinSwitchVolume: number = 0.9;
+
+    @property({ type: AudioClip, tooltip: 'Raio aparece no tabuleiro (ativo).' })
+    public rayEnabledClip: AudioClip | null = null;
+
+    @property({ range: [0, 1, 0.05], tooltip: 'Volume do som do raio ativo.' })
+    public rayEnabledVolume: number = 0.29;
+
+    @property({ type: AudioClip, tooltip: 'O raio acerta um elemento e o seleciona.' })
+    public raySelectClip: AudioClip | null = null;
+
+    @property({ range: [0, 1, 0.05], tooltip: 'Volume do som do raio selecionando um elemento (o arquivo ja foi amplificado em +50%).' })
+    public raySelectVolume: number = 1;
+
     @property({ type: AudioClip, tooltip: 'Item da prateleira devolvido ao tabuleiro.' })
     public removedFromSelectedClip: AudioClip | null = null;
 
@@ -218,6 +242,26 @@ export class SoundManager extends Component {
     public static playComboChanged() {
         const sm = SoundManager.instance;
         if (sm) sm.play('comboChanged', sm.comboChangedClip, sm.comboChangedVolume, 0.2);
+    }
+
+    public static playGoldenTime() {
+        const sm = SoundManager.instance;
+        if (sm) sm.play('goldenTime', sm.goldenTimeClip, sm.goldenTimeVolume, 1);
+    }
+
+    public static playRayEnabled() {
+        const sm = SoundManager.instance;
+        if (sm) sm.play('rayEnabled', sm.rayEnabledClip, sm.rayEnabledVolume, 0.5);
+    }
+
+    public static playRaySelect() {
+        const sm = SoundManager.instance;
+        if (sm) sm.play('raySelect', sm.raySelectClip, sm.raySelectVolume, 0.05);
+    }
+
+    public static playCoinSwitch() {
+        const sm = SoundManager.instance;
+        if (sm) sm.play('coinSwitch', sm.coinSwitchClip, sm.coinSwitchVolume, 0.3);
     }
 
     /** Voz do degrau de comemoracao (0 = NICE ... 5 = LEGENDARY). */

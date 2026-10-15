@@ -86,6 +86,11 @@ export class MatchSlots extends Component {
         }
     }
 
+    /** Quantos encaixes ainda estao livres. */
+    public FreeCount(): number {
+        return this.slotElements.filter(e => e === null).length;
+    }
+
     /** Esvazia todos os encaixes (troca de fase: os itens da prateleira foram removidos). */
     public ResetSlots() {
         this.slotElements.fill(null);
