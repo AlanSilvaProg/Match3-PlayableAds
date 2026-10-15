@@ -244,8 +244,6 @@ const DE: Record<string, string> = {
 
 const DICTS: Record<string, Record<string, string>> = { pt: PT, es: ES, de: DE };
 
-const LANG_KEY = 'match3_lang_override';
-
 function detect(): Lang {
     try {
         const g: any = typeof globalThis !== 'undefined' ? globalThis : {};
@@ -256,11 +254,6 @@ function detect(): Lang {
             return p === 'pt' || p === 'es' || p === 'de' || p === 'en' ? p : null;
         };
         if (m) { const l = pick(m[1]); if (l) return l; }
-        try {
-            const saved = g.localStorage ? g.localStorage.getItem(LANG_KEY) : null; // escolhido no botao de teste
-            const l = saved ? pick(saved) : null;
-            if (l) return l;
-        } catch (e) { /* sem storage */ }
         const nav: any = g.navigator;
         const list: string[] = nav ? (nav.languages && nav.languages.length ? Array.from(nav.languages) : [nav.language]) : [];
         for (const code of list) {
@@ -281,34 +274,6 @@ export class I18n {
         let s = (dict && dict[en]) || en;
         if (args.length) s = s.replace(/\{(\d+)\}/g, (_m, i) => (args[+i] !== undefined ? String(args[+i]) : ''));
         return s;
-    }
-
-    /**
-     * Botao de teste de idioma (canto superior esquerdo): so aparece em localhost/rede local (ou com `?langbtn=1`),
-     * nunca na build publicada. Cada toque passa ao proximo idioma, grava a escolha e recarrega a pagina.
-     */
-    public static installSwitcher() {
-        try {
-            const g: any = globalThis;
-            const doc = g.document, loc = g.location;
-            if (!doc || !loc || doc.getElementById('lang-switcher')) return;
-            const host: string = loc.hostname || '';
-            const local = host === 'localhost' || /^(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(host) || /[?&]langbtn=1/.test(loc.search || '');
-            if (!local) return;
-            const order: Lang[] = ['en', 'pt', 'es', 'de'];
-            const btn = doc.createElement('button');
-            btn.id = 'lang-switcher';
-            btn.textContent = `🌐 ${this.lang.toUpperCase()}`;
-            btn.style.cssText = 'position:fixed;left:6px;bottom:6px;z-index:99998;padding:6px 10px;font:bold 14px sans-serif;'
-                + 'border:2px solid #fff;border-radius:10px;background:rgba(20,30,70,.85);color:#fff;opacity:.85;';
-            btn.onclick = (e: Event) => {
-                e.stopPropagation();
-                const next = order[(order.indexOf(this.lang) + 1) % order.length];
-                try { g.localStorage.setItem(LANG_KEY, next); } catch (err) { /* sem storage */ }
-                loc.href = loc.pathname; // recarrega sem o ?lang= (que teria prioridade)
-            };
-            doc.body.appendChild(btn);
-        } catch (e) { /* so teste */ }
     }
 
     /** Traduz os textos fixos da cena (Labels cujo texto e uma chave do dicionario, como PLAY e SELECT LEVEL). */

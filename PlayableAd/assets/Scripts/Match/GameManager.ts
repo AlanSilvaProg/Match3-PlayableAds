@@ -280,7 +280,6 @@ export class GameManager extends Component {
 
     start() {
         I18n.localizeTree(this.node.parent);
-        I18n.installSwitcher();
         // Tudo o que precisa do carregamento ja esta pronto: avisa a Poki (uma vez por sessao).
         PokiService.gameLoadingFinished();
 
