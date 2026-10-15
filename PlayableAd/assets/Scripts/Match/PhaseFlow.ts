@@ -1,4 +1,5 @@
 import { Color, instantiate, Node, ParticleSystem2D, Sorting2D, Sprite, tween, Tween, UIOpacity, UITransform, Vec3, director, Prefab } from 'cc';
+import { tr } from './I18n';
 import { GameManager } from './GameManager';
 import { MatchElement } from './MatchElement';
 import { LevelPlan, Meal } from './LevelConfig';
@@ -45,7 +46,7 @@ export class PhaseFlow {
         if (!canvas) return;
         // Pequena espera: o jogo pode ainda estar no apelido/tutorial; nesse caso a faixa nao aparece.
         tween(canvas).delay(0.5).call(() => {
-            if (gm.isValid && gm.IsRunning()) this.showBanner(canvas, plan.meal, plan.level, plan.phases.length > 1 ? `PART 1 OF ${plan.phases.length}` : '');
+            if (gm.isValid && gm.IsRunning()) this.showBanner(canvas, plan.meal, plan.level, plan.phases.length > 1 ? tr('PART {0} OF {1}', 1, plan.phases.length) : '');
         }).start();
     }
 
@@ -66,7 +67,7 @@ export class PhaseFlow {
             this.resetBoardState(scene);
             if (opts.background) this.setBackground(gm, canvas, plan.meal);
             if (opts.banner) {
-                const sub = plan.phaseIndex > 0 ? `PART ${plan.phaseIndex + 1} OF ${plan.phases.length} - NEW FOODS!` : '';
+                const sub = plan.phaseIndex > 0 ? tr('PART {0} OF {1} - NEW FOODS!', plan.phaseIndex + 1, plan.phases.length) : '';
                 this.showBanner(canvas, plan.meal, plan.level, sub);
             }
             const created: MatchElement[] = initializer.BuildPhase(plan);
@@ -206,6 +207,7 @@ export class PhaseFlow {
     // ---------- Faixa ----------
 
     private static showBanner(canvas: Node, meal: Meal, level: number, subtitle: string) {
+        SoundManager.playMeal(meal);
         if (this.banner && this.banner.isValid) { Tween.stopAllByTarget(this.banner); this.banner.destroy(); }
         const style = this.MEAL_STYLE[meal];
         const root = new Node('PhaseBanner');
@@ -220,7 +222,7 @@ export class PhaseFlow {
         void level;
 
         const size = Responsive.portrait ? 74 : 92;
-        CelebrationFx.makeLabel(root, style.text, size, 0, 0, style.color, style.outline, 3);
+        CelebrationFx.makeLabel(root, tr(style.text), size, 0, 0, style.color, style.outline, 3);
         if (subtitle) CelebrationFx.makeLabel(root, subtitle, Math.round(size * 0.36), 0, -size * 0.85, Color.WHITE, new Color(20, 30, 60, 255), 2);
 
         SoundManager.playSuccessOrder();

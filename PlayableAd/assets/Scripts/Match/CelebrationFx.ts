@@ -1,4 +1,5 @@
 import { Color, Font, instantiate, Label, Node, ParticleSystem2D, Prefab, Sorting2D, tween, Tween, UIOpacity, UITransform, Vec3 } from 'cc';
+import { tr } from './I18n';
 import { OrderManager } from './OrderManager';
 
 /** Um degrau de parabenizacao: a partir de `streak` merges seguidos e rapidos aparece `text`. */
@@ -32,8 +33,8 @@ export class CelebrationFx {
         this.current = root;
 
         // Texto principal + subtitulo com o tamanho da sequencia.
-        const main = this.makeLabel(root, tier.text, tier.size, 0, 0, tier.color, tier.outline, 3);
-        const sub = this.makeLabel(root, `FAST COMBO x${streak}`, Math.round(tier.size * 0.42), 0, -tier.size * 0.78, Color.WHITE, new Color(20, 30, 60, 255), 2);
+        const main = this.makeLabel(root, tr(tier.text), tier.size, 0, 0, tier.color, tier.outline, 3);
+        const sub = this.makeLabel(root, tr('FAST COMBO x{0}', streak), Math.round(tier.size * 0.42), 0, -tier.size * 0.78, Color.WHITE, new Color(20, 30, 60, 255), 2);
         void main; void sub;
 
         // Animacao: surge pulando, balanca, sobe e esvaece.

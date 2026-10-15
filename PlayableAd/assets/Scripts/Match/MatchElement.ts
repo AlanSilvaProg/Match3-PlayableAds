@@ -109,6 +109,8 @@ export class MatchElement extends Component {
     private touchId: number = -1;
     private dragging: boolean = false;
     private clickedOnStart: boolean = false;
+    private trayDrag: boolean = false;
+    private dropFront: boolean = false;
     private dragMoved: number = 0;
     private dragOrigin: Vec3 | null = null;
 
@@ -149,6 +151,15 @@ export class MatchElement extends Component {
         return this.isAvailable && !this.hasReachedSlot && !this.isRejecting;
     }
 
+    /** Item ja na prateleira (selecionado, quieto e fora de merge) que pode ser arrastado de volta ao tabuleiro. */
+    private canDragFromTray(): boolean {
+        const gm = GameManager.instance;
+        if (!gm || !gm.IsRunning() || GoldenTime.active) return false;
+        if (this.isAvailable || !this.hasReachedSlot || this.merging || !this.boardPosition || !this.currentSlot) return false;
+        const mc = this.matchController;
+        return !!mc && mc.selectedElements.indexOf(this) !== -1 && !mc.isInPendingMerge(this);
+    }
+
     /** Tutorial em andamento (intro ou passo guiado): sem arrastar, o simples toque ja seleciona. */
     private inTutorial(): boolean {
         const gm = GameManager.instance;
@@ -167,11 +178,14 @@ export class MatchElement extends Component {
             this.OnClick();
             return;
         }
-        this.dragOrigin = this.canDrag() ? this.node.position.clone() : null;
+        this.trayDrag = !this.canDrag() && this.canDragFromTray();
+        this.dragOrigin = (this.trayDrag || this.canDrag()) ? this.node.position.clone() : null;
     }
 
     private onTouchMove(event: EventTouch) {
         if (event.getID() !== this.touchId || !this.dragOrigin) return;
+        if (this.trayDrag && !this.canDragFromTray() && !this.dragging) { this.dragOrigin = null; return; }
+        if (this.trayDrag && this.dragging && this.merging) { this.dragging = false; this.dragOrigin = null; return; }
         const d = event.getUIDelta();
         this.dragMoved += Math.hypot(d.x, d.y);
         if (!this.dragging) {
@@ -208,6 +222,12 @@ export class MatchElement extends Component {
         }
         if (!origin) return;
 
+        if (this.trayDrag) {
+            this.trayDrag = false;
+            this.endTrayDrag();
+            return;
+        }
+
         // Arrastado: so seleciona se foi solto em cima da area dos selecionados; no board, apenas muda de lugar.
         if (this.isOverTray()) {
             this.wiggleOrigin = origin;
@@ -230,6 +250,40 @@ export class MatchElement extends Component {
         }
     }
 
+    /** Soltou um item que estava na prateleira: sobre os encaixes volta ao seu slot; fora deles, volta ao tabuleiro onde foi largado. */
+    private endTrayDrag() {
+        if (this.merging || !this.currentSlot || !this.matchController || this.matchController.selectedElements.indexOf(this) === -1) return;
+        if (!this.isOverTray()) {
+            const p = this.clampToBoard(this.node.position);
+            this.boardPosition = new Vec3(p.x, p.y, this.node.position.z);
+            this.dropFront = true;
+            this.TryReturnToBoard();
+            if (this.isAvailable || this.hasReachedSlot) this.dropFront = false; // nao voltou (ex.: partida parada)
+            return;
+        }
+        const target = new Vec3();
+        this.currentSlot.getWorldPosition(target);
+        const local = new Vec3();
+        if (this.node.parent) this.node.parent.inverseTransformPoint(local, target);
+        Tween.stopAllByTarget(this.node);
+        this.SetSortingOrder(3);
+        tween(this.node).to(0.16, { position: local, scale: this.selectedScale }, { easing: 'cubicOut' }).start();
+    }
+
+    private clampToBoard(p: Vec3): Vec3 {
+        const parent = this.node.parent;
+        const ut = parent ? parent.getComponent(UITransform) : null;
+        let x = p.x, y = p.y;
+        if (ut) {
+            const inset = 90;
+            const halfW = Math.max(0, ut.width - inset) / 2, halfH = Math.max(0, ut.height - inset) / 2;
+            const cx = (0.5 - ut.anchorX) * ut.width, cy = (0.5 - ut.anchorY) * ut.height;
+            x = Math.max(cx - halfW, Math.min(cx + halfW, x));
+            y = Math.max(cy - halfH, Math.min(cy + halfH, y));
+        }
+        return new Vec3(x, y, p.z);
+    }
+
     /** O centro do item esta sobre a area dos encaixes (selecionados)? */
     private isOverTray(): boolean {
         const slots = this.matchSlots ? this.matchSlots.slots : null;
@@ -248,16 +302,8 @@ export class MatchElement extends Component {
     /** Solto no tabuleiro: fica onde foi largado (dentro da area do tabuleiro), sem ser selecionado. */
     private dropOnBoard() {
         const parent = this.node.parent;
-        const ut = parent ? parent.getComponent(UITransform) : null;
         const p = this.node.position;
-        let x = p.x, y = p.y;
-        if (ut) {
-            const inset = 90;
-            const halfW = Math.max(0, ut.width - inset) / 2, halfH = Math.max(0, ut.height - inset) / 2;
-            const cx = (0.5 - ut.anchorX) * ut.width, cy = (0.5 - ut.anchorY) * ut.height;
-            x = Math.max(cx - halfW, Math.min(cx + halfW, x));
-            y = Math.max(cy - halfH, Math.min(cy + halfH, y));
-        }
+        const { x, y } = this.clampToBoard(p);
         Tween.stopAllByTarget(this.node);
         // Fica na frente dos demais itens do tabuleiro (ordem acima do padrao e por ultimo na hierarquia).
         this.SetSortingOrder(this.defaultSortingOrder + 1);
@@ -433,14 +479,17 @@ export class MatchElement extends Component {
             .to(duration, { position: this.boardPosition, scale: this.availableScale }, { easing: 'cubicOut' })
             .call(() => {
                 this.isAvailable = true;
-                this.SetSortingOrder(this.defaultSortingOrder);
+                this.SetSortingOrder(this.dropFront ? this.defaultSortingOrder + 1 : this.defaultSortingOrder);
+                this.dropFront = false;
             })
             .start();
+        if (this.dropFront && this.node.parent) this.node.setSiblingIndex(this.node.parent.children.length - 1);
 
         slots.CompactSlots();
     }
 
     public MoveToSlot(slot: Node) {
+        if (this.dragging) { this.currentSlot = slot; return; } // arrastado da prateleira: ao soltar ele vai ao slot novo
         this.cancelWiggle();
         this.currentSlot = slot;
         this.hasReachedSlot = false;
@@ -592,6 +641,7 @@ export class MatchElement extends Component {
 
     update(deltaTime: number) {
         this.updateWiggle(deltaTime);
+        if (this.dragging) return; // arrastando: sem pulso de item errado
         const inTray = !this.isAvailable && this.hasReachedSlot && !this.merging;
         if (!inTray) {
             // Saiu da prateleira (voltou ao tabuleiro, esta se movendo ou entrou em merge): zera o relogio.

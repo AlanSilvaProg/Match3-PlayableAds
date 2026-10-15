@@ -4641,6 +4641,140 @@
       "__expectedType__": "cc.AudioClip"
     },
     "celebrationVolume": 0.9,
+    "mealClips": [
+      {
+        "__uuid__": "1822613c-e429-465e-a4f5-03d29e476dcf",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "57ed22b1-2c8f-413b-aeea-54aefadcd492",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "e0d46cc7-7067-4d68-ae0b-5e923a3a6492",
+        "__expectedType__": "cc.AudioClip"
+      }
+    ],
+    "mealClipsPt": [
+      {
+        "__uuid__": "69e70c70-8b55-448e-bfdc-837958015d6d",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "21978ab3-f643-4e89-a623-0fe2af23e897",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "3a35f029-b84d-475c-a456-244e72401919",
+        "__expectedType__": "cc.AudioClip"
+      }
+    ],
+    "celebrationClipsPt": [
+      {
+        "__uuid__": "4086f78f-af32-42db-934a-1e157bea2feb",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "b45ddc86-36c3-45f6-b767-cf13f6a5a4d0",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "db0da4b0-e8ea-4887-99b9-30087f40e760",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "0f2f4c4b-3344-4556-b512-e50a16898a4c",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "d1c4bbc8-60ae-41d1-bd51-73d8616c51fe",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "d1a4f2b5-a0bf-4a85-8cbd-f450b4d291c7",
+        "__expectedType__": "cc.AudioClip"
+      }
+    ],
+    "mealClipsEs": [
+      {
+        "__uuid__": "24ecf274-9686-4c14-ab77-e6f7ff8473e8",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "dc6f8d2a-04aa-46f3-8354-0bf5c7a8e4c9",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "b3b848f5-5869-492c-8e1d-0506f1821375",
+        "__expectedType__": "cc.AudioClip"
+      }
+    ],
+    "celebrationClipsEs": [
+      {
+        "__uuid__": "52457361-dcbd-494d-8243-8393071f5c81",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "eaaaf453-a412-4c6e-b52f-c88a3fe92450",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "0d65d1f7-f729-42f9-a662-d8a05e28b54a",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "01013e7b-7ac0-459a-a6b5-989be431f642",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "8e776d2f-dc83-4aed-8961-fee6ff2ccd97",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "ece984d8-1629-4c93-96a1-e2045fa010ff",
+        "__expectedType__": "cc.AudioClip"
+      }
+    ],
+    "mealClipsDe": [
+      {
+        "__uuid__": "ca6ba37e-317b-49d2-8606-447627acd01d",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "d25e0c19-9da0-4b78-bf7b-492cde59456a",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "80772254-0fd3-4b99-9a99-8f02aa9e4694",
+        "__expectedType__": "cc.AudioClip"
+      }
+    ],
+    "celebrationClipsDe": [
+      {
+        "__uuid__": "09c67c3d-3218-451d-8637-7bf93b30737b",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "64145904-983e-4ac5-bf8e-176b5d315860",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "f2d05850-b7f9-4d91-aa69-1080c46812bb",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "ac2c851a-78fd-4adf-9f31-3c51cf770e36",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "bb132669-1bf8-4319-8a71-c6b9bdf86c9a",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "bad6caa7-39ba-4a5a-ac24-b2006639b503",
+        "__expectedType__": "cc.AudioClip"
+      }
+    ],
     "goldenTimeClip": {
       "__uuid__": "9e3c10a9-8e2a-484e-9348-454268295900",
       "__expectedType__": "cc.AudioClip"

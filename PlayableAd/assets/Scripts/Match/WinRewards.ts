@@ -1,4 +1,5 @@
 import { Button, instantiate, Label, Node, Sprite, Sorting2D, tween, UITransform, Vec3, Color, Tween } from 'cc';
+import { tr } from './I18n';
 import { GameManager } from './GameManager';
 import { PowerupManager } from './PowerupManager';
 import { PokiService } from './PokiService';
@@ -37,7 +38,7 @@ export class WinRewards {
         const selector = GameManager.instance?.levelSelector?.getComponent('LevelSelector') as any;
         const nextUnlocked = !!selector && selector.isUnlocked(GameManager.currentLevel + 1);
         const nextLabel = nextBtn.getComponentInChildren(Label);
-        if (nextLabel) nextLabel.string = nextUnlocked ? 'NEXT' : 'RESTART';
+        if (nextLabel) nextLabel.string = nextUnlocked ? tr('NEXT') : tr('RESTART');
         if (nextButton) nextButton.clickEvents = [];
         nextBtn.on(Button.EventType.CLICK, () => next?.NextLevel());
 
@@ -78,7 +79,7 @@ export class WinRewards {
             const sprite = doubleBtn.getComponent(Sprite);
             const label = doubleBtn.getComponentInChildren(Label);
             if (label) {
-                label.string = 'x2 COINS';
+                label.string = tr('x2 COINS');
                 label.node.setPosition(-45, label.node.position.y, 0);
                 label.node.getComponent(UITransform)?.setContentSize(220, 110);
             }
@@ -111,7 +112,7 @@ export class WinRewards {
                     row.setScale(1, 1, 1);
                     tween(row).to(0.12, { scale: new Vec3(1.35, 1.35, 1) }).to(0.2, { scale: Vec3.ONE }, { easing: 'backOut' }).start();
                     if (label) {
-                        label.string = 'DOUBLED!';
+                        label.string = tr('DOUBLED!');
                         // Sem o icone de anuncio, o texto volta ao centro do botao.
                         label.node.setPosition(0, label.node.position.y, 0);
                         label.node.getComponent(UITransform)?.setContentSize(330, 110);
@@ -156,10 +157,10 @@ export class WinRewards {
         const contLabel = cont?.getComponentInChildren(Label);
         if (gm && cont && contLabel && !gm.hasRevived) {
             const checkpoint = gm.phaseIndex > 0;
-            contLabel.string = checkpoint ? 'CHECKPOINT' : 'CONTINUE';
+            contLabel.string = checkpoint ? tr('CHECKPOINT') : tr('CONTINUE');
             const text = checkpoint
-                ? `Watch an ad to restart ${gm.checkpointMeal} from the beginning!`
-                : 'Watch an ad to keep playing from where you stopped!';
+                ? tr('Watch an ad to restart {0} from the beginning!', gm.checkpointMeal)
+                : tr('Watch an ad to keep playing from where you stopped!');
             // A legenda fica logo abaixo do botao; o LEVELS desce para abrir espaco.
             const levels = screen.getChildByName('LevelsBtn');
             if (levels) levels.setPosition(levels.position.x, levels.position.y - 50, levels.position.z);

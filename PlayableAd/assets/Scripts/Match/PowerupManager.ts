@@ -1,4 +1,5 @@
 import { WindowAnim } from './WindowAnim';
+import { tr } from './I18n';
 import { SoundManager } from './SoundManager';
 import { Responsive } from './Responsive';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, tween, Tween, Prefab, instantiate } from 'cc';
@@ -258,7 +259,7 @@ export class PowerupManager extends Component {
 
         if (!ok) {
             this.shake(fromNode);
-            this.showToast('Nothing to use it on right now');
+            this.showToast(tr('Nothing to use it on right now'));
             return false;
         }
 
@@ -330,7 +331,7 @@ export class PowerupManager extends Component {
     }
 
     private onRevived(count: number) {
-        this.showToast(`+${count} random power-ups!`);
+        this.showToast(tr('+{0} random power-ups!', count));
         this.refreshBar();
     }
 
@@ -448,7 +449,7 @@ export class PowerupManager extends Component {
         icon.sizeMode = Sprite.SizeMode.CUSTOM;
         icon.spriteFrame = this.powerupIcon;
         iconNode.addComponent(Sorting2D).sortingOrder = order + 1;
-        this.makeLabel(node, 'POWER-UPS', 16, size + 20, 22, 0, -size * 0.58, order + 2);
+        this.makeLabel(node, tr('POWER-UPS'), 16, size + 20, 22, 0, -size * 0.58, order + 2);
 
         node.on(Node.EventType.TOUCH_START, () => node.setScale(0.92, 0.92, 1));
         node.on(Node.EventType.TOUCH_CANCEL, () => node.setScale(1, 1, 1));
@@ -627,7 +628,7 @@ export class PowerupManager extends Component {
         // A janela absorve os toques no proprio fundo: so o X e o fade escuro fecham.
         [Node.EventType.TOUCH_START, Node.EventType.TOUCH_END].forEach(t => win.on(t, () => { }));
 
-        this.makeLabel(win, 'POWER-UPS', 46, 420, 60, 0, H / 2 - 62, base + 3, Color.WHITE, new Color(20, 70, 120, 255));
+        this.makeLabel(win, tr('POWER-UPS'), 46, 420, 60, 0, H / 2 - 62, base + 3, Color.WHITE, new Color(20, 70, 120, 255));
 
         // Saldo de pontos (canto superior esquerdo da janela).
         // Na janela de power-ups o fundo (holder) fica escondido: so a moeda e o numero.
@@ -680,7 +681,7 @@ export class PowerupManager extends Component {
             buy.label.node.setPosition(14, 2, 0);
             buy.label.node.getComponent(UITransform)!.setContentSize(60, 34);
 
-            const free = this.makeButton(cell, 'FREE', 53, -58, 100, 44, base + 4, new Color(255, 255, 255, 255), () => this.watchAd(def.type, free.node), this.adButtonFrame || this.buttonFrame);
+            const free = this.makeButton(cell, tr('FREE'), 53, -58, 100, 44, base + 4, new Color(255, 255, 255, 255), () => this.watchAd(def.type, free.node), this.adButtonFrame || this.buttonFrame);
             // Icone de video (play) no lugar do texto "AD".
             const adIcon = this.makeNode('AdIcon', free.node, -25, 0, 28, 28);
             const adSprite = adIcon.addComponent(Sprite);
@@ -710,7 +711,7 @@ export class PowerupManager extends Component {
     private buy(type: PowerupType): boolean {
         const def = PowerupCatalog.getDef(type);
         if (!PlayerWallet.spend(def.cost)) {
-            this.showToast('Not enough coins');
+            this.showToast(tr('Not enough coins'));
             return false;
         }
         PowerupInventory.add(type, 1);
@@ -789,7 +790,7 @@ export class PowerupManager extends Component {
             holder.setValue(shown);
             this.punchNode(holder.node);
         });
-        this.showToast(`+${amount} coins`);
+        this.showToast(tr('+{0} coins', amount));
     }
 
     // ---------- Descricao ao passar o mouse ----------

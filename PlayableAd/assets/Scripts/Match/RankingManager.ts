@@ -1,4 +1,5 @@
 import { WindowAnim } from './WindowAnim';
+import { tr } from './I18n';
 import { SoundManager } from './SoundManager';
 import { Responsive } from './Responsive';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, UITransform, Vec3, Color, Sorting2D, UIOpacity, tween, Tween, sys, game } from 'cc';
@@ -206,7 +207,7 @@ export class RankingManager extends Component {
         return (json.items || []).map((it: any) => ({
             id: it.id,
             // Nomes enviados por outros jogadores tambem passam pelo filtro antes de aparecer.
-            name: isProfane(String(it.values?.name ?? '')) ? 'Player' : String(it.values?.name ?? 'Chef'),
+            name: isProfane(String(it.values?.name ?? '')) ? tr('Player') : String(it.values?.name ?? 'Chef'),
             stars: Number(it.values?.stars ?? 0),
         }));
     }
@@ -226,7 +227,7 @@ export class RankingManager extends Component {
 
     private async refresh(force: boolean) {
         if (!this.available) {
-            this.showStatus('Ranking unavailable.\nThe game id is not set.');
+            this.showStatus(tr('Ranking unavailable.\nThe game id is not set.'));
             this.clearRows();
             return;
         }
@@ -241,18 +242,18 @@ export class RankingManager extends Component {
             await this.SyncScore();
             this.entries = await this.fetchTop();
             this.lastFetch = performance.now();
-            this.showStatus(this.entries.length === 0 ? 'No players yet. Be the first!' : '');
+            this.showStatus(this.entries.length === 0 ? tr('No players yet. Be the first!') : '');
             this.buildRows();
 
             const mine = this.entries.findIndex(e => e.id === this.state.id);
             const stars = LevelProgress.getTotalStars();
             const rank = mine !== -1 ? mine + 1 : (stars > 0 ? await this.fetchMyRank(stars) : 0);
             if (this.myRankLabel) {
-                this.myRankLabel.string = rank > 0 ? `Your rank: #${rank}   ${stars} stars` : (stars > 0 ? `Your stars: ${stars}` : 'Win a level to join the ranking!');
+                this.myRankLabel.string = rank > 0 ? tr('Your rank: #{0}   {1} stars', rank, stars) : (stars > 0 ? tr('Your stars: {0}', stars) : tr('Win a level to join the ranking!'));
             }
         } catch (e) {
             console.warn('[RankingManager] ranking falhou:', e);
-            this.showStatus('Could not load the ranking.\nTry again later.');
+            this.showStatus(tr('Could not load the ranking.\nTry again later.'));
         }
     }
 
@@ -317,7 +318,7 @@ export class RankingManager extends Component {
         icon.sizeMode = Sprite.SizeMode.CUSTOM;
         icon.spriteFrame = this.openIcon || this.starFrame;
         iconNode.addComponent(Sorting2D).sortingOrder = order + 1;
-        this.makeLabel(node, 'RANKING', 16, size + 20, 22, 0, -size * 0.58, order + 2);
+        this.makeLabel(node, tr('RANKING'), 16, size + 20, 22, 0, -size * 0.58, order + 2);
 
         node.on(Node.EventType.TOUCH_START, () => node.setScale(0.92, 0.92, 1));
         node.on(Node.EventType.TOUCH_CANCEL, () => node.setScale(1, 1, 1));
@@ -367,7 +368,7 @@ export class RankingManager extends Component {
         this.makeSprite(win, pm.windowFrame, base + 1, true);
         // A janela absorve os toques no proprio fundo: so o X e o fade escuro fecham.
         [Node.EventType.TOUCH_START, Node.EventType.TOUCH_END].forEach(t => win.on(t, () => { }));
-        this.makeLabel(win, 'RANKING', 46, 400, 60, 0, H / 2 - 62, base + 3, Color.WHITE, new Color(20, 70, 120, 255));
+        this.makeLabel(win, tr('RANKING'), 46, 400, 60, 0, H / 2 - 62, base + 3, Color.WHITE, new Color(20, 70, 120, 255));
         this.myRankLabel = this.makeLabel(win, '', 24, 600, 32, 0, H / 2 - 112, base + 3, new Color(255, 230, 140, 255), new Color(40, 25, 0, 255));
 
         const close = this.makeNode('Close', win, W / 2 - 78, H / 2 - 62, 64, 56);
@@ -377,7 +378,7 @@ export class RankingManager extends Component {
 
         const prof = this.makeNode('Profile', win, -W / 2 + 120, H / 2 - 62, 150, 52);
         this.makeSprite(prof, pm.buttonFrame, base + 3, true);
-        this.makeLabel(prof, 'PROFILE', 24, 130, 36, 0, 3, base + 4);
+        this.makeLabel(prof, tr('PROFILE'), 24, 130, 36, 0, 3, base + 4);
         prof.on(Node.EventType.TOUCH_END, () => { SoundManager.playMenuClick(); this.PromptProfile(() => this.refresh(true)); });
 
         const viewport = this.makeNode('Viewport', win, 0, -52, this.viewportWidth, this.viewportHeight);
@@ -432,7 +433,7 @@ export class RankingManager extends Component {
 
             const rankColor = i < 3 ? medal[i] : Color.WHITE;
             this.makeLabel(row, `#${i + 1}`, 32, 110, 40, -rw / 2 + 80, 2, base + 4, rankColor, new Color(20, 20, 40, 255));
-            this.makeLabel(row, mine ? `${e.name} (you)` : e.name, 28, 420, 36, -60, 2, base + 4, mine ? new Color(160, 255, 180, 255) : Color.WHITE,
+            this.makeLabel(row, mine ? tr('{0} (you)', e.name) : e.name, 28, 420, 36, -60, 2, base + 4, mine ? new Color(160, 255, 180, 255) : Color.WHITE,
                 new Color(10, 20, 40, 255), Label.HorizontalAlign.LEFT);
 
             const starIcon = this.makeNode('Star', row, rw / 2 - 150, 2, 40, 40);
@@ -491,7 +492,7 @@ export class RankingManager extends Component {
         this.fitProfileDim();
 
         if (this.profileInfo) {
-            this.profileInfo.string = this.user ? `Logged in as ${this.user.username}` : 'Save your progress on any device';
+            this.profileInfo.string = this.user ? tr('Logged in as {0}', this.user.username) : tr('Save your progress on any device');
         }
         if (this.loginButton) this.loginButton.active = this.accountsAvailable && !this.user;
 
@@ -520,11 +521,11 @@ export class RankingManager extends Component {
 
         const win = this.makeNode('Window', root, 0, 0, 640, 520);
         this.makeSprite(win, pm.windowFrame, base + 1, true);
-        this.makeLabel(win, 'WELCOME!', 50, 520, 64, 0, 200, base + 3, Color.WHITE, new Color(20, 70, 120, 255));
-        this.makeLabel(win, 'Choose your nickname', 30, 520, 40, 0, 135, base + 3, new Color(255, 230, 140, 255), new Color(40, 25, 0, 255));
+        this.makeLabel(win, tr('WELCOME!'), 50, 520, 64, 0, 200, base + 3, Color.WHITE, new Color(20, 70, 120, 255));
+        this.makeLabel(win, tr('Choose your nickname'), 30, 520, 40, 0, 135, base + 3, new Color(255, 230, 140, 255), new Color(40, 25, 0, 255));
 
         // (o campo de texto HTML fica em y = +60 no sistema de coordenadas do jogo)
-        const hint = this.makeLabel(win, 'Shown in the ranking', 20, 460, 28, 0, 20, base + 3, new Color(200, 210, 235, 255));
+        const hint = this.makeLabel(win, tr('Shown in the ranking'), 20, 460, 28, 0, 20, base + 3, new Color(200, 210, 235, 255));
         hint.node.name = 'Hint';
         this.profileHint = hint;
 
@@ -532,7 +533,7 @@ export class RankingManager extends Component {
 
         const login = this.makeNode('Login', win, 0, -110, 360, 62);
         this.makeSprite(login, pm.buttonFrame, base + 3, true).color = new Color(255, 190, 70, 255);
-        this.makeLabel(login, 'LOGIN WITH POKI', 28, 330, 42, 0, 3, base + 4);
+        this.makeLabel(login, tr('LOGIN WITH POKI'), 28, 330, 42, 0, 3, base + 4);
         login.on(Node.EventType.TOUCH_END, () => { SoundManager.playMenuClick(); this.onLoginTap(); });
         this.loginButton = login;
 
@@ -548,7 +549,7 @@ export class RankingManager extends Component {
         this.commitName(false);
         PokiService.login().then(ok => {
             // Se der certo a pagina recarrega sozinha; aqui so tratamos o cancelamento.
-            if (!ok) PowerupManager.instance?.showToast('Login cancelled');
+            if (!ok) PowerupManager.instance?.showToast(tr('Login cancelled'));
         });
     }
 
@@ -573,7 +574,7 @@ export class RankingManager extends Component {
         if (this.sanitize(typed) && (isProfane(typed) || isProfane(this.sanitize(typed)))) {
             // O aviso fica dentro da janela (um toast ficaria atras dela).
             if (this.profileHint) {
-                this.profileHint.string = 'Please choose another nickname';
+                this.profileHint.string = tr('Please choose another nickname');
                 this.profileHint.color = new Color(255, 90, 80, 255);
             }
             SoundManager.playBadName();
@@ -609,7 +610,7 @@ export class RankingManager extends Component {
                 + 'border:3px solid #e0a030;border-radius:14px;background:#10163a;color:#fff;outline:none;';
             el.addEventListener('input', () => {
                 if (this.profileHint) {
-                    this.profileHint.string = 'Shown in the ranking';
+                    this.profileHint.string = tr('Shown in the ranking');
                     this.profileHint.color = new Color(200, 210, 235, 255);
                 }
             });

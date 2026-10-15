@@ -108,22 +108,26 @@ export class RayPickup {
 
     // ---------- Usar ----------
 
-    /** Os alimentos que faltam para completar o proximo pedido inteiro (todas as linhas), limitados pelas vagas da prateleira. */
+    /**
+     * Os alimentos que faltam para completar o proximo pedido INTEIRO (todas as linhas). Os ja selecionados
+     * (fora de merges em andamento) contam como "ja tem"; as vagas da prateleira nao limitam aqui: o raio
+     * espera os merges liberarem espaco enquanto seleciona (ver `activate`).
+     */
     private static pickNext(): MatchElement[] {
         const gm = GameManager.instance;
         const orders = OrderManager.instance;
         const scene = gm ? gm.node.parent : null;
         const board = scene ? scene.getChildByName('MatchSpace') : null;
         const mc: any = gm && scene ? scene.getComponentInChildren('MatchController') : null;
-        const slots: any = scene ? scene.getComponentInChildren('MatchSlots') : null;
         if (!gm || !orders || !board || !mc) return [];
 
         const lines = orders.GetPriorityOrderLines();
         if (lines.length === 0) return [];
 
         const selectedByType = new Map<ElementType, number>();
-        (mc.selectedElements as MatchElement[]).forEach(e => selectedByType.set(e.type, (selectedByType.get(e.type) || 0) + 1));
-        const free = slots ? slots.FreeCount() : 99;
+        (mc.selectedElements as MatchElement[])
+            .filter(e => e.isValid && !mc.isInPendingMerge(e))
+            .forEach(e => selectedByType.set(e.type, (selectedByType.get(e.type) || 0) + 1));
         const candidates = board.getComponentsInChildren(MatchElement).filter(e => e.isAvailable && e.isValid);
 
         const picks: MatchElement[] = [];
@@ -132,10 +136,7 @@ export class RayPickup {
             const need = line.quantity - have;
             selectedByType.set(line.type, Math.max(0, (selectedByType.get(line.type) || 0) - have));
             if (need <= 0) continue;
-            const of = candidates.filter(e => e.type === line.type && picks.indexOf(e) === -1).slice(0, need);
-            // So linhas inteiras: se nao cabem na prateleira, para aqui.
-            if (picks.length + of.length > free) break;
-            picks.push(...of);
+            picks.push(...candidates.filter(e => e.type === line.type && picks.indexOf(e) === -1).slice(0, need));
         }
         return picks;
     }
@@ -151,25 +152,43 @@ export class RayPickup {
 
         const from = root.position.clone();
         this.burst(board, from, 2.6);
+        tween(root).to(0.18, { scale: new Vec3(1.6, 1.6, 1) }).start();
 
-        // Um raio liga o icone a cada alimento escolhido, com estouro de particulas; depois eles sao selecionados.
-        picks.forEach((el, i) => {
-            tween(board).delay(i * 0.14).call(() => {
-                if (!el.isValid || !el.node || !el.isAvailable) return;
-                const to = el.node.position.clone();
-                this.bolt(board, from, to, this.CYAN, 14, 0.3);
-                this.bolt(board, from, to, Color.WHITE, 6, 0.3);
-                this.burst(board, to, 1.5);
-                SoundManager.playRaySelect();
-                el.OnClick();
-            }).start();
-        });
+        const scene = gm.node.parent;
+        const slots: any = scene ? scene.getComponentInChildren('MatchSlots') : null;
+        const queue = picks.slice();
+        let waited = 0;
 
-        tween(root).to(0.18, { scale: new Vec3(1.6, 1.6, 1) })
-            .to(0.2, { scale: new Vec3(0, 0, 1) }, { easing: 'backIn' })
-            .delay(Math.max(0, picks.length * 0.14 - 0.3))
-            .call(() => { if (root.isValid) root.destroy(); })
-            .start();
+        // Seleciona um por um (linha a linha). Prateleira cheia: espera os merges abrirem vaga; item que sumiu: troca por outro igual.
+        const step = () => {
+            if (!board.isValid || !gm.isValid || !gm.IsRunning() || queue.length === 0) return finish();
+            let el = queue[0];
+            if (!el.isValid || !el.isAvailable) {
+                const swap = board.getComponentsInChildren(MatchElement)
+                    .find(e => e.isAvailable && e.isValid && e.type === el.type && queue.indexOf(e) === -1);
+                if (!swap) { queue.shift(); return next(0.02); }
+                queue[0] = el = swap;
+            }
+            if (slots && slots.FreeCount() <= 0 && waited < 4) {
+                waited += 0.12;
+                return next(0.12);
+            }
+            queue.shift();
+            const to = el.node.position.clone();
+            this.bolt(board, from, to, this.CYAN, 14, 0.3);
+            this.bolt(board, from, to, Color.WHITE, 6, 0.3);
+            this.burst(board, to, 1.5);
+            SoundManager.playRaySelect();
+            el.OnClick();
+            next(0.14);
+        };
+        const next = (delay: number) => { tween(board).delay(delay).call(step).start(); };
+        const finish = () => {
+            if (!root.isValid) return;
+            tween(root).to(0.2, { scale: new Vec3(0, 0, 1) }, { easing: 'backIn' })
+                .call(() => { if (root.isValid) root.destroy(); }).start();
+        };
+        step();
     }
 
     // ---------- Efeitos ----------

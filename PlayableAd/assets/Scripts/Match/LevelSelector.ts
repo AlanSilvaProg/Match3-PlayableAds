@@ -1,4 +1,5 @@
 import { SoundManager } from './SoundManager';
+import { tr } from './I18n';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, EventTouch, EventMouse, tween, Tween, view } from 'cc';
 const { ccclass, property } = _decorator;
 import { GameManager } from './GameManager';
@@ -483,7 +484,7 @@ export class LevelSelector extends Component {
         // O texto ocupa `currentTextRatio` do botao: a fonte parte da altura util e o SHRINK ajusta a largura.
         const tw = w * this.currentTextRatio, th = h * this.currentTextRatio;
         const label = this.makeLabel(this.makeNode('Text', btn, 0, 4, tw, th), Math.round(th), 13, new Color(30, 150, 30, 255));
-        label.string = this.currentButtonText;
+        label.string = tr(this.currentButtonText);
         label.isBold = true;
         label.overflow = Label.Overflow.SHRINK;
         label.enableWrapText = false; // uma linha so: o SHRINK reduz a fonte para caber no botao

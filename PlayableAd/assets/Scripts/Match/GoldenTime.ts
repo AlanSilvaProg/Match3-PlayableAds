@@ -1,4 +1,5 @@
 import { Color, instantiate, Label, Node, ParticleSystem2D, Sorting2D, Sprite, tween, Tween, UIOpacity, UITransform, Vec3, director } from 'cc';
+import { tr } from './I18n';
 import { GameManager } from './GameManager';
 import { MatchElement } from './MatchElement';
 import { OrderManager } from './OrderManager';
@@ -77,7 +78,7 @@ export class GoldenTime {
         gm.timeHeld = true; // (o tutorial do 1o Golden Time solta o tempo ao fechar: reafirma)
         if (!this.counting) return;
         this.remaining -= dt;
-        if (this.hudLabel && this.hudLabel.isValid) this.hudLabel.string = `GOLDEN TIME  ${Math.max(0, this.remaining).toFixed(1)}s   x${this.collected}`;
+        if (this.hudLabel && this.hudLabel.isValid) this.hudLabel.string = `${tr('GOLDEN TIME')}  ${Math.max(0, this.remaining).toFixed(1)}s   x${this.collected}`;
         if (this.remaining <= 0) this.end();
     }
 
@@ -320,8 +321,8 @@ export class GoldenTime {
         root.setPosition(at);
         const op = root.addComponent(UIOpacity);
         const size = Responsive.portrait ? 84 : 104;
-        CelebrationFx.makeLabel(root, 'GOLDEN TIME!', size, 0, 0, this.GOLD, this.GOLD_OUT, 6);
-        CelebrationFx.makeLabel(root, 'x2 COINS - GRAB THEM ALL!', Math.round(size * 0.34), 0, -size * 0.85, Color.WHITE, new Color(90, 50, 0, 255), 5);
+        CelebrationFx.makeLabel(root, tr('GOLDEN TIME!'), size, 0, 0, this.GOLD, this.GOLD_OUT, 6);
+        CelebrationFx.makeLabel(root, tr('x2 COINS - GRAB THEM ALL!'), Math.round(size * 0.34), 0, -size * 0.85, Color.WHITE, new Color(90, 50, 0, 255), 5);
         root.setScale(0.15, 0.15, 1);
         tween(root)
             .to(0.22, { scale: new Vec3(1.35, 1.35, 1), eulerAngles: new Vec3(0, 0, 5) }, { easing: 'quadOut' })
@@ -362,7 +363,7 @@ export class GoldenTime {
         const ut = board ? board.getComponent(UITransform) : null;
         const y = board && ut ? board.position.y + ut.height * 0.5 * board.scale.y + 24 : 260;
         root.setPosition(board ? board.position.x : 0, y, 0);
-        this.hudLabel = CelebrationFx.makeLabel(root, 'GOLDEN TIME', Responsive.portrait ? 42 : 48, 0, 0, this.GOLD, this.GOLD_OUT, 4);
+        this.hudLabel = CelebrationFx.makeLabel(root, tr('GOLDEN TIME'), Responsive.portrait ? 42 : 48, 0, 0, this.GOLD, this.GOLD_OUT, 4);
         this.hud = root;
         tween(root).by(0.35, { position: new Vec3(0, 6, 0) }, { easing: 'sineInOut' })
             .by(0.35, { position: new Vec3(0, -6, 0) }, { easing: 'sineInOut' }).union().repeatForever().start();

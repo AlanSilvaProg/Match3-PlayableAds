@@ -1,4 +1,5 @@
 import { SoundManager } from './SoundManager';
+import { tr } from './I18n';
 import { Responsive } from './Responsive';
 import { _decorator, Component, Node, Vec3, Color, Sprite, SpriteFrame, Label, Font, UITransform, Sorting2D, tween, Tween, UIOpacity, sys } from 'cc';
 const { ccclass, property } = _decorator;
@@ -244,8 +245,8 @@ export class TutorialManager extends Component {
         const op = root.addComponent(UIOpacity);
         const size = Responsive.portrait ? 64 : 84;
         const gold = new Color(255, 214, 51, 255), outline = new Color(120, 70, 0, 255);
-        CelebrationFx.makeLabel(root, "NOW IT'S", size, 0, size * 0.55, Color.WHITE, new Color(20, 30, 60, 255), 2);
-        CelebrationFx.makeLabel(root, 'YOUR TURN!', Math.round(size * 1.25), 0, -size * 0.5, gold, outline, 3);
+        CelebrationFx.makeLabel(root, tr("NOW IT'S"), size, 0, size * 0.55, Color.WHITE, new Color(20, 30, 60, 255), 2);
+        CelebrationFx.makeLabel(root, tr('YOUR TURN!'), Math.round(size * 1.25), 0, -size * 0.5, gold, outline, 3);
         root.setScale(0.2, 0.2, 1);
         tween(root)
             .to(0.3, { scale: new Vec3(1.2, 1.2, 1) }, { easing: 'backOut' })
@@ -522,7 +523,7 @@ export class TutorialManager extends Component {
         this.fadeNode?.on(Node.EventType.TOUCH_END, this.onFocusTap, this);
         this.highlight([orders.node, ...picks.map(e => e.node)]);
         const name = ElementCatalog.getDef(line.type).name;
-        this.showCaption(`Those foods are not in your orders!\nYour first order needs ${line.quantity}x ${name}.\nPick the highlighted ones.`,
+        this.showCaption(tr('Those foods are not in your orders!\nYour first order needs {0}x {1}.\nPick the highlighted ones.', line.quantity, tr(name)),
             this.capPos('orders', new Vec3(95, 120, 0)), true);
         if (this.tutorialIndicator) {
             if (!this.handRaised) {
@@ -693,11 +694,12 @@ export class TutorialManager extends Component {
 
     /** Caixa de texto do tutorial, com "Touch to continue" quando o passo avanca por toque. */
     private showCaption(text: string, position: Vec3, withContinue: boolean, scale: number = 1) {
+        text = tr(text);
         if (!this.captionRoot) {
             const root = this.makeNode('Caption', this.node, 0, 0, 500, 170);
             this.makePanel(root, 0, 0, 500, 170, 0, new Color(25, 30, 60, 240));
             this.captionLabel = this.makeLabel(root, '', 30, 450, 100, 0, 22, 1);
-            const cont = this.makeLabel(root, this.continueText, 26, 300, 36, 0, -58, 1, new Color(255, 214, 51, 255), new Color(60, 40, 0, 255));
+            const cont = this.makeLabel(root, tr(this.continueText), 26, 300, 36, 0, -58, 1, new Color(255, 214, 51, 255), new Color(60, 40, 0, 255));
             this.continueLabel = cont.node;
             this.captionRoot = root;
         }

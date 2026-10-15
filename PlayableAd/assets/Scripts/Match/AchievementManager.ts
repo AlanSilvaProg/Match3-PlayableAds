@@ -1,4 +1,5 @@
 import { WindowAnim } from './WindowAnim';
+import { tr } from './I18n';
 import { SoundManager } from './SoundManager';
 import { Responsive } from './Responsive';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, UITransform, Vec3, Color, Sorting2D, UIOpacity, tween, Tween, Enum, Rect, Size, Vec2 } from 'cc';
@@ -278,11 +279,11 @@ export class AchievementManager extends Component {
         let text: string;
         if (d.rewardType === AchievementRewardType.Coins) {
             this.claimCoins(d);
-            text = `+${d.coins} coins`;
+            text = tr('+{0} coins', d.coins);
         } else {
             PowerupInventory.add(d.powerup, d.powerupAmount);
             pm?.refreshBadges();
-            text = `+${d.powerupAmount} ${PowerupCatalog.getDef(d.powerup).name}`;
+            text = `+${d.powerupAmount} ${PowerupCatalog.getDef(d.powerup).name}`; // (name ja vem traduzido)
         }
         pm?.showToast(text, true);
         this.refreshRows();
@@ -343,7 +344,7 @@ export class AchievementManager extends Component {
 
     private rewardText(d: AchievementDef): string {
         return d.rewardType === AchievementRewardType.Coins
-            ? `+${d.coins} coins`
+            ? tr('+{0} coins', d.coins)
             : `+${d.powerupAmount} ${PowerupCatalog.getDef(d.powerup).name}`;
     }
 
@@ -378,7 +379,7 @@ export class AchievementManager extends Component {
             iconNode.addComponent(Sorting2D).sortingOrder = base + 2;
 
             const left = -w / 2 + 112;
-            this.makeLabel(banner, 'ACHIEVEMENT UNLOCKED!', 20, 400, 24, left, 24, base + 2, new Color(255, 214, 51, 255), new Color(60, 40, 0, 255), true);
+            this.makeLabel(banner, tr('ACHIEVEMENT UNLOCKED!'), 20, 400, 24, left, 24, base + 2, new Color(255, 214, 51, 255), new Color(60, 40, 0, 255), true);
             const title = this.makeLabel(banner, '', 30, 400, 34, left, -2, base + 2, Color.WHITE, new Color(10, 20, 40, 255), true);
             const reward = this.makeLabel(banner, '', 20, 370, 24, left + 34, -28, base + 2, new Color(120, 255, 140, 255), new Color(10, 60, 20, 255), true);
             // Icone do premio (moedas ou power-up) ao lado do texto.
@@ -403,7 +404,7 @@ export class AchievementManager extends Component {
         const targetY = this.bannerTopY() - index * (h + 10);
 
         this.applyIcon(entry.icon, d, 52);
-        entry.title.string = d.title;
+        entry.title.string = tr(d.title);
         entry.reward.string = this.rewardText(d);
         if (d.rewardType === AchievementRewardType.Coins) {
             entry.rewardIcon.spriteFrame = this.coinGroupFrame || this.pm?.coinFrame || null;
@@ -499,7 +500,7 @@ export class AchievementManager extends Component {
             iconNode.getComponent(UITransform)!.setContentSize(rw * sc, rh * sc);
         }
         iconNode.addComponent(Sorting2D).sortingOrder = order + 1;
-        this.makeLabel(node, 'ACHIEVEMENTS', 14, size + 40, 22, 0, -size * 0.58, order + 2);
+        this.makeLabel(node, tr('ACHIEVEMENTS'), 14, size + 40, 22, 0, -size * 0.58, order + 2);
 
         // Bolinha vermelha com a quantidade de premios prontos para coletar.
         const dot = this.makeNode('Dot', node, size * 0.4, size * 0.4, 34, 34);
@@ -563,7 +564,7 @@ export class AchievementManager extends Component {
         this.makeSprite(win, pm.windowFrame, base + 1, true);
         // A janela absorve os toques no proprio fundo: so o X e o fade escuro fecham.
         [Node.EventType.TOUCH_START, Node.EventType.TOUCH_END].forEach(t => win.on(t, () => { }));
-        this.makeLabel(win, 'ACHIEVEMENTS', 46, 480, 60, 0, H / 2 - 62, base + 3, Color.WHITE, new Color(20, 70, 120, 255));
+        this.makeLabel(win, tr('ACHIEVEMENTS'), 46, 480, 60, 0, H / 2 - 62, base + 3, Color.WHITE, new Color(20, 70, 120, 255));
         this.windowBadge = pm.createPointsBadgeView(win, -W / 2 + 190, H / 2 - 62, base + 3, false);
         this.makeButton(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, new Color(255, 120, 120, 255), () => this.closeWindow());
 
@@ -626,8 +627,8 @@ export class AchievementManager extends Component {
 
         // Textos (alinhados a esquerda).
         const textLeft = -rw / 2 + 120;
-        this.makeLabel(row, d.title, 28, 360, 32, textLeft, 17, base + 4, new Color(255, 230, 140, 255), new Color(40, 25, 0, 255), true);
-        this.makeLabel(row, d.description, 20, 380, 28, textLeft, -17, base + 4, Color.WHITE, new Color(10, 20, 40, 255), true);
+        this.makeLabel(row, tr(d.title), 28, 360, 32, textLeft, 17, base + 4, new Color(255, 230, 140, 255), new Color(40, 25, 0, 255), true);
+        this.makeLabel(row, tr(d.description), 20, 380, 28, textLeft, -17, base + 4, Color.WHITE, new Color(10, 20, 40, 255), true);
         const progress = this.makeLabel(row, '', 24, 110, 34, 90, 0, base + 4);
 
         // Premio: icone da moeda ou do power-up + quantidade.
@@ -647,7 +648,7 @@ export class AchievementManager extends Component {
         }
         this.makeLabel(row, rewardText, 24, 100, 28, 195, -26, base + 5);
 
-        const btn = this.makeButton(row, 'CLAIM', rw / 2 - 90, 0, 150, 56, base + 4, Color.WHITE, () => this.claim(d));
+        const btn = this.makeButton(row, tr('CLAIM'), rw / 2 - 90, 0, 150, 56, base + 4, Color.WHITE, () => this.claim(d));
 
         return { def: d, node: row, iconSprite, lock, progress, button: btn.node, buttonBg: btn.bg, buttonLabel: btn.label };
     }
@@ -666,7 +667,7 @@ export class AchievementManager extends Component {
 
             // Botao: so aparece com a conquista liberada; depois de coletar vira "DONE" apagado.
             r.button.active = unlocked;
-            r.buttonLabel.string = claimed ? 'DONE' : 'CLAIM';
+            r.buttonLabel.string = claimed ? tr('DONE') : tr('CLAIM');
             r.buttonBg.color = claimed ? new Color(110, 110, 110, 255) : Color.WHITE;
             r.buttonLabel.color = claimed ? new Color(190, 190, 190, 255) : Color.WHITE;
         }

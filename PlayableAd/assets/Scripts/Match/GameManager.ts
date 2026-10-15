@@ -1,4 +1,5 @@
 import { _decorator, Component, Label, Prefab, instantiate, Node, Sprite, SpriteFrame, find, director, sys, EventTarget, Color, Vec3, tween, Tween, game, Game, UIOpacity, UITransform, Sorting2D, ParticleSystem2D, view, ResolutionPolicy } from 'cc';
+import { I18n, tr } from './I18n';
 import { MatchElement } from './MatchElement';
 import { LevelProgress } from './LevelProgress';
 import { LevelPlan, LevelConfig, Meal } from './LevelConfig';
@@ -278,6 +279,8 @@ export class GameManager extends Component {
     }
 
     start() {
+        I18n.localizeTree(this.node.parent);
+        I18n.installSwitcher();
         // Tudo o que precisa do carregamento ja esta pronto: avisa a Poki (uma vez por sessao).
         PokiService.gameLoadingFinished();
 
@@ -508,7 +511,7 @@ export class GameManager extends Component {
     /** Nome da refeicao do checkpoint (fase atual), usado no texto do botao da tela de derrota. */
     public get checkpointMeal(): string {
         const p = this.phasePlan;
-        return p ? ['BREAKFAST', 'LUNCH', 'DINNER'][p.meal] : '';
+        return p ? tr(['BREAKFAST', 'LUNCH', 'DINNER'][p.meal]) : '';
     }
 
     /** A fase termina quando todos os pedidos foram entregues (chamado pelo OrderManager); a ultima fase termina o nivel. */

@@ -1,3 +1,4 @@
+import { I18n } from './I18n';
 import { _decorator, Component, AudioClip, AudioSource, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -83,6 +84,22 @@ export class SoundManager extends Component {
 
     @property({ range: [0, 1, 0.05], tooltip: 'Volume das vozes de comemoracao de combo rapido.' })
     public celebrationVolume: number = 0.9;
+
+    @property({ type: [AudioClip], tooltip: 'Voz do anuncio da refeicao em INGLES: [0] Breakfast time, [1] Lunch time, [2] Dinner time.' })
+    public mealClips: AudioClip[] = [];
+    @property({ type: [AudioClip], tooltip: 'Anuncio da refeicao em PORTUGUES (mesma ordem: cafe, almoco, janta). Vazio = usa o ingles.' })
+    public mealClipsPt: AudioClip[] = [];
+    @property({ type: [AudioClip], tooltip: 'Anuncio da refeicao em ESPANHOL (cafe, almoco, janta). Vazio = usa o ingles.' })
+    public mealClipsEs: AudioClip[] = [];
+    @property({ type: [AudioClip], tooltip: 'Anuncio da refeicao em ALEMAO (cafe, almoco, janta). Vazio = usa o ingles.' })
+    public mealClipsDe: AudioClip[] = [];
+
+    @property({ type: [AudioClip], tooltip: 'Vozes dos combos em PORTUGUES: NICE, GREAT, AWESOME, AMAZING, UNSTOPPABLE, LEGENDARY (nessa ordem). Vazio = ingles.' })
+    public celebrationClipsPt: AudioClip[] = [];
+    @property({ type: [AudioClip], tooltip: 'Vozes dos combos em ESPANHOL (mesma ordem). Vazio = ingles.' })
+    public celebrationClipsEs: AudioClip[] = [];
+    @property({ type: [AudioClip], tooltip: 'Vozes dos combos em ALEMAO (mesma ordem). Vazio = ingles.' })
+    public celebrationClipsDe: AudioClip[] = [];
 
     @property({ type: AudioClip, tooltip: 'Ativacao do Golden Time (toca com a explosao dourada).' })
     public goldenTimeClip: AudioClip | null = null;
@@ -270,7 +287,26 @@ export class SoundManager extends Component {
         if (!sm) return;
         const clips = [sm.celebrationNiceClip, sm.celebrationGreatClip, sm.celebrationAwesomeClip,
             sm.celebrationAmazingClip, sm.celebrationUnstoppableClip, sm.celebrationLegendaryClip];
-        sm.play('celebration', clips[Math.max(0, Math.min(clips.length - 1, tier))], sm.celebrationVolume, 0.3);
+        const i = Math.max(0, Math.min(clips.length - 1, tier));
+        const local = sm.langClips(sm.celebrationClipsPt, sm.celebrationClipsEs, sm.celebrationClipsDe)[i];
+        sm.play('celebration', local || clips[i], sm.celebrationVolume, 0.3);
+    }
+
+    /** Voz do anuncio da refeicao (0 = cafe, 1 = almoco, 2 = janta) no idioma do jogo (cai no ingles). */
+    public static playMeal(meal: number) {
+        const sm = SoundManager.instance;
+        if (!sm) return;
+        const local = sm.langClips(sm.mealClipsPt, sm.mealClipsEs, sm.mealClipsDe)[meal];
+        sm.play('meal', local || sm.mealClips[meal] || null, sm.celebrationVolume, 0.5);
+    }
+
+    private langClips(pt: AudioClip[], es: AudioClip[], de: AudioClip[]): AudioClip[] {
+        switch (I18n.lang) {
+            case 'pt': return pt;
+            case 'es': return es;
+            case 'de': return de;
+            default: return [];
+        }
     }
 
     public static playRemovedFromSelected() {

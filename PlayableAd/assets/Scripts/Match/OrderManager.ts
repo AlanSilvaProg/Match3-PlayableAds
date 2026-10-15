@@ -1,4 +1,5 @@
 import { SoundManager } from './SoundManager';
+import { tr } from './I18n';
 import { GoldenTime } from './GoldenTime';
 import { Responsive } from './Responsive';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, tween, Tween } from 'cc';
@@ -525,7 +526,7 @@ export class OrderManager extends Component {
         const n = this.makeNode('OrdersTitle', this.node, 0, this.titleLocalY(), this.cardWidth + 10, 44);
         this.titleNode = n;
         const label = this.makeLabel(n, 38, 3, Color.WHITE, new Color(20, 70, 120, 255));
-        label.string = this.titleText;
+        label.string = tr(this.titleText);
         label.isBold = true;
         label.overflow = Label.Overflow.SHRINK;
     }

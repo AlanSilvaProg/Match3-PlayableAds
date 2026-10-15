@@ -18,7 +18,7 @@
       "uuid": "fddeb92d-097c-4299-ba88-970f7721873c"
     },
     "Sounds": {
-      "time": 1792091306056.1472,
+      "time": 1792098429802.3103,
       "uuid": "8bb2ebca-6ac1-483e-a977-06eeaa496d79"
     },
     "UI": {
@@ -201,14 +201,14 @@
       "time": 1791206513732.255
     },
     "Scripts/Match": {
-      "time": 1792087808047.9976,
+      "time": 1792095298328.6746,
       "uuid": "e3c2ab47-56e3-45b6-a059-8f621df9046e"
     },
     "Scripts/Match/MatchElement.ts.meta": {
       "time": 1791206513733.2612
     },
     "Scripts/Match/MatchElement.ts": {
-      "time": 1792093511617.314,
+      "time": 1792095354421.8765,
       "uuid": "63fc03d9-c22e-4d18-850b-8e6fc39bf560"
     },
     "Scripts/Match/MatchSlots.ts.meta": {
@@ -263,7 +263,7 @@
       "time": 1791206513734.03
     },
     "Scripts/Match/GameManager.ts": {
-      "time": 1792086654132.504,
+      "time": 1792097436609.3962,
       "uuid": "7066c457-7c2b-417b-8779-338dab7721ee"
     },
     "Scripts/Match/GameState.ts": {
@@ -327,7 +327,7 @@
       "time": 1791206513734.441
     },
     "Scripts/Match/TutorialManager.ts": {
-      "time": 1792087614292.4458,
+      "time": 1792095293746.3813,
       "uuid": "fdb05417-a2c0-4ac9-83f0-aaa156c58ec0"
     },
     "extra_assets/white_rect.jpg.meta": {
@@ -341,7 +341,7 @@
       "time": 1791206513731.8757
     },
     "Scenes/PlayableAdMatch.scene": {
-      "time": 1792092214173.1802,
+      "time": 1792100440761.3423,
       "uuid": "e04ca93c-f472-474b-bec4-ef3ccf980601"
     },
     "Animations/HandAnimation.anim.meta": {
@@ -526,7 +526,7 @@
       "uuid": "04de0ceb-77af-4e8b-a3ec-a3ad355f5426"
     },
     "Scripts/Match/LevelSelector.ts": {
-      "time": 1791912137580.3093,
+      "time": 1792095276542.8462,
       "uuid": "7c408ce4-5b86-4809-9bca-26080cda20f3"
     },
     "extra_assets/points-holder.png": {
@@ -593,7 +593,7 @@
       "time": 1791405604863.5935
     },
     "Scripts/Match/OrderManager.ts": {
-      "time": 1792093581123.197,
+      "time": 1792097219999.4756,
       "uuid": "6e105072-af44-4db7-86a0-e934805b3005"
     },
     "Scripts/Match/PokiService.ts.meta": {
@@ -641,11 +641,11 @@
       "uuid": "70e6e791-7798-4a8b-8be6-76068c52d927"
     },
     "Scripts/Match/PowerupCatalog.ts": {
-      "time": 1791507066524.7,
+      "time": 1792095300779.3547,
       "uuid": "33ca32cb-8fc0-47b2-80de-686e8d7396cb"
     },
     "Scripts/Match/PowerupManager.ts": {
-      "time": 1792005410533.0332,
+      "time": 1792095276540.3142,
       "uuid": "39f5cacb-184b-4a99-94dd-51497df88dd6"
     },
     "Scripts/Match/ReviveButton.ts": {
@@ -701,7 +701,7 @@
       "time": 1791507100706.3894
     },
     "Scripts/Match/AchievementManager.ts": {
-      "time": 1791924713690.5842,
+      "time": 1792095276539.4915,
       "uuid": "451e3fb0-9d42-467e-a4a1-e06f23084125"
     },
     "Scripts/Match/PlayerStats.ts": {
@@ -726,7 +726,7 @@
       "time": 1791511046886.3008
     },
     "Scripts/Match/RankingManager.ts": {
-      "time": 1792020639284.8997,
+      "time": 1792095293746.1567,
       "uuid": "ed373575-27ac-4644-92aa-d9096f8ee670"
     },
     "Scripts/Match/PlayerData.ts.meta": {
@@ -789,7 +789,7 @@
       "time": 1791551543475.4749
     },
     "Scripts/Match/SoundManager.ts": {
-      "time": 1792092016699.2378,
+      "time": 1792098252180.5132,
       "uuid": "f26d4f9b-2212-4455-8975-fda240fd3cfc"
     },
     "Sounds/drop-order-to-one.mp3.meta": {
@@ -943,57 +943,15 @@
       "time": 1791842817633.3872
     },
     "Scripts/Match/WinRewards.ts": {
-      "time": 1792020537389.1177,
+      "time": 1792095276542.3477,
       "uuid": "dad88ccd-4d24-43c4-8214-afb1436e28a7"
     },
     "Scripts/Match/CelebrationFx.ts.meta": {
       "time": 1791912280139.7485
     },
     "Scripts/Match/CelebrationFx.ts": {
-      "time": 1792005484239.129,
+      "time": 1792095276537.478,
       "uuid": "a16f2a87-75e3-4d25-85e8-7239e1a9f321"
-    },
-    "Sounds/AMAZING.mp3.meta": {
-      "time": 1791923077525.948
-    },
-    "Sounds/AWESOME.mp3.meta": {
-      "time": 1791923077525.845
-    },
-    "Sounds/GREAT.mp3.meta": {
-      "time": 1791923077526.0925
-    },
-    "Sounds/LEGENDARY.mp3.meta": {
-      "time": 1791923077526.6313
-    },
-    "Sounds/NICE.mp3.meta": {
-      "time": 1791923077525.284
-    },
-    "Sounds/UNSTOPPABLE.mp3.meta": {
-      "time": 1791923077535.2668
-    },
-    "Sounds/NICE.mp3": {
-      "time": 1791922783061.3347,
-      "uuid": "c69267c5-1a7f-44bf-b7fd-8074a9e63313"
-    },
-    "Sounds/AWESOME.mp3": {
-      "time": 1791922853772.0383,
-      "uuid": "5e671884-04d4-4d03-8f3a-32594d2b295b"
-    },
-    "Sounds/AMAZING.mp3": {
-      "time": 1791922886034.844,
-      "uuid": "48bf5a12-5c3d-4c08-bc8b-b47d547474fb"
-    },
-    "Sounds/GREAT.mp3": {
-      "time": 1791922824362.7986,
-      "uuid": "079686f8-6146-4363-9b7c-38dd91a6a196"
-    },
-    "Sounds/LEGENDARY.mp3": {
-      "time": 1791922980643.3953,
-      "uuid": "2b128e72-298b-4576-b266-6a516b77ed92"
-    },
-    "Sounds/UNSTOPPABLE.mp3": {
-      "time": 1791922910618.5886,
-      "uuid": "942d54e4-dfd2-485a-92c8-3e19f96f84d8"
     },
     "extra_assets/background_night.png.meta": {
       "time": 1792005225491.451
@@ -1006,7 +964,7 @@
       "time": 1792005583540.01
     },
     "Scripts/Match/PhaseFlow.ts": {
-      "time": 1792085334135.473,
+      "time": 1792098252180.9587,
       "uuid": "d377fbb9-bec6-4405-9e26-d272f4381b43"
     },
     "extra_assets/ray-icon.png.meta": {
@@ -1020,14 +978,14 @@
       "time": 1792083035425.6772
     },
     "Scripts/Match/RayPickup.ts": {
-      "time": 1792091305968.868,
+      "time": 1792097643068.8079,
       "uuid": "5f870be3-0e39-4d74-9399-44e51ba3efe8"
     },
     "Scripts/Match/GoldenTime.ts.meta": {
       "time": 1792085380574.004
     },
     "Scripts/Match/GoldenTime.ts": {
-      "time": 1792087614292.8198,
+      "time": 1792095276538.7517,
       "uuid": "57cb1a8a-09fe-4855-a579-93f1b06c3850"
     },
     "Sounds/coin-switch.wav.meta": {
@@ -1057,6 +1015,300 @@
     "Sounds/element-selected-by-ray.mp3": {
       "time": 1792092016524.6711,
       "uuid": "dd8db944-8f35-4d86-880d-d0c44fbb5cc0"
+    },
+    "Scripts/Match/I18n.ts.meta": {
+      "time": 1792095298349.3545
+    },
+    "Scripts/Match/I18n.ts": {
+      "time": 1792097436608.1226,
+      "uuid": "62a2ea09-be6b-4e9a-86e3-c0f25de310de"
+    },
+    "Sounds/Voices.meta": {
+      "time": 1792098429820.2815
+    },
+    "Sounds/Voices/de.meta": {
+      "time": 1792098429820.4724
+    },
+    "Sounds/Voices/en.meta": {
+      "time": 1792098429821.1084
+    },
+    "Sounds/Voices/es.meta": {
+      "time": 1792098429821.2642
+    },
+    "Sounds/Voices/pt.meta": {
+      "time": 1792098429821.428
+    },
+    "Sounds/Voices/en/AMAZING.mp3.meta": {
+      "time": 1791923077525.948
+    },
+    "Sounds/Voices/en/AWESOME.mp3.meta": {
+      "time": 1791923077525.845
+    },
+    "Sounds/Voices/en/GREAT.mp3.meta": {
+      "time": 1791923077526.0925
+    },
+    "Sounds/Voices/en/LEGENDARY.mp3.meta": {
+      "time": 1791923077526.6313
+    },
+    "Sounds/Voices/en/NICE.mp3.meta": {
+      "time": 1791923077525.284
+    },
+    "Sounds/Voices/en/UNSTOPPABLE.mp3.meta": {
+      "time": 1791923077535.2668
+    },
+    "Sounds/Voices": {
+      "time": 1792099194422.781,
+      "uuid": "bd444190-f1bc-4c6c-a6fd-fb054a1b34fe"
+    },
+    "Sounds/Voices/de": {
+      "time": 1792100430559.8428,
+      "uuid": "8e42bca0-6f27-49b5-af99-63b3785fc164"
+    },
+    "Sounds/Voices/en": {
+      "time": 1792100430560.2476,
+      "uuid": "468959cc-56f4-4bbd-9f47-d192b2fee1a7"
+    },
+    "Sounds/Voices/es": {
+      "time": 1792100430558.8237,
+      "uuid": "51b1bb86-2336-4148-9e1b-3ae1427765bf"
+    },
+    "Sounds/Voices/pt": {
+      "time": 1792100430557.6467,
+      "uuid": "f4110c90-8a1a-4fbc-8c60-4875991401cb"
+    },
+    "Sounds/Voices/en/NICE.mp3": {
+      "time": 1791922783061.3347,
+      "uuid": "c69267c5-1a7f-44bf-b7fd-8074a9e63313"
+    },
+    "Sounds/Voices/en/AWESOME.mp3": {
+      "time": 1791922853772.0383,
+      "uuid": "5e671884-04d4-4d03-8f3a-32594d2b295b"
+    },
+    "Sounds/Voices/en/LEGENDARY.mp3": {
+      "time": 1791922980643.3953,
+      "uuid": "2b128e72-298b-4576-b266-6a516b77ed92"
+    },
+    "Sounds/Voices/en/GREAT.mp3": {
+      "time": 1791922824362.7986,
+      "uuid": "079686f8-6146-4363-9b7c-38dd91a6a196"
+    },
+    "Sounds/Voices/en/AMAZING.mp3": {
+      "time": 1791922886034.844,
+      "uuid": "48bf5a12-5c3d-4c08-bc8b-b47d547474fb"
+    },
+    "Sounds/Voices/en/UNSTOPPABLE.mp3": {
+      "time": 1791922910618.5886,
+      "uuid": "942d54e4-dfd2-485a-92c8-3e19f96f84d8"
+    },
+    "Sounds/Voices/de/AMAZING.mp3.meta": {
+      "time": 1792100417506.4583
+    },
+    "Sounds/Voices/de/AWESOME.mp3.meta": {
+      "time": 1792100417494.1099
+    },
+    "Sounds/Voices/de/BREAKFAST.mp3.meta": {
+      "time": 1792100417493.9807
+    },
+    "Sounds/Voices/de/DINNER.mp3.meta": {
+      "time": 1792100417495.363
+    },
+    "Sounds/Voices/de/GREAT.mp3.meta": {
+      "time": 1792100417506.5706
+    },
+    "Sounds/Voices/de/LEGENDARY.mp3.meta": {
+      "time": 1792100417492.2673
+    },
+    "Sounds/Voices/de/LUNCH.mp3.meta": {
+      "time": 1792100417494.8323
+    },
+    "Sounds/Voices/de/NICE.mp3.meta": {
+      "time": 1792100417508.369
+    },
+    "Sounds/Voices/de/UNSTOPPABLE.mp3.meta": {
+      "time": 1792100417504.7297
+    },
+    "Sounds/Voices/en/BREAKFAST.mp3.meta": {
+      "time": 1792100417515.0593
+    },
+    "Sounds/Voices/en/DINNER.mp3.meta": {
+      "time": 1792100417516.4692
+    },
+    "Sounds/Voices/en/LUNCH.mp3.meta": {
+      "time": 1792100417507.747
+    },
+    "Sounds/Voices/es/AMAZING.mp3.meta": {
+      "time": 1792100417516.5876
+    },
+    "Sounds/Voices/es/AWESOME.mp3.meta": {
+      "time": 1792100417529.3413
+    },
+    "Sounds/Voices/es/BREAKFAST.mp3.meta": {
+      "time": 1792100417535.2097
+    },
+    "Sounds/Voices/es/DINNER.mp3.meta": {
+      "time": 1792100417530.246
+    },
+    "Sounds/Voices/es/GREAT.mp3.meta": {
+      "time": 1792100417517.1318
+    },
+    "Sounds/Voices/es/LEGENDARY.mp3.meta": {
+      "time": 1792100417529.4312
+    },
+    "Sounds/Voices/es/LUNCH.mp3.meta": {
+      "time": 1792100417530.1746
+    },
+    "Sounds/Voices/es/NICE.mp3.meta": {
+      "time": 1792100417528.0828
+    },
+    "Sounds/Voices/es/UNSTOPPABLE.mp3.meta": {
+      "time": 1792100417518.7092
+    },
+    "Sounds/Voices/pt/AMAZING.mp3.meta": {
+      "time": 1792100417536.9368
+    },
+    "Sounds/Voices/pt/AWESOME.mp3.meta": {
+      "time": 1792100417546.7568
+    },
+    "Sounds/Voices/pt/BREAKFAST.mp3.meta": {
+      "time": 1792100417542.805
+    },
+    "Sounds/Voices/pt/DINNER.mp3.meta": {
+      "time": 1792100417542.597
+    },
+    "Sounds/Voices/pt/GREAT.mp3.meta": {
+      "time": 1792100417546.62
+    },
+    "Sounds/Voices/pt/LEGENDARY.mp3.meta": {
+      "time": 1792100417536.007
+    },
+    "Sounds/Voices/pt/LUNCH.mp3.meta": {
+      "time": 1792100417542.6838
+    },
+    "Sounds/Voices/pt/NICE.mp3.meta": {
+      "time": 1792100417536.8025
+    },
+    "Sounds/Voices/pt/UNSTOPPABLE.mp3.meta": {
+      "time": 1792100417537.6736
+    },
+    "Sounds/Voices/de/AWESOME.mp3": {
+      "time": 1792100278383.1326,
+      "uuid": "f2d05850-b7f9-4d91-aa69-1080c46812bb"
+    },
+    "Sounds/Voices/de/DINNER.mp3": {
+      "time": 1792100377914.5278,
+      "uuid": "80772254-0fd3-4b99-9a99-8f02aa9e4694"
+    },
+    "Sounds/Voices/de/AMAZING.mp3": {
+      "time": 1792100292765.622,
+      "uuid": "ac2c851a-78fd-4adf-9f31-3c51cf770e36"
+    },
+    "Sounds/Voices/de/BREAKFAST.mp3": {
+      "time": 1792100347444.4753,
+      "uuid": "ca6ba37e-317b-49d2-8606-447627acd01d"
+    },
+    "Sounds/Voices/de/GREAT.mp3": {
+      "time": 1792100263187.8765,
+      "uuid": "64145904-983e-4ac5-bf8e-176b5d315860"
+    },
+    "Sounds/Voices/de/UNSTOPPABLE.mp3": {
+      "time": 1792100308550.8123,
+      "uuid": "bb132669-1bf8-4319-8a71-c6b9bdf86c9a"
+    },
+    "Sounds/Voices/de/LEGENDARY.mp3": {
+      "time": 1792100324970.5322,
+      "uuid": "bad6caa7-39ba-4a5a-ac24-b2006639b503"
+    },
+    "Sounds/Voices/de/LUNCH.mp3": {
+      "time": 1792100361860.9702,
+      "uuid": "d25e0c19-9da0-4b78-bf7b-492cde59456a"
+    },
+    "Sounds/Voices/de/NICE.mp3": {
+      "time": 1792100146534.2502,
+      "uuid": "09c67c3d-3218-451d-8637-7bf93b30737b"
+    },
+    "Sounds/Voices/en/BREAKFAST.mp3": {
+      "time": 1792099467163.8025,
+      "uuid": "1822613c-e429-465e-a4f5-03d29e476dcf"
+    },
+    "Sounds/Voices/en/DINNER.mp3": {
+      "time": 1792099520318.825,
+      "uuid": "e0d46cc7-7067-4d68-ae0b-5e923a3a6492"
+    },
+    "Sounds/Voices/en/LUNCH.mp3": {
+      "time": 1792099499525.9043,
+      "uuid": "57ed22b1-2c8f-413b-aeea-54aefadcd492"
+    },
+    "Sounds/Voices/es/AMAZING.mp3": {
+      "time": 1792099970015.244,
+      "uuid": "01013e7b-7ac0-459a-a6b5-989be431f642"
+    },
+    "Sounds/Voices/es/AWESOME.mp3": {
+      "time": 1792099953868.1912,
+      "uuid": "0d65d1f7-f729-42f9-a662-d8a05e28b54a"
+    },
+    "Sounds/Voices/es/BREAKFAST.mp3": {
+      "time": 1792099784464.3406,
+      "uuid": "24ecf274-9686-4c14-ab77-e6f7ff8473e8"
+    },
+    "Sounds/Voices/es/GREAT.mp3": {
+      "time": 1792099903823.3274,
+      "uuid": "eaaaf453-a412-4c6e-b52f-c88a3fe92450"
+    },
+    "Sounds/Voices/es/DINNER.mp3": {
+      "time": 1792099846747.4504,
+      "uuid": "b3b848f5-5869-492c-8e1d-0506f1821375"
+    },
+    "Sounds/Voices/es/LEGENDARY.mp3": {
+      "time": 1792099999913.5747,
+      "uuid": "ece984d8-1629-4c93-96a1-e2045fa010ff"
+    },
+    "Sounds/Voices/es/LUNCH.mp3": {
+      "time": 1792099818244.5105,
+      "uuid": "dc6f8d2a-04aa-46f3-8354-0bf5c7a8e4c9"
+    },
+    "Sounds/Voices/es/NICE.mp3": {
+      "time": 1792099881970.4067,
+      "uuid": "52457361-dcbd-494d-8243-8393071f5c81"
+    },
+    "Sounds/Voices/pt/BREAKFAST.mp3": {
+      "time": 1792099357842.6584,
+      "uuid": "69e70c70-8b55-448e-bfdc-837958015d6d"
+    },
+    "Sounds/Voices/es/UNSTOPPABLE.mp3": {
+      "time": 1792099985969.9246,
+      "uuid": "8e776d2f-dc83-4aed-8961-fee6ff2ccd97"
+    },
+    "Sounds/Voices/pt/DINNER.mp3": {
+      "time": 1792099399231.2817,
+      "uuid": "3a35f029-b84d-475c-a456-244e72401919"
+    },
+    "Sounds/Voices/pt/AWESOME.mp3": {
+      "time": 1792099234613.6497,
+      "uuid": "db0da4b0-e8ea-4887-99b9-30087f40e760"
+    },
+    "Sounds/Voices/pt/AMAZING.mp3": {
+      "time": 1792099276488.7495,
+      "uuid": "0f2f4c4b-3344-4556-b512-e50a16898a4c"
+    },
+    "Sounds/Voices/pt/LEGENDARY.mp3": {
+      "time": 1792099315504.6213,
+      "uuid": "d1a4f2b5-a0bf-4a85-8cbd-f450b4d291c7"
+    },
+    "Sounds/Voices/pt/LUNCH.mp3": {
+      "time": 1792099377273.425,
+      "uuid": "21978ab3-f643-4e89-a623-0fe2af23e897"
+    },
+    "Sounds/Voices/pt/GREAT.mp3": {
+      "time": 1792099215978.5508,
+      "uuid": "b45ddc86-36c3-45f6-b767-cf13f6a5a4d0"
+    },
+    "Sounds/Voices/pt/NICE.mp3": {
+      "time": 1792099175640.2417,
+      "uuid": "4086f78f-af32-42db-934a-1e157bea2feb"
+    },
+    "Sounds/Voices/pt/UNSTOPPABLE.mp3": {
+      "time": 1792099295219.1018,
+      "uuid": "d1c4bbc8-60ae-41d1-bd51-73d8616c51fe"
     }
   },
   "missing": {}
