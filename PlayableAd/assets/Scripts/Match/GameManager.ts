@@ -81,6 +81,8 @@ export class GameManager extends Component {
     public static readonly EVENT_REVIVED = 'revived';
     /** Emitido pelo OrderManager quando um pedido e entregue (payload: quantos ja foram entregues). */
     public static readonly EVENT_ORDER_DELIVERED = 'order_delivered';
+    /** Todas as linhas de um pedido estao prontas na bandeja: falta tocar em ENTREGAR. */
+    public static readonly EVENT_ORDER_READY = 'order_ready';
     /** Emitido pelo MatchController quando a selecao muda (payload: Map<ElementType, number> com a contagem na prateleira). */
     public static readonly EVENT_SELECTION_CHANGED = 'selection_changed';
     /** Emitido pelo MatchController quando um item que nenhum pedido aberto pede chega a prateleira (payload: MatchElement). */

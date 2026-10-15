@@ -151,9 +151,7 @@
   },
   "8258bf71-387b-48fe-9418-5981de4885b9": {
     "url": "db://assets/UI/splash_logo.png",
-    "value": {
-      "depends": []
-    },
+    "value": {},
     "versionCode": 1
   },
   "2cd97e8d-a9c7-454c-a5a5-ee38376852ac": {
@@ -694,8 +692,8 @@
         "c9c4b8b3-5ed2-4ddc-94d0-1de5c8f13462",
         "8042363e-37b2-4f04-a2d1-a3b1f45cd610",
         "8511e72e-99c1-4e7b-8ea6-96cdd8d6dcd4",
-        "031381fc-b2e2-4e31-a027-c172cb01d518",
-        "0e3e8ab1-deb7-44ad-a881-e5e774e01d7b"
+        "0e3e8ab1-deb7-44ad-a881-e5e774e01d7b",
+        "031381fc-b2e2-4e31-a027-c172cb01d518"
       ]
     },
     "versionCode": 2

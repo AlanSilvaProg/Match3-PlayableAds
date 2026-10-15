@@ -327,6 +327,16 @@ export class ComboManager extends Component {
         CelebrationFx.show(canvas, at, tier, this.fastStreak, this.levelUpEffectPrefab);
     }
 
+    /** Entrega atrasada: o combo e a sequencia rapida zeram na hora. */
+    public BreakCombo() {
+        const gm = GameManager.instance;
+        if (gm && !gm.IsRunning()) return;
+        this.bar = 0;
+        this.fastStreak = 0;
+        if (this.comboActive) this.dropCombo();
+        this.refreshBar();
+    }
+
     private dropCombo() {
         this.fastStreak = 0;
         // So avisa que o combo acabou se ele chegou a subir de nivel (gatilho do tutorial de Max Combo).

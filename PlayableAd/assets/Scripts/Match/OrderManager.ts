@@ -2,13 +2,15 @@ import { SoundManager } from './SoundManager';
 import { tr } from './I18n';
 import { GoldenTime } from './GoldenTime';
 import { Responsive } from './Responsive';
-import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, tween, Tween } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, tween, Tween, UIOpacity } from 'cc';
 const { ccclass, property } = _decorator;
 import { ElementType } from './ElementType';
 import { ElementCatalog } from './ElementCatalog';
 import { OrderPlan, LevelPlan } from './LevelConfig';
 import { GameManager } from './GameManager';
 import { PlayerStats, AchievementMetric } from './PlayerStats';
+import { PowerupManager } from './PowerupManager';
+import { ComboManager } from './ComboManager';
 
 interface OrderLineView {
     type: ElementType;
@@ -30,6 +32,14 @@ interface OrderView {
     lines: OrderLineView[];
     timeLeft: number;
     delivered: boolean;
+    /** Todas as linhas prontas: o botao ENTREGAR do cartao esta liberado. */
+    ready: boolean;
+    footer: Node;
+    footerBg: Sprite;
+    footerLabel: Label;
+    /** Moedas dos merges deste pedido, seguras ate o jogador entregar. */
+    heldPoints: number;
+    coinCount: number;
 }
 
 /** Reserva de uma linha de pedido por um merge em andamento. */
@@ -50,6 +60,7 @@ export interface OrderClaim {
 export class OrderManager extends Component {
 
     public static instance: OrderManager = null!;
+    private static readonly FOOTER_H = 40;
 
     @property({ type: Font, tooltip: 'Fonte dos textos do painel (vazio = fonte do sistema).' })
     public font: Font | null = null;
@@ -123,6 +134,7 @@ export class OrderManager extends Component {
     private readonly goldenCard = new Color(255, 185, 30, 255);
     private readonly goldenCardLight = new Color(255, 232, 110, 255);
     private readonly cardColor = new Color(30, 36, 60, 235);
+    private readonly readyCard = new Color(36, 128, 66, 245);
     private readonly lateColor = new Color(150, 20, 25, 240);
     private readonly okColor = new Color(60, 220, 90, 255);
     private readonly warnColor = new Color(255, 190, 40, 255);
@@ -207,7 +219,20 @@ export class OrderManager extends Component {
             }
         }
 
-        this.active.forEach(o => this.refreshTimer(o));
+        this.active.forEach(o => {
+            this.refreshTimer(o);
+            if (o.ready && !o.delivered && o.footer.isValid) {
+                const k = 1 + 0.12 * (0.5 + 0.5 * Math.sin(this.clock * 9));
+                o.footer.setScale(k, k, 1);
+                // O cartao inteiro pulsa e, a cada ~1,8s, balanca chamando a atencao.
+                if (o.timeLeft >= 0 && this.frozenFor <= 0) {
+                    const s = this.cardScale * (1 + 0.05 * (0.5 + 0.5 * Math.sin(this.clock * 6)));
+                    o.node.setScale(s, s, 1);
+                }
+                const t = this.clock % 1.8;
+                o.node.setRotationFromEuler(0, 0, t < 0.55 ? Math.sin(t * 34) * 5 * (1 - t / 0.55) : 0);
+            }
+        });
         this.updateHint(dt);
     }
 
@@ -216,7 +241,8 @@ export class OrderManager extends Component {
     private updateHint(dt: number) {
         const gm = GameManager.instance;
         const ok = !!gm && GameManager.currentLevel < this.hintLevels && gm.IsRunning() && !gm.timeHeld
-            && gm.tutorialAllowed === null && !GoldenTime.active && !this.allDelivered;
+            && gm.tutorialAllowed === null && !GoldenTime.active && !this.allDelivered
+            && !this.active.some(o => o.ready && !o.delivered); // pedido pronto: o proximo passo e ENTREGAR
         if (!ok) { if (this.hinted.length) this.stopHint(); return; }
         this.sinceDelivery += dt;
         if (this.sinceDelivery < this.hintSeconds) return;
@@ -395,7 +421,69 @@ export class OrderManager extends Component {
             .to(0.12, { scale: Vec3.ONE })
             .start();
 
-        if (order.lines.every(l => l.done)) this.deliver(order);
+        if (order.lines.every(l => l.done)) this.markReady(order);
+    }
+
+    /** Pedido pronto na bandeja: libera o botao ENTREGAR do cartao. A entrega e uma acao do jogador. */
+    private markReady(order: OrderView) {
+        if (order.ready || order.delivered) return;
+        order.ready = true;
+        this.refreshFooter(order);
+        this.addReadyGlow(order);
+        SoundManager.playNotification();
+        GameManager.instance?.events.emit(GameManager.EVENT_ORDER_READY, order.node);
+    }
+
+    /** Pedido pronto: aura verde pulsando atras do cartao (o resto do destaque e feito no update). */
+    private addReadyGlow(order: OrderView) {
+        if (!this.cardBackground || order.node.getChildByName('ReadyGlow')) return;
+        const w = this.cardWidth + 44, h = order.height + 44;
+        const g = this.makeNode('ReadyGlow', order.node, 0, 0, w, h);
+        g.setSiblingIndex(0);
+        const sp = g.addComponent(Sprite);
+        sp.sizeMode = Sprite.SizeMode.CUSTOM;
+        sp.type = Sprite.Type.SLICED;
+        sp.spriteFrame = this.cardBackground;
+        sp.color = new Color(120, 255, 120, 255);
+        g.addComponent(Sorting2D).sortingOrder = this.sortingBase - 1;
+        const op = g.addComponent(UIOpacity);
+        op.opacity = 140;
+        tween(op).to(0.3, { opacity: 255 }).to(0.3, { opacity: 110 }).union().repeatForever().start();
+    }
+
+    /** As moedas de um merge ficam no pedido e so voam ate o placar quando ele for entregue. */
+    public AddPendingCoins(claim: OrderClaim, points: number, count: number) {
+        claim.order.heldPoints += points;
+        claim.order.coinCount += count;
+    }
+
+    /** O jogador tocou em ENTREGAR. */
+    public DeliverOrder(order: OrderView) {
+        const gm = GameManager.instance;
+        if (!order.ready || order.delivered || !gm || (!gm.IsRunning() && !gm.IsTutorialRunning())) return;
+        order.ready = false;
+        order.node.setRotationFromEuler(0, 0, 0);
+        SoundManager.playMenuClick();
+        const pm = PowerupManager.instance;
+        if (order.coinCount > 0 && pm) {
+            pm.FlyCoins(order.footer.worldPosition, Math.max(4, Math.min(20, order.coinCount)), order.heldPoints);
+        } else if (order.heldPoints > 0) {
+            ComboManager.instance?.ReleaseDisplay(order.heldPoints);
+        }
+        this.deliver(order);
+    }
+
+    /** O no do botao ENTREGAR do 1o pedido pronto (usado pelo tutorial), ou null. */
+    public firstReadyFooter(): Node | null {
+        for (const o of this.active) if (o.ready && !o.delivered && o.footer.isValid) return o.footer;
+        return null;
+    }
+
+    private refreshFooter(order: OrderView) {
+        const ready = order.ready && !order.delivered;
+        order.footerBg.color = ready ? new Color(50, 235, 85, 255) : new Color(70, 78, 110, 255);
+        order.footerLabel.color = ready ? Color.WHITE : new Color(160, 170, 200, 255);
+        if (!ready) order.footer.setScale(1, 1, 1);
     }
 
     private onSelectionChanged(counts: Map<ElementType, number>) {
@@ -442,10 +530,13 @@ export class OrderManager extends Component {
         if (gm && !gm.IsRunning()) {
             // sem bonus/penalidade
         } else if (order.timeLeft >= 0) {
+            // Entrega no prazo conta para o combo (sem moedas extras: elas ja vieram dos merges).
+            ComboManager.instance?.RegisterMatch(1, Math.max(1, order.lines.length), true);
             const bonus = Math.min(this.maxEarlyBonus, Math.floor(order.timeLeft * this.earlyBonusFactor));
             if (gm && bonus > 0) gm.AddTime(bonus, worldPos);
         } else {
             this.lateOrders++;
+            ComboManager.instance?.BreakCombo(); // entrega atrasada zera o combo
             SoundManager.playBadResultOrder();
             const penalty = Math.ceil(-order.timeLeft * this.latePenaltyFactor);
             if (gm && penalty > 0) gm.AddTime(-penalty, worldPos);
@@ -487,7 +578,7 @@ export class OrderManager extends Component {
     // ---------- Visual ----------
 
     private heightFor(order: OrderPlan): number {
-        return 36 + order.lines.length * 44 + 10;
+        return 36 + order.lines.length * 44 + 10 + OrderManager.FOOTER_H;
     }
 
     private usedHeight(): number {
@@ -570,7 +661,28 @@ export class OrderManager extends Component {
             return line;
         });
 
-        const view: OrderView = { plan, node, height: h, bg, timerLabel, lines, timeLeft: plan.deliverTime, delivered: false };
+        // Botao ENTREGAR (cinza ate o pedido ficar pronto, verde e pulsando depois).
+        const footer = this.makeNode('Deliver', node, 0, -h / 2 + OrderManager.FOOTER_H / 2 + 4, w - 14, OrderManager.FOOTER_H - 4);
+        const footerBg = footer.addComponent(Sprite);
+        footerBg.sizeMode = Sprite.SizeMode.CUSTOM;
+        footerBg.type = Sprite.Type.SLICED;
+        if (this.cardBackground) footerBg.spriteFrame = this.cardBackground;
+        footer.addComponent(Sorting2D).sortingOrder = this.sortingBase + 1;
+        const footerTextNode = this.makeNode('Text', footer, 0, 0, w - 24, OrderManager.FOOTER_H - 8);
+        const footerLabel = this.makeLabel(footerTextNode, 20, 3, Color.WHITE, new Color(10, 40, 20, 255));
+        footerLabel.isBold = true;
+        footerLabel.enableWrapText = false;
+        footerLabel.overflow = Label.Overflow.SHRINK;
+        footerLabel.fontSize = 19;
+        footerLabel.lineHeight = 20;
+        footerLabel.string = tr('DELIVER');
+
+        const view: OrderView = {
+            plan, node, height: h, bg, timerLabel, lines, timeLeft: plan.deliverTime, delivered: false,
+            ready: false, footer, footerBg, footerLabel, heldPoints: 0, coinCount: 0,
+        };
+        footer.on(Node.EventType.TOUCH_END, () => this.DeliverOrder(view));
+        this.refreshFooter(view);
         this.refreshTimer(view);
 
         node.setScale(0, 0, 1);
@@ -595,9 +707,9 @@ export class OrderManager extends Component {
     /** "x3" = quantidade pedida; com itens ja na prateleira vira "1/3", "2/3"... */
     private refreshLine(line: OrderLineView) {
         if (line.done) {
-            line.countLabel.string = 'OK';
+            line.countLabel.string = `${line.quantity}/${line.quantity}`;
             line.countLabel.color = this.okColor;
-            line.countLabel.fontSize = 24;
+            line.countLabel.fontSize = 26;
         } else if (line.reserved) {
             line.countLabel.string = `${line.quantity}/${line.quantity}`;
             line.countLabel.color = this.okColor;
@@ -605,15 +717,16 @@ export class OrderManager extends Component {
         } else {
             // A selecao conta so para o pedido prioritario (o 1o na tela que ainda quer este alimento): e ele que vai completar.
             const have = this.isPriorityLine(line) ? Math.min(this.selection.get(line.type) || 0, line.quantity) : 0;
-            line.countLabel.string = have > 0 ? `${have}/${line.quantity}` : `x${line.quantity}`;
+            line.countLabel.string = `${have}/${line.quantity}`;
             line.countLabel.color = have > 0 ? this.warnColor : Color.WHITE;
-            line.countLabel.fontSize = have > 0 ? 26 : 30;
+            line.countLabel.fontSize = 26;
         }
         line.countLabel.lineHeight = line.countLabel.fontSize;
     }
 
     /** Cor normal do cartao: azul escuro; pedidos de ouro brilham em dourado. */
     private baseCard(order: OrderView): Color {
+        if (order.ready && !order.plan.golden) return this.readyCard;
         if (!order.plan.golden) return this.cardColor;
         const k = 0.5 + 0.5 * Math.sin(this.clock * 4);
         return Color.lerp(new Color(), this.goldenCard, this.goldenCardLight, k);

@@ -165,9 +165,9 @@ export class MatchController extends Component {
                 OrderManager.instance.CompleteLine(claim);
             }
 
-            // Moedas do merge voam ate o placar de pontos da partida.
-            if (!golden && PowerupManager.instance && middleSlot && middleSlot.isValid) {
-                PowerupManager.instance.FlyCoins(middleSlot.worldPosition, Math.min(14, 5 + mergedCount * 2), holding ? gained : 0);
+            // As moedas ficam no pedido e so voam ate o placar quando o jogador tocar em ENTREGAR.
+            if (!golden && PowerupManager.instance && middleSlot && middleSlot.isValid && OrderManager.instance) {
+                OrderManager.instance.AddPendingCoins(claim, holding ? gained : 0, Math.min(14, 5 + mergedCount * 2));
             } else if (holding && ComboManager.instance) {
                 ComboManager.instance.ReleaseDisplay(gained); // sem como voar as moedas: libera o placar na hora
             }

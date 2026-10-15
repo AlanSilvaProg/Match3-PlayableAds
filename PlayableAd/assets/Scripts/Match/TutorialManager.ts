@@ -70,7 +70,7 @@ export class TutorialManager extends Component {
 
     private canTap: boolean = false;
     /** Introducao da 1a partida: 1 = explica os pedidos, 2 = clique guiado ate entregar o 1o pedido, 0 = fora dela. */
-    private introStep: 0 | 1 | 2 = 0;
+    private introStep: 0 | 1 | 2 | 3 = 0;
     private whitelist: MatchElement[] = [];
     private raised: { sorting: Sorting2D, original: number }[] = [];
     private captionRoot: Node | null = null;
@@ -109,6 +109,7 @@ export class TutorialManager extends Component {
         ev?.on(GameManager.EVENT_SELECTION_CHANGED, this.onSelectionChanged, this);
         ev?.on(GameManager.EVENT_WRONG_SELECTED, this.onWrongSelected, this);
         ev?.on(GameManager.EVENT_PLAY, this.onPlay, this);
+        ev?.on(GameManager.EVENT_ORDER_READY, this.onOrderReady, this);
         if (this.fadeNode) this.fadeNode.active = false;
         if (this.tutorialIndicator) this.tutorialIndicator.active = false;
     }
@@ -116,6 +117,7 @@ export class TutorialManager extends Component {
     protected onDestroy() {
         const events = GameManager.instance?.events;
         events?.off(GameManager.EVENT_PLAY, this.onPlay, this);
+        events?.off(GameManager.EVENT_ORDER_READY, this.onOrderReady, this);
         events?.off(GameManager.EVENT_WRONG_SELECTED, this.onWrongSelected, this);
         events?.off(GameManager.EVENT_COMBO_LOST, this.onComboLost, this);
         events?.off(GameManager.EVENT_COMBO_LEVEL_UP, this.onComboLevelUp, this);
@@ -148,7 +150,7 @@ export class TutorialManager extends Component {
         this.fadeNode?.targetOff(this);
         this.fadeNode?.on(Node.EventType.TOUCH_END, this.onIntroTap, this);
         this.highlight([OrderManager.instance.node]);
-        this.showCaption('These are your ORDERS!\nCollect the exact amount before time runs out.', this.capPos('orders', new Vec3(95, 120, 0)), true);
+        this.showCaption(tr("The customer wants:\n{0}\nLet's prepare the order!", this.orderListText()), this.capPos('orders', new Vec3(95, 120, 0)), true);
         this.canTap = false;
         this.scheduleOnce(() => { this.canTap = true; }, this.tapDelay);
     }
@@ -193,17 +195,44 @@ export class TutorialManager extends Component {
             });
         }
         // A legenda fica numa faixa SEM alimentos: em retrato, na linha do combo; em paisagem, acima do tabuleiro.
-        this.showCaption('Tap the highlighted foods!', this.capPos('click', new Vec3(100, Responsive.top - 55, 0)), false, Responsive.portrait ? 0.8 : 0.62);
+        this.showCaption(tr('Tap {0} to put\nthem on the TRAY!', this.orderListText()), this.capPos('click', new Vec3(100, Responsive.top - 55, 0)), false, Responsive.portrait ? 0.8 : 0.62);
+    }
+
+    /** "2x Fries, 3x Ice Cream": o conteudo do 1o pedido, nos textos da introducao. */
+    private orderListText(): string {
+        const lines = OrderManager.instance?.GetFirstOrderLines() || [];
+        return lines.map(l => `${l.quantity}x ${tr(ElementCatalog.getDef(l.type).name)}`).join(', ');
+    }
+
+    /** Passo 3 da introducao: o pedido ficou pronto na bandeja; so o botao ENTREGAR responde. */
+    private onOrderReady() {
+        if (this.introStep !== 2) return;
+        this.introStep = 3;
+        SoundManager.playTutorialStep();
+        const gm = GameManager.instance;
+        if (gm) gm.tutorialAllowed = []; // nenhum alimento aceita toque agora
+        this.whitelist = [];
+        this.fadeNode?.targetOff(this);
+        this.showFade(true);
+        if (OrderManager.instance) this.highlight([OrderManager.instance.node]);
+        this.showCaption('Order complete!\nTap DELIVER to get your coins.', this.capPos('orders', new Vec3(95, 120, 0)), false);
     }
 
     private onOrderDelivered() {
         // O 1o pedido foi entregue: fim da introducao.
-        if (this.introStep === 2) this.scheduleOnce(() => this.finishIntro(), 0.9);
+        if (this.introStep === 3) this.scheduleOnce(() => this.finishIntro(), 0.9);
     }
 
     /** A mao segue o proximo alimento a clicar. */
     private updateIntro() {
-        if (this.introStep !== 2 || !this.tutorialIndicator) return;
+        if (!this.tutorialIndicator) return;
+        if (this.introStep === 3) {
+            const footer = OrderManager.instance?.firstReadyFooter();
+            this.tutorialIndicator.active = !!footer;
+            if (footer) this.tutorialIndicator.setWorldPosition(footer.worldPosition);
+            return;
+        }
+        if (this.introStep !== 2) return;
         const selected = this.matchController ? this.matchController.selectedElements : [];
         const next = this.whitelist.find(el => el.isValid && el.node && el.isAvailable && selected.indexOf(el) === -1);
         if (next) {

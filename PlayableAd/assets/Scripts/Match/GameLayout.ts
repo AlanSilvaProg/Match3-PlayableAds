@@ -1,5 +1,7 @@
-import { Node, UITransform, Vec3 } from 'cc';
+import { Node, UITransform, Vec3, Label, Color, Sorting2D } from 'cc';
 import { Responsive } from './Responsive';
+import { tr } from './I18n';
+import { OrderManager } from './OrderManager';
 
 interface Saved { pos: Vec3; scale: Vec3; euler: Vec3; size: { w: number, h: number } | null; }
 
@@ -10,6 +12,37 @@ interface Saved { pos: Vec3; scale: Vec3; euler: Vec3; size: { w: number, h: num
  */
 export class GameLayout {
     private static saved: Map<Node, Saved> = new Map();
+    /** Faixa no topo do tabuleiro reservada ao texto-guia (os alimentos nao entram nela). */
+    private static readonly HINT_BAND = 40;
+
+    /** Texto-guia na faixa reservada: "escolha aqui as comidas dos pedidos". Cria uma vez e so reposiciona depois. */
+    private static placeBoardHint(canvas: Node, x: number, y: number, width: number) {
+        let n = canvas.getChildByName('BoardHint');
+        if (!n) {
+            n = new Node('BoardHint');
+            n.layer = canvas.layer;
+            n.parent = canvas;
+            n.addComponent(UITransform).setContentSize(width, 34);
+            const label = n.addComponent(Label);
+            const font = OrderManager.instance ? OrderManager.instance.font : null;
+            if (font) { label.useSystemFont = false; label.font = font; }
+            label.string = tr('Pick the foods for your orders here!');
+            label.fontSize = 24;
+            label.lineHeight = 26;
+            label.isBold = true;
+            label.color = new Color(255, 236, 170, 235);
+            label.horizontalAlign = Label.HorizontalAlign.CENTER;
+            label.verticalAlign = Label.VerticalAlign.CENTER;
+            label.overflow = Label.Overflow.SHRINK;
+            label.enableWrapText = false;
+            label.enableOutline = true;
+            label.outlineColor = new Color(40, 25, 0, 255);
+            label.outlineWidth = 3;
+            n.addComponent(Sorting2D).sortingOrder = 1;
+        }
+        n.getComponent(UITransform)!.setContentSize(width, 34);
+        n.setPosition(x, y, 0);
+    }
 
     public static apply(canvas: Node) {
         const find = (path: string) => canvas.getChildByPath(path);
@@ -90,9 +123,12 @@ export class GameLayout {
 
         // Tabuleiro.
         if (nodes.board) {
-            this.setBoardSize(nodes.board, 700, m.boardH);
-            nodes.board.setPosition(0, m.boardY, 0);
+            const band = this.HINT_BAND;
+            this.setBoardSize(nodes.board, 700, m.boardH - band / m.boardScale);
+            nodes.board.setPosition(0, m.boardY - band / 2, 0);
             nodes.board.setScale(m.boardScale, m.boardScale, 1);
+            const fullTop = m.boardY + (m.boardH * m.boardScale) / 2;
+            this.placeBoardHint(canvas, 0, fullTop - band / 2, 700 * m.boardScale - 40);
         }
 
         // Prateleira na horizontal, abaixo do tabuleiro.
@@ -120,7 +156,11 @@ export class GameLayout {
             const saved = this.saved.get(nodes.board);
             const w = (saved?.size?.w ?? 700) + Math.min(extraW * 0.8, 600);
             const h = (saved?.size?.h ?? 510) + Math.min(extraH * 0.8, 400);
-            this.setBoardSize(nodes.board, w, h);
+            const band = this.HINT_BAND;
+            this.setBoardSize(nodes.board, w, h - band);
+            const bp = nodes.board.position;
+            nodes.board.setPosition(bp.x, bp.y - band / 2, bp.z);
+            this.placeBoardHint(nodes.board.parent!, bp.x, bp.y + h / 2 - band / 2, w - 40);
         }
         // Coluna de pedidos: o fundo (sprite girado 90 graus) acompanha a altura visivel.
         const bg = nodes.ordersBg?.getComponent(UITransform);

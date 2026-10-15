@@ -8,6 +8,12 @@ import { Label, Node } from 'cc';
 export type Lang = 'en' | 'pt' | 'es' | 'de';
 
 const PT: Record<string, string> = {
+    "Pick the foods for your orders here!": "Escolha aqui as comidas dos pedidos!",
+    "DELIVER": "ENTREGAR",
+    "TRAY": "BANDEJA",
+    "The customer wants:\n{0}\nLet's prepare the order!": "O cliente quer:\n{0}\nVamos preparar o pedido!",
+    "Tap {0} to put\nthem on the TRAY!": "Toque em {0} para\ncolocá-los na BANDEJA!",
+    "Order complete!\nTap DELIVER to get your coins.": "Pedido completo!\nToque em ENTREGAR para ganhar suas moedas.",
     'Orders': 'Pedidos',
     // Combos
     'NICE!': 'LEGAL!', 'GREAT!': 'ÓTIMO!', 'AWESOME!': 'INCRÍVEL!', 'AMAZING!': 'SENSACIONAL!',
@@ -93,6 +99,12 @@ const PT: Record<string, string> = {
 };
 
 const ES: Record<string, string> = {
+    "Pick the foods for your orders here!": "¡Elige aquí las comidas de los pedidos!",
+    "DELIVER": "ENTREGAR",
+    "TRAY": "BANDEJA",
+    "The customer wants:\n{0}\nLet's prepare the order!": "El cliente quiere:\n{0}\n¡Vamos a preparar el pedido!",
+    "Tap {0} to put\nthem on the TRAY!": "¡Toca {0} para\nponerlos en la BANDEJA!",
+    "Order complete!\nTap DELIVER to get your coins.": "¡Pedido completo!\nToca ENTREGAR para ganar tus monedas.",
     'Orders': 'Pedidos',
     'NICE!': '¡BIEN!', 'GREAT!': '¡GENIAL!', 'AWESOME!': '¡INCREÍBLE!', 'AMAZING!': '¡ASOMBROSO!',
     'UNSTOPPABLE!': '¡IMPARABLE!', 'LEGENDARY!': '¡LEGENDARIO!', 'FAST COMBO x{0}': 'COMBO RÁPIDO x{0}',
@@ -168,6 +180,12 @@ const ES: Record<string, string> = {
 };
 
 const DE: Record<string, string> = {
+    "Pick the foods for your orders here!": "Wähle hier die Speisen für die Bestellungen!",
+    "DELIVER": "LIEFERN",
+    "TRAY": "TABLETT",
+    "The customer wants:\n{0}\nLet's prepare the order!": "Der Kunde möchte:\n{0}\nBereiten wir die Bestellung vor!",
+    "Tap {0} to put\nthem on the TRAY!": "Tippe auf {0}, um sie\naufs TABLETT zu legen!",
+    "Order complete!\nTap DELIVER to get your coins.": "Bestellung fertig!\nTippe auf LIEFERN, um deine Münzen zu bekommen.",
     'Orders': 'Bestellungen',
     'NICE!': 'NETT!', 'GREAT!': 'SUPER!', 'AWESOME!': 'GENIAL!', 'AMAZING!': 'WAHNSINN!',
     'UNSTOPPABLE!': 'UNAUFHALTSAM!', 'LEGENDARY!': 'LEGENDÄR!', 'FAST COMBO x{0}': 'SCHNELLER COMBO x{0}',

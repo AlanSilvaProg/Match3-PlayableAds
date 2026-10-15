@@ -22,7 +22,7 @@
       "uuid": "8bb2ebca-6ac1-483e-a977-06eeaa496d79"
     },
     "UI": {
-      "time": 1792100993778.047,
+      "time": 1792103289866.0068,
       "uuid": "422b06ed-a41e-4bf6-9453-a6e69a59d850"
     },
     "extra_assets": {
@@ -58,9 +58,6 @@
     },
     "UI/gameplay_collect_area.png.meta": {
       "time": 1791206513739.2202
-    },
-    "UI/splash_logo.png.meta": {
-      "time": 1791223935665.1226
     },
     "UI/target_bkg.png.meta": {
       "time": 1791206513739.656
@@ -134,10 +131,6 @@
     "UI/gameplay_collect_area.png": {
       "time": 1791206513739.1545,
       "uuid": "1584ad8b-6473-4a13-a6c1-d9ec39d463e1"
-    },
-    "UI/splash_logo.png": {
-      "time": 1791223908961.716,
-      "uuid": "8258bf71-387b-48fe-9418-5981de4885b9"
     },
     "extra_assets/explosion.png": {
       "time": 1791206513740.118,
@@ -215,7 +208,7 @@
       "time": 1791206513733.6562
     },
     "Scripts/Match/MatchSlots.ts": {
-      "time": 1792083029415.6606,
+      "time": 1792103751157.5173,
       "uuid": "38af9b55-b6e0-4600-a305-7f16f772b343"
     },
     "Scripts/Match/MatchInitializer.ts.meta": {
@@ -229,7 +222,7 @@
       "time": 1791206513732.98
     },
     "Scripts/Match/MatchController.ts": {
-      "time": 1792085306150.1472,
+      "time": 1792103451844.2358,
       "uuid": "ef137c72-8446-49a0-90d6-bf3455356caa"
     },
     "Scenes.meta": {
@@ -263,7 +256,7 @@
       "time": 1791206513734.03
     },
     "Scripts/Match/GameManager.ts": {
-      "time": 1792101397959.6646,
+      "time": 1792103451843.3984,
       "uuid": "7066c457-7c2b-417b-8779-338dab7721ee"
     },
     "Scripts/Match/GameState.ts": {
@@ -285,14 +278,14 @@
       "time": 1791206513729.6812
     },
     "Prefabs/FailScreen.prefab": {
-      "time": 1791514232415.9534,
+      "time": 1792104256759.1462,
       "uuid": "d49c5b5f-4aa5-432f-b100-30cc895ec194"
     },
     "Prefabs/WinnerScreen.prefab.meta": {
       "time": 1791206513731.4795
     },
     "Prefabs/WinnerScreen.prefab": {
-      "time": 1791513744958.6006,
+      "time": 1792104269886.3894,
       "uuid": "6584e6d4-14e2-4cd0-9204-bbc880fb3d18"
     },
     "Animations.meta": {
@@ -327,7 +320,7 @@
       "time": 1791206513734.441
     },
     "Scripts/Match/TutorialManager.ts": {
-      "time": 1792095293746.3813,
+      "time": 1792103477660.1384,
       "uuid": "fdb05417-a2c0-4ac9-83f0-aaa156c58ec0"
     },
     "extra_assets/white_rect.jpg.meta": {
@@ -341,7 +334,7 @@
       "time": 1791206513731.8757
     },
     "Scenes/PlayableAdMatch.scene": {
-      "time": 1792101198589.786,
+      "time": 1792104298851.102,
       "uuid": "e04ca93c-f472-474b-bec4-ef3ccf980601"
     },
     "Animations/HandAnimation.anim.meta": {
@@ -402,7 +395,7 @@
       "uuid": "8e2ab00e-7fad-47dc-b43f-33d690ede0ac"
     },
     "Scripts/Match/ComboManager.ts": {
-      "time": 1792085306149.337,
+      "time": 1792104072819.1277,
       "uuid": "7f157597-9213-4a48-842c-722380101aa3"
     },
     "UI/Combo/combo_2x.png": {
@@ -436,10 +429,10 @@
       "uuid": "8eafd6ba-3593-471c-a694-c4534adaeb40"
     },
     "UI/splash_logo_merge.png.meta": {
-      "time": 1791249596952.9573
+      "time": 1792103289918.0361
     },
     "UI/splash_logo_merge.png": {
-      "time": 1791550438290.1333,
+      "time": 1792103113708.8335,
       "uuid": "a6601604-e134-4432-a5a8-376ed789a8ef"
     },
     "extra_assets/background.png.meta": {
@@ -593,7 +586,7 @@
       "time": 1791405604863.5935
     },
     "Scripts/Match/OrderManager.ts": {
-      "time": 1792097219999.4756,
+      "time": 1792104272674.9292,
       "uuid": "6e105072-af44-4db7-86a0-e934805b3005"
     },
     "Scripts/Match/PokiService.ts.meta": {
@@ -932,7 +925,7 @@
       "uuid": "a1717552-869c-4df0-bd12-e833037ede92"
     },
     "Scripts/Match/GameLayout.ts": {
-      "time": 1791845708147.1323,
+      "time": 1792104504632.217,
       "uuid": "9825bfdd-efa9-4a58-bc49-e8436ea5bbf6"
     },
     "Scripts/Match/Responsive.ts": {
@@ -1006,7 +999,7 @@
       "time": 1792095298349.3545
     },
     "Scripts/Match/I18n.ts": {
-      "time": 1792101397958.938,
+      "time": 1792104504632.943,
       "uuid": "62a2ea09-be6b-4e9a-86e3-c0f25de310de"
     },
     "Sounds/Voices.meta": {
@@ -1047,19 +1040,19 @@
       "uuid": "bd444190-f1bc-4c6c-a6fd-fb054a1b34fe"
     },
     "Sounds/Voices/de": {
-      "time": 1792100978715.322,
+      "time": 1792102823328.3196,
       "uuid": "8e42bca0-6f27-49b5-af99-63b3785fc164"
     },
     "Sounds/Voices/en": {
-      "time": 1792100979190.209,
+      "time": 1792102823323.095,
       "uuid": "468959cc-56f4-4bbd-9f47-d192b2fee1a7"
     },
     "Sounds/Voices/es": {
-      "time": 1792100979682.5474,
+      "time": 1792102823331.6748,
       "uuid": "51b1bb86-2336-4148-9e1b-3ae1427765bf"
     },
     "Sounds/Voices/pt": {
-      "time": 1792100980185.0425,
+      "time": 1792102823325.796,
       "uuid": "f4110c90-8a1a-4fbc-8c60-4875991401cb"
     },
     "Sounds/Voices/en/NICE.mp3": {
