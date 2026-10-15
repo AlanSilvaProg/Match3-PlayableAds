@@ -102,6 +102,16 @@ export class OrderManager extends Component {
     private elapsed: number = 0;
     private active: OrderView[] = [];
     private clock: number = 0;
+
+    @property({ tooltip: 'Dica: segundos sem entregar um pedido para os alimentos certos pulsarem.' })
+    public hintSeconds: number = 8;
+
+    @property({ tooltip: 'Dica: so nos primeiros N niveis.' })
+    public hintLevels: number = 3;
+
+    private sinceDelivery: number = 0;
+    private hinted: any[] = [];
+    private hintRefresh: number = 0;
     private allDelivered: boolean = false;
     private frozenFor: number = 0;
     /** Escala uniforme dos cartoes: diminui quando ha pedidos demais para a altura do painel. */
@@ -167,6 +177,8 @@ export class OrderManager extends Component {
         // Cartoes de uma tentativa anterior (checkpoint) somem antes da nova fase.
         this.active.forEach(o => { Tween.stopAllByTarget(o.node); if (o.node.isValid) o.node.destroy(); });
         this.frozenFor = 0;
+        this.sinceDelivery = 0;
+        this.stopHint();
         this.plan = plan;
         this.nextIndex = 0;
         this.elapsed = 0;
@@ -195,6 +207,52 @@ export class OrderManager extends Component {
         }
 
         this.active.forEach(o => this.refreshTimer(o));
+        this.updateHint(dt);
+    }
+
+    // ---------- Dica (primeiros niveis) ----------
+
+    private updateHint(dt: number) {
+        const gm = GameManager.instance;
+        const ok = !!gm && GameManager.currentLevel < this.hintLevels && gm.IsRunning() && !gm.timeHeld
+            && gm.tutorialAllowed === null && !GoldenTime.active && !this.allDelivered;
+        if (!ok) { if (this.hinted.length) this.stopHint(); return; }
+        this.sinceDelivery += dt;
+        if (this.sinceDelivery < this.hintSeconds) return;
+        this.hintRefresh -= dt;
+        if (this.hintRefresh > 0) return;
+        this.hintRefresh = 0.4;
+        this.hinted = this.hinted.filter(el => {
+            if (el.isValid && el.isAvailable) return true;
+            return false; // foi selecionado: o proprio OnClick ja parou o tween
+        });
+        const scene = gm!.node.parent;
+        const board = scene ? scene.getChildByName('MatchSpace') : null;
+        if (!board) return;
+        const candidates: any[] = board.getComponentsInChildren('MatchElement').filter((e: any) => e.isValid && e.isAvailable);
+        for (const line of this.GetPriorityOrderLines()) {
+            const of = candidates.filter(e => e.type === line.type).slice(0, line.quantity);
+            for (const el of of) {
+                if (this.hinted.indexOf(el) !== -1) continue;
+                this.hinted.push(el);
+                const sc = el.availableScale;
+                Tween.stopAllByTarget(el.node);
+                tween(el.node)
+                    .to(0.3, { scale: new Vec3(sc.x * 1.2, sc.y * 1.2, sc.z) }, { easing: 'sineInOut' })
+                    .to(0.3, { scale: sc.clone() }, { easing: 'sineInOut' })
+                    .union().repeatForever().start();
+            }
+        }
+    }
+
+    private stopHint() {
+        for (const el of this.hinted) {
+            if (!el.isValid || !el.node || !el.isAvailable) continue;
+            Tween.stopAllByTarget(el.node);
+            el.node.setScale(el.availableScale);
+        }
+        this.hinted = [];
+        this.hintRefresh = 0;
     }
 
     // ---------- Pedidos x merges ----------
@@ -410,6 +468,8 @@ export class OrderManager extends Component {
             })
             .start();
 
+        this.sinceDelivery = 0;
+        this.stopHint();
         gm?.events.emit(GameManager.EVENT_ORDER_DELIVERED, this.deliveredOrders);
 
         // Pedido de ouro entregue no prazo e que NAO e o ultimo da fase: Golden Time.

@@ -108,6 +108,7 @@ export class MatchElement extends Component {
 
     private touchId: number = -1;
     private dragging: boolean = false;
+    private clickedOnStart: boolean = false;
     private dragMoved: number = 0;
     private dragOrigin: Vec3 | null = null;
 
@@ -140,6 +141,7 @@ export class MatchElement extends Component {
     /** Pode comecar a arrastar este item agora? (partida rodando, item no tabuleiro e liberado pelo tutorial) */
     private canDrag(): boolean {
         const gm = GameManager.instance;
+        if (this.inTutorial()) return false;
         if (gm && !gm.IsRunning() && !gm.IsTutorialRunning()) return false;
         const allowed = gm ? gm.tutorialAllowed : null;
         if (allowed && allowed.indexOf(this) === -1) return false;
@@ -147,11 +149,24 @@ export class MatchElement extends Component {
         return this.isAvailable && !this.hasReachedSlot && !this.isRejecting;
     }
 
+    /** Tutorial em andamento (intro ou passo guiado): sem arrastar, o simples toque ja seleciona. */
+    private inTutorial(): boolean {
+        const gm = GameManager.instance;
+        return !!gm && (gm.IsTutorialRunning() || gm.tutorialAllowed !== null);
+    }
+
     private onTouchStart(event: EventTouch) {
         if (this.touchId !== -1) return;
         this.touchId = event.getID();
         this.dragging = false;
         this.dragMoved = 0;
+        this.clickedOnStart = false;
+        if (this.inTutorial()) {
+            this.clickedOnStart = true;
+            this.dragOrigin = null;
+            this.OnClick();
+            return;
+        }
         this.dragOrigin = this.canDrag() ? this.node.position.clone() : null;
     }
 
@@ -186,6 +201,7 @@ export class MatchElement extends Component {
         // Soltar fora do item sem ter arrastado nao e um clique (igual ao Button).
         if (event.type === Node.EventType.TOUCH_CANCEL && !wasDragged) return;
 
+        if (this.clickedOnStart) { this.clickedOnStart = false; return; }
         if (!wasDragged) {
             this.OnClick(); // toque simples: seleciona
             return;
