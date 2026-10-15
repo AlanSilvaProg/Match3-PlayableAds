@@ -143,8 +143,6 @@
             "extra_assets/ray-icon.png",
             "Scripts/Match/RayPickup.ts",
             "Scripts/Match/GoldenTime.ts",
-            "Sounds/coin-switch.wav",
-            "Sounds/golden-time.wav",
             "Sounds/element-selected-by-ray.mp3",
             "Sounds/ray-enabled.mp3",
             "Scripts/Match/I18n.ts",
@@ -188,7 +186,9 @@
             "Sounds/Voices/pt/LEGENDARY.mp3",
             "Sounds/Voices/pt/LUNCH.mp3",
             "Sounds/Voices/pt/NICE.mp3",
-            "Sounds/Voices/pt/UNSTOPPABLE.mp3"
+            "Sounds/Voices/pt/UNSTOPPABLE.mp3",
+            "Sounds/coin-switch.mp3",
+            "Sounds/golden-time.mp3"
         ]
     }
 }

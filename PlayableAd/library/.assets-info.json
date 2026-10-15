@@ -18,15 +18,15 @@
       "uuid": "fddeb92d-097c-4299-ba88-970f7721873c"
     },
     "Sounds": {
-      "time": 1792098429802.3103,
+      "time": 1792100981351.8748,
       "uuid": "8bb2ebca-6ac1-483e-a977-06eeaa496d79"
     },
     "UI": {
-      "time": 1791550438290.3962,
+      "time": 1792100993778.047,
       "uuid": "422b06ed-a41e-4bf6-9453-a6e69a59d850"
     },
     "extra_assets": {
-      "time": 1792082500958.4265,
+      "time": 1792100986903.2104,
       "uuid": "97d238bb-3a2a-47d4-be4f-8be109e1af2b"
     },
     "Sounds/AlarmLoop.mp3.meta": {
@@ -96,23 +96,23 @@
       "time": 1791206513751.1382
     },
     "Sounds/AttachItem1.mp3": {
-      "time": 1791206513736.39,
+      "time": 1792100978021.816,
       "uuid": "ceb3f865-972d-4aec-947a-ccd1b1ce311c"
     },
     "Sounds/AlarmLoop.mp3": {
-      "time": 1791206513735.1719,
+      "time": 1792100977969.252,
       "uuid": "f2bbfe54-467d-4646-a59e-8c61c10cc21a"
     },
     "Sounds/CollectMatch1.mp3": {
-      "time": 1791206513736.6316,
+      "time": 1792100978073.9622,
       "uuid": "5da64fda-4ae0-493a-8d44-7b9c3b45a6ad"
     },
     "Sounds/GrabItem.mp3": {
-      "time": 1791206513737.1335,
+      "time": 1792100978121.4026,
       "uuid": "8254c4f1-fa99-4936-9559-268f88f98908"
     },
     "Sounds/LevelComplete.mp3": {
-      "time": 1791206513737.62,
+      "time": 1792100978177.2478,
       "uuid": "6f7bc02c-1d6f-40a3-8880-9e3b25a7cc48"
     },
     "UI/energybar.png": {
@@ -124,7 +124,7 @@
       "uuid": "10404a0e-017b-4c9a-81a1-dc07d1fc80f6"
     },
     "Sounds/LevelFailed.mp3": {
-      "time": 1791206513738.0713,
+      "time": 1792100978231.884,
       "uuid": "1653f5f2-8003-45a8-b468-8f2a008f3c80"
     },
     "Sounds/MusicLoop5s.mp3": {
@@ -341,7 +341,7 @@
       "time": 1791206513731.8757
     },
     "Scenes/PlayableAdMatch.scene": {
-      "time": 1792100440761.3423,
+      "time": 1792101198589.786,
       "uuid": "e04ca93c-f472-474b-bec4-ef3ccf980601"
     },
     "Animations/HandAnimation.anim.meta": {
@@ -712,7 +712,7 @@
       "time": 1791514348825.904
     },
     "UI/achivements-icon-sheet.png": {
-      "time": 1791550437722.2717,
+      "time": 1792101000182.2688,
       "uuid": "9a918a94-bd23-4080-918a-de266d7e2f63"
     },
     "UI/moeda-de-dolar-group.png.meta": {
@@ -778,11 +778,11 @@
       "time": 1791551506331.2346
     },
     "Sounds/notification.mp3": {
-      "time": 1791551373906.7788,
+      "time": 1792100980831.9734,
       "uuid": "cf803827-248d-4ffb-bc2b-ac9e4ac9ff7e"
     },
     "Sounds/coleta.mp3": {
-      "time": 1791551246509.661,
+      "time": 1792100980443.9722,
       "uuid": "d5fcf940-6a37-4a36-911b-42a94a3fb653"
     },
     "Scripts/Match/SoundManager.ts.meta": {
@@ -796,7 +796,7 @@
       "time": 1791551993434.0615
     },
     "Sounds/drop-order-to-one.mp3": {
-      "time": 1791551757119.5737,
+      "time": 1792100980607.9812,
       "uuid": "5d53f24a-224f-4e80-8290-1a606d9a0ff4"
     },
     "Scripts/Match/WindowAnim.ts.meta": {
@@ -813,60 +813,60 @@
       "uuid": "2032632f-3d6c-49b8-bfad-790ee5b8c056"
     },
     "Sounds/menu-click.mp3": {
-      "time": 1791552104157.6472,
+      "time": 1792100980782.1672,
       "uuid": "03b5b1e9-efff-4a11-b434-5edbf023ed35"
     },
     "Sounds/open-menu.mp3": {
-      "time": 1791552330772.3828,
+      "time": 1792100980883.1636,
       "uuid": "036389e6-3ce2-4748-8b1a-0e0709a3a0ff"
     },
     "Sounds/click-blocked.mp3.meta": {
       "time": 1791552610354.9045
     },
     "Sounds/click-blocked.mp3": {
-      "time": 1791552515207.7825,
+      "time": 1792100980389.274,
       "uuid": "f0699c6f-a851-4978-988f-638cf5431c37"
     },
     "Sounds/time-increasing.mp3.meta": {
       "time": 1791552751088.3306
     },
     "Sounds/time-increasing.mp3": {
-      "time": 1791552690614.5571,
+      "time": 1792100981256.3257,
       "uuid": "054ccc49-949a-4c5c-a124-cb9ef04c0b7d"
     },
     "Sounds/time-clock.mp3.meta": {
       "time": 1791552813761.6997
     },
     "Sounds/time-clock.mp3": {
-      "time": 1791552777573.3452,
+      "time": 1792100981205.7686,
       "uuid": "af1f299e-a1b4-44ac-a134-dcdc8512aed1"
     },
     "Sounds/combo-changed.mp3.meta": {
       "time": 1791552901930.841
     },
     "Sounds/combo-changed.mp3": {
-      "time": 1791552879073.9646,
+      "time": 1792100980500.6428,
       "uuid": "c479ddc4-aa62-4341-adc2-c6ebd99f07b2"
     },
     "Sounds/removed-from-selected.mp3.meta": {
       "time": 1791553043777.376
     },
     "Sounds/removed-from-selected.mp3": {
-      "time": 1791552963324.7266,
+      "time": 1792100981037.5452,
       "uuid": "a162b1d0-2630-47d9-bb34-4c41e578b96f"
     },
     "Sounds/bad-result-order.mp3.meta": {
       "time": 1791553121699.0964
     },
     "Sounds/bad-result-order.mp3": {
-      "time": 1791553093045.1572,
+      "time": 1792100980338.3071,
       "uuid": "8c387cb6-bbbb-4200-ae26-afacecefdead"
     },
     "Sounds/success-order.mp3.meta": {
       "time": 1791553406663.9922
     },
     "Sounds/success-order.mp3": {
-      "time": 1791553335295.6658,
+      "time": 1792100981144.03,
       "uuid": "891a75e3-bb08-4515-ac19-59b512a306c5"
     },
     "Sounds/bad-name.mp3.meta": {
@@ -876,18 +876,18 @@
       "time": 1791553503220.2136
     },
     "Sounds/bad-name.mp3": {
-      "time": 1791553477593.6636,
+      "time": 1792100980283.6948,
       "uuid": "c65f9065-de9a-45c7-96d9-d6c21e05cb9f"
     },
     "Sounds/stars-won.mp3": {
-      "time": 1791553448954.016,
+      "time": 1792100981088.8586,
       "uuid": "e680447d-5d67-40dc-80cd-2bff4066a6ff"
     },
     "Sounds/tutorial-step.mp3.meta": {
       "time": 1791553536148.5593
     },
     "Sounds/tutorial-step.mp3": {
-      "time": 1791553522390.3867,
+      "time": 1792100981304.6675,
       "uuid": "5cce37e3-97af-4e90-839d-3eb9a2a47a73"
     },
     "Sounds/auto-select.mp3.meta": {
@@ -897,25 +897,25 @@
       "time": 1791554088337.3857
     },
     "Sounds/double-coins.mp3": {
-      "time": 1791554036213.6218,
+      "time": 1792100980556.1387,
       "uuid": "3ff3a70b-028b-4ae4-bd33-f355202c2383"
     },
     "Sounds/auto-select.mp3": {
-      "time": 1791554029130.5493,
+      "time": 1792100980234.6147,
       "uuid": "2fa6d368-bdcd-4d3e-8467-57abdfb0c52b"
     },
     "Sounds/heart-beat.mp3.meta": {
       "time": 1791554142041.8127
     },
     "Sounds/heart-beat.mp3": {
-      "time": 1791554109288.31,
+      "time": 1792100980732.2732,
       "uuid": "0d3b6adc-4954-4d0f-bd52-e6ae2f4880ef"
     },
     "Sounds/reducing-time.mp3.meta": {
       "time": 1791554172370.5195
     },
     "Sounds/reducing-time.mp3": {
-      "time": 1791554151380.9746,
+      "time": 1792100980988.5933,
       "uuid": "c113cfa6-d52a-4fd9-ab95-99b356f1630d"
     },
     "Scripts/Match/EndScreenLayout.ts.meta": {
@@ -954,10 +954,10 @@
       "uuid": "a16f2a87-75e3-4d25-85e8-7239e1a9f321"
     },
     "extra_assets/background_night.png.meta": {
-      "time": 1792005225491.451
+      "time": 1792100987476.583
     },
     "extra_assets/background_night.png": {
-      "time": 1792005096874.3953,
+      "time": 1792100986903.0813,
       "uuid": "1d4919d3-9280-4dbd-b571-87c8061e7938"
     },
     "Scripts/Match/PhaseFlow.ts.meta": {
@@ -988,20 +988,6 @@
       "time": 1792095276538.7517,
       "uuid": "57cb1a8a-09fe-4855-a579-93f1b06c3850"
     },
-    "Sounds/coin-switch.wav.meta": {
-      "time": 1792087317782.4265
-    },
-    "Sounds/golden-time.wav.meta": {
-      "time": 1792087317782.6277
-    },
-    "Sounds/coin-switch.wav": {
-      "time": 1792087223008.926,
-      "uuid": "93662788-4c25-4e2d-b578-9b7897bf7719"
-    },
-    "Sounds/golden-time.wav": {
-      "time": 1792087163176.7925,
-      "uuid": "9e3c10a9-8e2a-484e-9348-454268295900"
-    },
     "Sounds/element-selected-by-ray.mp3.meta": {
       "time": 1792091306139.4558
     },
@@ -1009,11 +995,11 @@
       "time": 1792091306139.1423
     },
     "Sounds/ray-enabled.mp3": {
-      "time": 1792091030454.6538,
+      "time": 1792100980936.313,
       "uuid": "c5e5ae96-b6fc-42f7-9243-fb4ce389e0b4"
     },
     "Sounds/element-selected-by-ray.mp3": {
-      "time": 1792092016524.6711,
+      "time": 1792100980658.4358,
       "uuid": "dd8db944-8f35-4d86-880d-d0c44fbb5cc0"
     },
     "Scripts/Match/I18n.ts.meta": {
@@ -1061,43 +1047,43 @@
       "uuid": "bd444190-f1bc-4c6c-a6fd-fb054a1b34fe"
     },
     "Sounds/Voices/de": {
-      "time": 1792100430559.8428,
+      "time": 1792100978715.322,
       "uuid": "8e42bca0-6f27-49b5-af99-63b3785fc164"
     },
     "Sounds/Voices/en": {
-      "time": 1792100430560.2476,
+      "time": 1792100979190.209,
       "uuid": "468959cc-56f4-4bbd-9f47-d192b2fee1a7"
     },
     "Sounds/Voices/es": {
-      "time": 1792100430558.8237,
+      "time": 1792100979682.5474,
       "uuid": "51b1bb86-2336-4148-9e1b-3ae1427765bf"
     },
     "Sounds/Voices/pt": {
-      "time": 1792100430557.6467,
+      "time": 1792100980185.0425,
       "uuid": "f4110c90-8a1a-4fbc-8c60-4875991401cb"
     },
     "Sounds/Voices/en/NICE.mp3": {
-      "time": 1791922783061.3347,
+      "time": 1792100979136.0994,
       "uuid": "c69267c5-1a7f-44bf-b7fd-8074a9e63313"
     },
     "Sounds/Voices/en/AWESOME.mp3": {
-      "time": 1791922853772.0383,
+      "time": 1792100978820.4358,
       "uuid": "5e671884-04d4-4d03-8f3a-32594d2b295b"
     },
     "Sounds/Voices/en/LEGENDARY.mp3": {
-      "time": 1791922980643.3953,
+      "time": 1792100979033.157,
       "uuid": "2b128e72-298b-4576-b266-6a516b77ed92"
     },
     "Sounds/Voices/en/GREAT.mp3": {
-      "time": 1791922824362.7986,
+      "time": 1792100978978.603,
       "uuid": "079686f8-6146-4363-9b7c-38dd91a6a196"
     },
     "Sounds/Voices/en/AMAZING.mp3": {
-      "time": 1791922886034.844,
+      "time": 1792100978767.8381,
       "uuid": "48bf5a12-5c3d-4c08-bc8b-b47d547474fb"
     },
     "Sounds/Voices/en/UNSTOPPABLE.mp3": {
-      "time": 1791922910618.5886,
+      "time": 1792100979189.8333,
       "uuid": "942d54e4-dfd2-485a-92c8-3e19f96f84d8"
     },
     "Sounds/Voices/de/AMAZING.mp3.meta": {
@@ -1191,124 +1177,138 @@
       "time": 1792100417537.6736
     },
     "Sounds/Voices/de/AWESOME.mp3": {
-      "time": 1792100278383.1326,
+      "time": 1792100978337.0151,
       "uuid": "f2d05850-b7f9-4d91-aa69-1080c46812bb"
     },
     "Sounds/Voices/de/DINNER.mp3": {
-      "time": 1792100377914.5278,
+      "time": 1792100978444.2512,
       "uuid": "80772254-0fd3-4b99-9a99-8f02aa9e4694"
     },
     "Sounds/Voices/de/AMAZING.mp3": {
-      "time": 1792100292765.622,
+      "time": 1792100978285.5808,
       "uuid": "ac2c851a-78fd-4adf-9f31-3c51cf770e36"
     },
     "Sounds/Voices/de/BREAKFAST.mp3": {
-      "time": 1792100347444.4753,
+      "time": 1792100978389.8052,
       "uuid": "ca6ba37e-317b-49d2-8606-447627acd01d"
     },
     "Sounds/Voices/de/GREAT.mp3": {
-      "time": 1792100263187.8765,
+      "time": 1792100978497.3855,
       "uuid": "64145904-983e-4ac5-bf8e-176b5d315860"
     },
     "Sounds/Voices/de/UNSTOPPABLE.mp3": {
-      "time": 1792100308550.8123,
+      "time": 1792100978714.9434,
       "uuid": "bb132669-1bf8-4319-8a71-c6b9bdf86c9a"
     },
     "Sounds/Voices/de/LEGENDARY.mp3": {
-      "time": 1792100324970.5322,
+      "time": 1792100978549.9358,
       "uuid": "bad6caa7-39ba-4a5a-ac24-b2006639b503"
     },
     "Sounds/Voices/de/LUNCH.mp3": {
-      "time": 1792100361860.9702,
+      "time": 1792100978602.6375,
       "uuid": "d25e0c19-9da0-4b78-bf7b-492cde59456a"
     },
     "Sounds/Voices/de/NICE.mp3": {
-      "time": 1792100146534.2502,
+      "time": 1792100978658.7034,
       "uuid": "09c67c3d-3218-451d-8637-7bf93b30737b"
     },
     "Sounds/Voices/en/BREAKFAST.mp3": {
-      "time": 1792099467163.8025,
+      "time": 1792100978873.1956,
       "uuid": "1822613c-e429-465e-a4f5-03d29e476dcf"
     },
     "Sounds/Voices/en/DINNER.mp3": {
-      "time": 1792099520318.825,
+      "time": 1792100978925.063,
       "uuid": "e0d46cc7-7067-4d68-ae0b-5e923a3a6492"
     },
     "Sounds/Voices/en/LUNCH.mp3": {
-      "time": 1792099499525.9043,
+      "time": 1792100979085.2954,
       "uuid": "57ed22b1-2c8f-413b-aeea-54aefadcd492"
     },
     "Sounds/Voices/es/AMAZING.mp3": {
-      "time": 1792099970015.244,
+      "time": 1792100979243.2693,
       "uuid": "01013e7b-7ac0-459a-a6b5-989be431f642"
     },
     "Sounds/Voices/es/AWESOME.mp3": {
-      "time": 1792099953868.1912,
+      "time": 1792100979300.0947,
       "uuid": "0d65d1f7-f729-42f9-a662-d8a05e28b54a"
     },
     "Sounds/Voices/es/BREAKFAST.mp3": {
-      "time": 1792099784464.3406,
+      "time": 1792100979357.8506,
       "uuid": "24ecf274-9686-4c14-ab77-e6f7ff8473e8"
     },
     "Sounds/Voices/es/GREAT.mp3": {
-      "time": 1792099903823.3274,
+      "time": 1792100979467.6143,
       "uuid": "eaaaf453-a412-4c6e-b52f-c88a3fe92450"
     },
     "Sounds/Voices/es/DINNER.mp3": {
-      "time": 1792099846747.4504,
+      "time": 1792100979415.05,
       "uuid": "b3b848f5-5869-492c-8e1d-0506f1821375"
     },
     "Sounds/Voices/es/LEGENDARY.mp3": {
-      "time": 1792099999913.5747,
+      "time": 1792100979521.9368,
       "uuid": "ece984d8-1629-4c93-96a1-e2045fa010ff"
     },
     "Sounds/Voices/es/LUNCH.mp3": {
-      "time": 1792099818244.5105,
+      "time": 1792100979576.4329,
       "uuid": "dc6f8d2a-04aa-46f3-8354-0bf5c7a8e4c9"
     },
     "Sounds/Voices/es/NICE.mp3": {
-      "time": 1792099881970.4067,
+      "time": 1792100979628.4941,
       "uuid": "52457361-dcbd-494d-8243-8393071f5c81"
     },
     "Sounds/Voices/pt/BREAKFAST.mp3": {
-      "time": 1792099357842.6584,
+      "time": 1792100979861.0754,
       "uuid": "69e70c70-8b55-448e-bfdc-837958015d6d"
     },
     "Sounds/Voices/es/UNSTOPPABLE.mp3": {
-      "time": 1792099985969.9246,
+      "time": 1792100979682.1228,
       "uuid": "8e776d2f-dc83-4aed-8961-fee6ff2ccd97"
     },
     "Sounds/Voices/pt/DINNER.mp3": {
-      "time": 1792099399231.2817,
+      "time": 1792100979919.332,
       "uuid": "3a35f029-b84d-475c-a456-244e72401919"
     },
     "Sounds/Voices/pt/AWESOME.mp3": {
-      "time": 1792099234613.6497,
+      "time": 1792100979802.413,
       "uuid": "db0da4b0-e8ea-4887-99b9-30087f40e760"
     },
     "Sounds/Voices/pt/AMAZING.mp3": {
-      "time": 1792099276488.7495,
+      "time": 1792100979738.7644,
       "uuid": "0f2f4c4b-3344-4556-b512-e50a16898a4c"
     },
     "Sounds/Voices/pt/LEGENDARY.mp3": {
-      "time": 1792099315504.6213,
+      "time": 1792100980025.3057,
       "uuid": "d1a4f2b5-a0bf-4a85-8cbd-f450b4d291c7"
     },
     "Sounds/Voices/pt/LUNCH.mp3": {
-      "time": 1792099377273.425,
+      "time": 1792100980079.3433,
       "uuid": "21978ab3-f643-4e89-a623-0fe2af23e897"
     },
     "Sounds/Voices/pt/GREAT.mp3": {
-      "time": 1792099215978.5508,
+      "time": 1792100979971.1062,
       "uuid": "b45ddc86-36c3-45f6-b767-cf13f6a5a4d0"
     },
     "Sounds/Voices/pt/NICE.mp3": {
-      "time": 1792099175640.2417,
+      "time": 1792100980130.9597,
       "uuid": "4086f78f-af32-42db-934a-1e157bea2feb"
     },
     "Sounds/Voices/pt/UNSTOPPABLE.mp3": {
-      "time": 1792099295219.1018,
+      "time": 1792100980184.646,
       "uuid": "d1c4bbc8-60ae-41d1-bd51-73d8616c51fe"
+    },
+    "Sounds/coin-switch.mp3.meta": {
+      "time": 1792100981315.5945
+    },
+    "Sounds/golden-time.mp3.meta": {
+      "time": 1792100981347.76
+    },
+    "Sounds/coin-switch.mp3": {
+      "time": 1792100981315.0308,
+      "uuid": "93662788-4c25-4e2d-b578-9b7897bf7719"
+    },
+    "Sounds/golden-time.mp3": {
+      "time": 1792100981347.0703,
+      "uuid": "9e3c10a9-8e2a-484e-9348-454268295900"
     }
   },
   "missing": {}

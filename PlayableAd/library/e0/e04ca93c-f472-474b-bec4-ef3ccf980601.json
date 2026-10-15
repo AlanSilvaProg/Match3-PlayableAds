@@ -2118,6 +2118,8 @@
     "latePenaltyFactor": 1,
     "warnRatio": 0.3,
     "sortingBase": 6,
+    "hintSeconds": 8,
+    "hintLevels": 3,
     "_id": "jlt2nkoF7yPs7lq0FUxiTr"
   },
   {
@@ -4669,6 +4671,34 @@
         "__expectedType__": "cc.AudioClip"
       }
     ],
+    "mealClipsEs": [
+      {
+        "__uuid__": "24ecf274-9686-4c14-ab77-e6f7ff8473e8",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "dc6f8d2a-04aa-46f3-8354-0bf5c7a8e4c9",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "b3b848f5-5869-492c-8e1d-0506f1821375",
+        "__expectedType__": "cc.AudioClip"
+      }
+    ],
+    "mealClipsDe": [
+      {
+        "__uuid__": "ca6ba37e-317b-49d2-8606-447627acd01d",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "d25e0c19-9da0-4b78-bf7b-492cde59456a",
+        "__expectedType__": "cc.AudioClip"
+      },
+      {
+        "__uuid__": "80772254-0fd3-4b99-9a99-8f02aa9e4694",
+        "__expectedType__": "cc.AudioClip"
+      }
+    ],
     "celebrationClipsPt": [
       {
         "__uuid__": "4086f78f-af32-42db-934a-1e157bea2feb",
@@ -4695,20 +4725,6 @@
         "__expectedType__": "cc.AudioClip"
       }
     ],
-    "mealClipsEs": [
-      {
-        "__uuid__": "24ecf274-9686-4c14-ab77-e6f7ff8473e8",
-        "__expectedType__": "cc.AudioClip"
-      },
-      {
-        "__uuid__": "dc6f8d2a-04aa-46f3-8354-0bf5c7a8e4c9",
-        "__expectedType__": "cc.AudioClip"
-      },
-      {
-        "__uuid__": "b3b848f5-5869-492c-8e1d-0506f1821375",
-        "__expectedType__": "cc.AudioClip"
-      }
-    ],
     "celebrationClipsEs": [
       {
         "__uuid__": "52457361-dcbd-494d-8243-8393071f5c81",
@@ -4732,20 +4748,6 @@
       },
       {
         "__uuid__": "ece984d8-1629-4c93-96a1-e2045fa010ff",
-        "__expectedType__": "cc.AudioClip"
-      }
-    ],
-    "mealClipsDe": [
-      {
-        "__uuid__": "ca6ba37e-317b-49d2-8606-447627acd01d",
-        "__expectedType__": "cc.AudioClip"
-      },
-      {
-        "__uuid__": "d25e0c19-9da0-4b78-bf7b-492cde59456a",
-        "__expectedType__": "cc.AudioClip"
-      },
-      {
-        "__uuid__": "80772254-0fd3-4b99-9a99-8f02aa9e4694",
         "__expectedType__": "cc.AudioClip"
       }
     ],
