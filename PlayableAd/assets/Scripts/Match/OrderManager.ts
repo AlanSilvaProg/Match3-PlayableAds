@@ -681,7 +681,8 @@ export class OrderManager extends Component {
             plan, node, height: h, bg, timerLabel, lines, timeLeft: plan.deliverTime, delivered: false,
             ready: false, footer, footerBg, footerLabel, heldPoints: 0, coinCount: 0,
         };
-        footer.on(Node.EventType.TOUCH_END, () => this.DeliverOrder(view));
+        // O cartao inteiro entrega (nao so o botao): qualquer toque nele, com o pedido pronto, faz a entrega.
+        node.on(Node.EventType.TOUCH_END, () => this.DeliverOrder(view));
         this.refreshFooter(view);
         this.refreshTimer(view);
 
