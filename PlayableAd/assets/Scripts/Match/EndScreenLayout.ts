@@ -43,7 +43,9 @@ export class EndScreenLayout {
             // LogoAnimation guarda a posicao base no onEnable: desliga/religa em volta da mudanca para ela acompanhar.
             const anim: any = c.getComponent('LogoAnimation');
             if (anim) anim.enabled = false;
-            if (!portrait) c.setPosition(o.x, o.y, c.position.z);
+            // Derrota em paisagem: a coluna (coracao, botoes e legenda) sobe para ficar centralizada na altura da tela.
+            const failLift = !portrait && !(screen as any).__winLayout && c.name !== 'Logo' ? 56 : 0;
+            if (!portrait) c.setPosition(o.x, o.y + failLift, c.position.z);
             else if (c.name === 'Logo') c.setPosition(0, 445, c.position.z);
             else c.setPosition(o.x + this.SHIFT, o.y, c.position.z); // coluna de botoes/estrelas vai para o centro
             if (anim) anim.enabled = true;
