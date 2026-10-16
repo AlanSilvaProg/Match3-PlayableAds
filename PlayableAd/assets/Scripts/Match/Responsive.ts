@@ -56,9 +56,7 @@ export class Responsive {
         const ordersTop = ordersTitleY - 25;
         const ordersBottom = ordersTop - ordersH;
         const barY = bottomY + 40;
-        const shelfScale = 1.3;
-        const shelfY = bottomY + 148;
-        const shelfTop = shelfY + 56;
+        const shelfTop = barY + 50; // sem bandeja: o tabuleiro desce ate a barra de power-ups
         const boardTop = ordersBottom - 15;
         const boardBottom = shelfTop + 15;
         const region = boardTop - boardBottom;
@@ -68,7 +66,7 @@ export class Responsive {
         if (boardH < 500) { boardScale = Math.max(0.8, region / 500); boardH = region / boardScale; }
         boardH = Math.max(300, Math.min(boardH, 1000));
         return {
-            topY, bottomY, ordersH, ordersTitleY, ordersTop, barY, shelfScale, shelfY,
+            topY, bottomY, ordersH, ordersTitleY, ordersTop, barY,
             logoY: topY - 70, timerY: topY - 55, timerBarY: topY - 108, comboY: topY - 205,
             boardY: (boardTop + boardBottom) / 2, boardScale, boardH,
         };

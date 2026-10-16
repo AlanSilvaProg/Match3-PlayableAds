@@ -7,7 +7,6 @@ import { ElementType } from './ElementType';
 import { ElementCatalog } from './ElementCatalog';
 import { LevelConfig, LevelPlan } from './LevelConfig';
 import { GameManager } from './GameManager';
-import { MatchSlots } from './MatchSlots';
 
 @ccclass('MatchInitializer')
 export class MatchInitializer extends Component {
@@ -20,9 +19,6 @@ export class MatchInitializer extends Component {
 
     @property(MatchController)
     public matchController: MatchController = null!;
-
-    @property(MatchSlots)
-    public matchSlots: MatchSlots = null!;
 
     @property({ tooltip: 'Tamanho maximo (px) do sprite de cada item no tabuleiro.' })
     public elementSize: number = 90;
@@ -113,7 +109,6 @@ export class MatchInitializer extends Component {
         }
 
         matchElement.matchController = this.matchController;
-        matchElement.matchSlots = this.matchSlots;
 
         return matchElement;
     }

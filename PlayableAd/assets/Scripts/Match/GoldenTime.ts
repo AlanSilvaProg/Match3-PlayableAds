@@ -238,12 +238,7 @@ export class GoldenTime {
         const orders = OrderManager.instance;
         if (!orders) return [];
         const demand = orders.RemainingDemand();
-        // O que ja esta na prateleira conta como atendido.
-        const tray: MatchElement[] = mc ? mc.selectedElements : [];
-        tray.forEach(e => {
-            const need = demand.get(e.type) || 0;
-            if (need > 0) demand.set(e.type, need - 1);
-        });
+        // (RemainingDemand ja desconta o que os pedidos receberam.)
 
         const alive = els.filter(e => e.isValid && e.isAvailable);
         const spare: MatchElement[] = [];

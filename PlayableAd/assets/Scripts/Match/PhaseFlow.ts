@@ -120,8 +120,6 @@ export class PhaseFlow {
         if (!scene) return;
         const controller: any = scene.getComponentInChildren('MatchController');
         controller?.ResetState();
-        const slots: any = scene.getComponentInChildren('MatchSlots');
-        slots?.ResetSlots();
     }
 
     // ---------- Burst da nova leva ----------

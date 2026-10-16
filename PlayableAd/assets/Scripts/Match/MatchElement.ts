@@ -1,14 +1,14 @@
 import { SoundManager } from './SoundManager';
 import { GoldenTime } from './GoldenTime';
-import { _decorator, Component, Button, Sprite, Enum, Vec3, tween, Tween, Node, AudioSource, Sorting2D, Color, EventTouch, UITransform } from 'cc';
+import { _decorator, Component, Button, Sprite, Enum, Vec3, tween, Tween, Node, AudioSource, Sorting2D, Color, EventTouch, UITransform, UIOpacity } from 'cc';
 const { ccclass, property } = _decorator;
 
-import { MatchSlots } from './MatchSlots';
 import { ElementType } from './ElementType';
 import { ElementCatalog } from './ElementCatalog';
 import { MatchController } from './MatchController';
 import { GameManager } from './GameManager';
-import { OrderManager } from './OrderManager';
+import { OrderManager, OrderClaim } from './OrderManager';
+import { PowerupManager } from './PowerupManager';
 
 @ccclass('MatchElement')
 export class MatchElement extends Component {
@@ -37,9 +37,6 @@ export class MatchElement extends Component {
     @property(MatchController)
     public matchController: MatchController = null!;
 
-    @property(MatchSlots)
-    public matchSlots: MatchSlots = null!;
-
     @property
     public moveSpeed: number = 500;
 
@@ -65,10 +62,6 @@ export class MatchElement extends Component {
     public defaultSortingOrder: number = 1;
 
     public isAvailable: boolean = true;
-    public currentSlot: Node | null = null;
-    private movementDuration: number = 0;
-    public hasReachedSlot: boolean = false;
-    private boardPosition: Vec3 | null = null;
     private isRejecting: boolean = false;
 
     // ---------- Arrastar ----------
@@ -78,22 +71,6 @@ export class MatchElement extends Component {
     @property({ tooltip: 'Escala do item enquanto e arrastado.' })
     public dragScale: number = 1.2;
 
-    // ---------- Reforco visual: item errado parado na prateleira ----------
-    @property({ tooltip: 'Segundos que um item errado (que nenhum pedido pede) pode ficar na prateleira antes de comecar a pulsar.' })
-    public wrongPulseDelay: number = 3;
-
-    @property({ tooltip: 'Amplitude da pulsacao (fracao da escala) do item errado.' })
-    public wrongPulseAmount: number = 0.25;
-
-    @property({ tooltip: 'Velocidade (rad/s) da pulsacao do item errado.' })
-    public wrongPulseSpeed: number = 9;
-
-    private wrongTime: number = 0;
-    private wrongNow: boolean = false;
-    private wrongCheck: number = 0;
-    private pulsing: boolean = false;
-    private pulseClock: number = 0;
-    private merging: boolean = false;
     /** A entrada do item e animada por fora (burst de troca de fase): o start() nao forca a escala. */
     public spawnAnimated: boolean = false;
 
@@ -109,8 +86,6 @@ export class MatchElement extends Component {
     private touchId: number = -1;
     private dragging: boolean = false;
     private clickedOnStart: boolean = false;
-    private trayDrag: boolean = false;
-    private dropFront: boolean = false;
     private dragMoved: number = 0;
     private dragOrigin: Vec3 | null = null;
 
@@ -122,10 +97,8 @@ export class MatchElement extends Component {
     }
 
     start() {
-        if (!this.hasReachedSlot) {
-            if (!this.spawnAnimated) this.node.setScale(this.availableScale);
-            this.SetSortingOrder(this.defaultSortingOrder);
-        }
+        if (!this.spawnAnimated) this.node.setScale(this.availableScale);
+        this.SetSortingOrder(this.defaultSortingOrder);
 
         // O Button so dispara o clique se o toque soltar em cima do mesmo item; aqui o toque e tratado por inteiro:
         // o item pressionado (e arrastado) e o que fica selecionado ao soltar, esteja o dedo onde estiver.
@@ -148,16 +121,7 @@ export class MatchElement extends Component {
         const allowed = gm ? gm.tutorialAllowed : null;
         if (allowed && allowed.indexOf(this) === -1) return false;
         if (GoldenTime.active) return false;
-        return this.isAvailable && !this.hasReachedSlot && !this.isRejecting;
-    }
-
-    /** Item ja na prateleira (selecionado, quieto e fora de merge) que pode ser arrastado de volta ao tabuleiro. */
-    private canDragFromTray(): boolean {
-        const gm = GameManager.instance;
-        if (!gm || !gm.IsRunning() || GoldenTime.active) return false;
-        if (this.isAvailable || !this.hasReachedSlot || this.merging || !this.boardPosition || !this.currentSlot) return false;
-        const mc = this.matchController;
-        return !!mc && mc.selectedElements.indexOf(this) !== -1 && !mc.isInPendingMerge(this);
+        return this.isAvailable && !this.isRejecting;
     }
 
     /** Tutorial em andamento (intro ou passo guiado): sem arrastar, o simples toque ja seleciona. */
@@ -178,14 +142,11 @@ export class MatchElement extends Component {
             this.OnClick();
             return;
         }
-        this.trayDrag = !this.canDrag() && this.canDragFromTray();
-        this.dragOrigin = (this.trayDrag || this.canDrag()) ? this.node.position.clone() : null;
+        this.dragOrigin = this.canDrag() ? this.node.position.clone() : null;
     }
 
     private onTouchMove(event: EventTouch) {
         if (event.getID() !== this.touchId || !this.dragOrigin) return;
-        if (this.trayDrag && !this.canDragFromTray() && !this.dragging) { this.dragOrigin = null; return; }
-        if (this.trayDrag && this.dragging && this.merging) { this.dragging = false; this.dragOrigin = null; return; }
         const d = event.getUIDelta();
         this.dragMoved += Math.hypot(d.x, d.y);
         if (!this.dragging) {
@@ -222,52 +183,23 @@ export class MatchElement extends Component {
         }
         if (!origin) return;
 
-        if (this.trayDrag) {
-            this.trayDrag = false;
-            this.endTrayDrag();
-            return;
-        }
-
-        // Arrastado: so seleciona se foi solto em cima da area dos selecionados; no board, apenas muda de lugar.
-        if (this.isOverTray()) {
+        // Arrastado: so seleciona se foi solto em cima de um pedido; no board, apenas muda de lugar.
+        if (this.isOverOrders()) {
             this.wiggleOrigin = origin;
             this.OnClick();
             this.wiggleOrigin = null;
             if (this.isAvailable) {
-                // Nao foi selecionado (prateleira cheia, tutorial...): volta ao lugar de onde saiu.
+                // Nao foi selecionado (nenhum pedido pede o alimento, tutorial...): volta ao lugar de onde saiu.
                 Tween.stopAllByTarget(this.node);
                 this.isRejecting = false; // o tremor de rejeicao foi interrompido
                 this.SetSortingOrder(this.defaultSortingOrder);
                 tween(this.node)
                     .to(0.18, { position: origin, scale: this.availableScale }, { easing: 'cubicOut' })
                     .start();
-            } else {
-                // Selecionado: se for devolvido ao tabuleiro, volta ao lugar de origem (nao ao ponto onde soltou).
-                this.boardPosition = origin;
             }
         } else {
             this.dropOnBoard();
         }
-    }
-
-    /** Soltou um item que estava na prateleira: sobre os encaixes volta ao seu slot; fora deles, volta ao tabuleiro onde foi largado. */
-    private endTrayDrag() {
-        if (this.merging || !this.currentSlot || !this.matchController || this.matchController.selectedElements.indexOf(this) === -1) return;
-        if (!this.isOverTray()) {
-            const p = this.clampToBoard(this.node.position);
-            this.boardPosition = new Vec3(p.x, p.y, this.node.position.z);
-            this.dropFront = true;
-            this.TryReturnToBoard();
-            if (this.isAvailable || this.hasReachedSlot) this.dropFront = false; // nao voltou (ex.: partida parada)
-            return;
-        }
-        const target = new Vec3();
-        this.currentSlot.getWorldPosition(target);
-        const local = new Vec3();
-        if (this.node.parent) this.node.parent.inverseTransformPoint(local, target);
-        Tween.stopAllByTarget(this.node);
-        this.SetSortingOrder(3);
-        tween(this.node).to(0.16, { position: local, scale: this.selectedScale }, { easing: 'cubicOut' }).start();
     }
 
     private clampToBoard(p: Vec3): Vec3 {
@@ -284,19 +216,10 @@ export class MatchElement extends Component {
         return new Vec3(x, y, p.z);
     }
 
-    /** O centro do item esta sobre a area dos encaixes (selecionados)? */
-    private isOverTray(): boolean {
-        const slots = this.matchSlots ? this.matchSlots.slots : null;
-        if (!slots || slots.length === 0) return false;
-        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-        slots.forEach(n => {
-            const p = n.worldPosition;
-            minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
-            minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
-        });
-        const margin = 70;
-        const w = this.node.worldPosition;
-        return w.x >= minX - margin && w.x <= maxX + margin && w.y >= minY - margin && w.y <= maxY + margin;
+    /** O centro do item esta sobre um cartao de pedido (soltar ali tambem seleciona)? */
+    private isOverOrders(): boolean {
+        const orders = OrderManager.instance;
+        return !!orders && orders.isOverCard(this.node.worldPosition);
     }
 
     /** Solto no tabuleiro: fica onde foi largado (dentro da area do tabuleiro), sem ser selecionado. */
@@ -322,7 +245,7 @@ export class MatchElement extends Component {
         const radius = 190;
         parent.children.forEach(c => {
             const el = c.getComponent(MatchElement);
-            if (!el || el === this || !el.isAvailable || el.merging || el.isRejecting || el.dragging) return;
+            if (!el || el === this || !el.isAvailable || el.isRejecting || el.dragging) return;
             const dx = c.position.x - origin.x, dy = c.position.y - origin.y;
             const d = Math.hypot(dx, dy);
             if (d > radius) return;
@@ -381,234 +304,117 @@ export class MatchElement extends Component {
             return;
         }
 
-        if (!this.isAvailable) {
-            this.TryReturnToBoard();
-            return;
-        }
+        if (!this.isAvailable) return;
 
-        // Reserva o slot antes de alterar qualquer estado: com a prateleira cheia o clique e rejeitado.
-        const slot = this.matchSlots ? this.matchSlots.AssignSlot(this) : null;
-        if (!slot) {
+        // O alimento vai direto para o pedido (o 1o da tela que ainda o pede). Nenhum pedido pede: feedback negativo.
+        const orders = OrderManager.instance;
+        const claim = orders ? orders.TryAssign(this.type) : null;
+        if (!claim) {
             this.PlayRejectedFeedback();
             return;
         }
 
-        // Power-up Focus pode ter deixado o item pulsando/escurecido: limpa antes de mover para a prateleira.
+        // Power-up Focus pode ter deixado o item pulsando/escurecido: limpa antes de voar.
         this.cancelWiggle();
         Tween.stopAllByTarget(this.node);
         const sprite = this.spriteComponent || this.getComponent(Sprite);
         if (sprite) sprite.color = Color.WHITE;
 
         this.isAvailable = false;
-        this.boardPosition = this.node.position.clone();
-        this.currentSlot = slot;
+        const origin = this.node.position.clone();
         // Os vizinhos se acomodam (ao arrastar, a partir do ponto de origem do item, ja que ele sai de la).
-        this.wiggleNeighbors(this.wiggleOrigin || this.boardPosition);
+        this.wiggleNeighbors(this.wiggleOrigin || origin);
+        this.SetSortingOrder(40); // voa por cima dos cartoes
 
-        this.SetSortingOrder(3);
-
-        if (this.selectionAudio) {
-            this.selectionAudio.play();
-        }
-
-        const targetWorldPos = new Vec3();
-        slot.getWorldPosition(targetWorldPos);
-
-        const currentWorldPos = new Vec3();
-        this.node.getWorldPosition(currentWorldPos);
-
-        const targetLocalPos = new Vec3();
-        if (this.node.parent) {
-            this.node.parent.inverseTransformPoint(targetLocalPos, targetWorldPos);
-        }
-
-        const distance = Vec3.distance(currentWorldPos, targetWorldPos);
-        this.movementDuration = distance / this.moveSpeed;
-
-        tween(this.node)
-            .to(this.movementDuration, { position: targetLocalPos, scale: this.selectedScale })
-            .call(() => {
-                this.hasReachedSlot = true;
-                // Primeiro a logica (o merge depende dela), depois o som.
-                if (this.matchController) {
-                    this.matchController.onElementReachedSlot(this);
-                }
-                SoundManager.playAttach();
-            })
-            .start();
-
-        if (this.matchController) {
-            this.matchController.onElementClicked(this);
-        }
+        if (this.selectionAudio) this.selectionAudio.play();
+        if (this.matchController) this.matchController.onElementClicked(this);
+        this.flyToOrder(claim);
     }
 
-    /** Prateleira cheia: balanca o item sem registra-lo como selecionado. */
+    /** O alimento voa ate o icone da linha no cartao, encolhendo; ao chegar, o progresso do pedido sobe. */
+    private flyToOrder(claim: OrderClaim) {
+        const orders = OrderManager.instance;
+        const node = this.node;
+        const startPos = node.worldPosition.clone();
+        const startScale = node.scale.clone();
+        const endScale = new Vec3(startScale.x * 0.4, startScale.y * 0.4, 1);
+        let target = orders ? orders.GetLineTarget(claim) : null;
+        if (!target) target = startPos.clone();
+        const dist = Vec3.distance(startPos, target);
+        const dur = Math.max(0.28, Math.min(0.55, dist / (this.moveSpeed * 1.6)));
+        const state = { t: 0 };
+        const cur = new Vec3();
+        tween(state)
+            .to(dur, { t: 1 }, {
+                easing: 'quadIn',
+                onUpdate: () => {
+                    if (!node.isValid) return;
+                    const live = orders ? orders.GetLineTarget(claim) : null; // o cartao pode estar se mexendo
+                    if (live) target = live;
+                    Vec3.lerp(cur, startPos, target!, state.t);
+                    node.setWorldPosition(cur);
+                    node.setScale(startScale.x + (endScale.x - startScale.x) * state.t, startScale.y + (endScale.y - startScale.y) * state.t, 1);
+                },
+            })
+            .call(() => {
+                SoundManager.playAttach();
+                orders?.OnItemArrived(claim);
+                if (node.isValid) node.destroy();
+            })
+            .start();
+    }
+
+    /** Nenhum pedido pede este alimento: feedback negativo bem visivel (tremor, vermelho, X e som). */
     private PlayRejectedFeedback() {
         if (this.isRejecting) return;
         this.cancelWiggle();
         this.isRejecting = true;
-        SoundManager.playBlocked();
+        SoundManager.playWrongClick();
         const origin = this.node.position.clone();
+        const sprite = this.spriteComponent || this.getComponent(Sprite);
+        if (sprite) sprite.color = new Color(255, 70, 70, 255);
+        this.showWrongMark();
+        const s = this.availableScale;
         tween(this.node)
-            .to(0.04, { position: new Vec3(origin.x - 8, origin.y, origin.z) })
-            .to(0.08, { position: new Vec3(origin.x + 8, origin.y, origin.z) })
-            .to(0.04, { position: origin })
-            .call(() => { this.isRejecting = false; })
-            .start();
-    }
-
-    /** Devolve um item que esta na prateleira (e ainda nao entrou em um merge) para sua posicao no board. */
-    private TryReturnToBoard() {
-        const gm = GameManager.instance;
-        if (gm && !gm.IsRunning()) return;
-        if (!this.hasReachedSlot || !this.boardPosition || !this.currentSlot) return;
-        if (!this.matchController || this.matchController.selectedElements.indexOf(this) === -1) return;
-
-        const slots = this.matchSlots;
-        slots.ReleaseSlot(this.currentSlot);
-        this.currentSlot = null;
-        this.hasReachedSlot = false;
-        this.matchController.onElementReturned(this);
-        SoundManager.playRemovedFromSelected();
-
-        Tween.stopAllByTarget(this.node);
-        this.SetSortingOrder(3);
-        const distance = Vec3.distance(this.node.position, this.boardPosition);
-        const duration = Math.max(0.15, distance / this.moveSpeed);
-        tween(this.node)
-            .to(duration, { position: this.boardPosition, scale: this.availableScale }, { easing: 'cubicOut' })
+            .to(0.05, { position: new Vec3(origin.x - 12, origin.y, origin.z), scale: new Vec3(s.x * 1.18, s.y * 1.18, 1) })
+            .to(0.08, { position: new Vec3(origin.x + 12, origin.y, origin.z) })
+            .to(0.08, { position: new Vec3(origin.x - 9, origin.y, origin.z) })
+            .to(0.06, { position: new Vec3(origin.x + 6, origin.y, origin.z) })
+            .to(0.08, { position: origin, scale: s.clone() })
             .call(() => {
-                this.isAvailable = true;
-                this.SetSortingOrder(this.dropFront ? this.defaultSortingOrder + 1 : this.defaultSortingOrder);
-                this.dropFront = false;
-            })
-            .start();
-        if (this.dropFront && this.node.parent) this.node.setSiblingIndex(this.node.parent.children.length - 1);
-
-        slots.CompactSlots();
-    }
-
-    public MoveToSlot(slot: Node) {
-        if (this.dragging) { this.currentSlot = slot; return; } // arrastado da prateleira: ao soltar ele vai ao slot novo
-        this.cancelWiggle();
-        this.currentSlot = slot;
-        this.hasReachedSlot = false;
-        Tween.stopAllByTarget(this.node);
-
-        const targetWorldPos = new Vec3();
-        slot.getWorldPosition(targetWorldPos);
-
-        const targetLocalPos = new Vec3();
-        if (this.node.parent) {
-            this.node.parent.inverseTransformPoint(targetLocalPos, targetWorldPos);
-        }
-
-        tween(this.node)
-            .to(0.3, { position: targetLocalPos, scale: this.selectedScale })
-            .call(() => {
-                this.hasReachedSlot = true;
-                if (this.matchController) {
-                    this.matchController.onElementReachedSlot(this);
-                }
+                this.isRejecting = false;
+                if (sprite && this.isAvailable) sprite.color = Color.WHITE;
             })
             .start();
     }
 
-    public ForceSetInSlot(slot: Node) {
-        this.isAvailable = false;
-        this.boardPosition = this.node.position.clone();
-        this.currentSlot = slot;
-        this.hasReachedSlot = true;
-
-        const targetWorldPos = new Vec3();
-        slot.getWorldPosition(targetWorldPos);
-
-        const targetLocalPos = new Vec3();
-        if (this.node.parent) {
-            this.node.parent.inverseTransformPoint(targetLocalPos, targetWorldPos);
-        }
-
-        this.node.setPosition(targetLocalPos);
-        this.node.setScale(this.selectedScale);
-        this.SetSortingOrder(3);
-
-        if (this.matchController) {
-            this.matchController.onElementClicked(this);
-            this.matchController.onElementReachedSlot(this);
-        }
-    }
-
-    public getMovementDuration(): number {
-        return this.movementDuration;
-    }
-
-    public Merge(targetSlot: Node | null = null, isMiddle: boolean = false) {
-        this.cancelWiggle();
-        this.merging = true;
-        this.StopWrongPulse(false);
-        if (this.currentSlot && this.matchSlots) {
-            this.matchSlots.ReleaseSlot(this.currentSlot);
-            this.currentSlot = null;
-        }
-
-        if (isMiddle) {
-            this.SetSortingOrder(4);
-        } else {
-            this.SetSortingOrder(3);
-        }
-
-        let mergePosition = this.mergedPosition;
-
-        if (targetSlot) {
-            const targetWorldPos = new Vec3();
-            targetSlot.getWorldPosition(targetWorldPos);
-
-            mergePosition = new Vec3();
-            if (this.node.parent) {
-                this.node.parent.inverseTransformPoint(mergePosition, targetWorldPos);
-            }
-        }
-
-        const pull = this.mergePullDuration;
-
-        if (isMiddle) {
-            // Centro: cresce e vibra enquanto os outros sao atraidos, e explode no impacto.
-            const buildUp = this.selectedScale.clone().multiplyScalar(this.mergeBuildUpScale);
-            const impact = this.selectedScale.clone().multiplyScalar(this.mergeImpactScale);
-
-            tween(this.node)
-                .parallel(
-                    tween().to(pull, { scale: buildUp }, { easing: 'sineOut' }),
-                    tween()
-                        .to(pull * 0.25, { eulerAngles: new Vec3(0, 0, 8) })
-                        .to(pull * 0.5, { eulerAngles: new Vec3(0, 0, -8) })
-                        .to(pull * 0.25, { eulerAngles: new Vec3(0, 0, 0) })
-                )
-                .to(0.07, { scale: impact }, { easing: 'backOut' })
-                .to(0.12, { scale: Vec3.ZERO }, { easing: 'quadIn' })
-                .call(() => {
-                    this.node.destroy();
-                })
-                .start();
-        } else {
-            // Laterais: recuam um pouco (antecipacao) e sao sugadas para o centro, acelerando.
-            const start = this.node.position.clone();
-            const dir = new Vec3();
-            Vec3.subtract(dir, start, mergePosition);
-            dir.z = 0;
-            if (dir.lengthSqr() > 0.0001) dir.normalize();
-            const windUp = new Vec3(start.x + dir.x * this.mergeWindUpDistance, start.y + dir.y * this.mergeWindUpDistance, start.z);
-            const windUpScale = this.selectedScale.clone().multiplyScalar(1.1);
-            const endScale = this.selectedScale.clone().multiplyScalar(0.6);
-
-            tween(this.node)
-                .to(0.08, { position: windUp, scale: windUpScale }, { easing: 'sineOut' })
-                .to(pull - 0.08, { position: mergePosition, scale: endScale }, { easing: 'cubicIn' })
-                .call(() => {
-                    this.node.destroy();
-                })
-                .start();
-        }
+    /** Um X vermelho grande (duas barras cruzadas) sobre o item, que cresce e some. */
+    private showWrongMark() {
+        const frame = PowerupManager.instance ? PowerupManager.instance.dimFrame : null;
+        if (!frame || !this.node.parent) return;
+        const holder = new Node('WrongMark');
+        holder.layer = this.node.layer;
+        holder.parent = this.node.parent;
+        holder.setPosition(this.node.position.x, this.node.position.y, 0);
+        const op = holder.addComponent(UIOpacity);
+        [45, -45].forEach(angle => {
+            [[86, 20, new Color(255, 255, 255, 255)], [76, 12, new Color(235, 30, 30, 255)]].forEach(([len, thick, color]: any, i) => {
+                const bar = new Node('Bar');
+                bar.layer = holder.layer;
+                bar.parent = holder;
+                bar.setRotationFromEuler(0, 0, angle);
+                bar.addComponent(UITransform).setContentSize(len, thick);
+                const sp = bar.addComponent(Sprite);
+                sp.sizeMode = Sprite.SizeMode.CUSTOM;
+                sp.spriteFrame = frame;
+                sp.color = color;
+                bar.addComponent(Sorting2D).sortingOrder = 45 + i;
+            });
+        });
+        holder.setScale(0.3, 0.3, 1);
+        tween(holder).to(0.12, { scale: new Vec3(1.15, 1.15, 1) }, { easing: 'backOut' }).to(0.08, { scale: Vec3.ONE })
+            .delay(0.28).call(() => { if (holder.isValid) holder.destroy(); }).start();
+        tween(op).delay(0.3).to(0.18, { opacity: 0 }).start();
     }
 
     public SetSortingOrder(order: number) {
@@ -622,60 +428,7 @@ export class MatchElement extends Component {
         }
     }
 
-    /** Na prateleira, quieto, e nenhum pedido aberto pede este alimento (e ele nao esta num merge). */
-    private isWrongSelection(): boolean {
-        const gm = GameManager.instance;
-        if (!gm || !gm.IsRunning() || this.merging || !this.matchController) return false;
-        if (this.matchController.isInPendingMerge(this)) return false;
-        const orders = OrderManager.instance;
-        return !!orders && orders.NextQuantityFor(this.type) === 0;
-    }
-
-    private StopWrongPulse(restoreScale: boolean) {
-        if (!this.pulsing) return;
-        this.pulsing = false;
-        const sprite = this.spriteComponent || this.getComponent(Sprite);
-        if (sprite) sprite.color = Color.WHITE;
-        if (restoreScale && this.node.isValid) this.node.setScale(this.selectedScale);
-    }
-
     update(deltaTime: number) {
         this.updateWiggle(deltaTime);
-        if (this.dragging) return; // arrastando: sem pulso de item errado
-        const inTray = !this.isAvailable && this.hasReachedSlot && !this.merging;
-        if (!inTray) {
-            // Saiu da prateleira (voltou ao tabuleiro, esta se movendo ou entrou em merge): zera o relogio.
-            this.wrongTime = 0;
-            this.wrongNow = false;
-            this.StopWrongPulse(false);
-            return;
-        }
-
-        this.wrongCheck -= deltaTime;
-        if (this.wrongCheck <= 0) {
-            this.wrongCheck = 0.2;
-            this.wrongNow = this.isWrongSelection();
-        }
-        if (!this.wrongNow) {
-            this.wrongTime = 0;
-            this.StopWrongPulse(true);
-            return;
-        }
-
-        this.wrongTime += deltaTime;
-        if (this.wrongTime < this.wrongPulseDelay) return;
-
-        // Pulsa (escala + tom avermelhado) ate o jogador remover o item ou um pedido passar a pedi-lo.
-        if (!this.pulsing) {
-            this.pulsing = true;
-            this.pulseClock = 0;
-            Tween.stopAllByTarget(this.node);
-        }
-        this.pulseClock += deltaTime;
-        const k = 0.5 + 0.5 * Math.sin(this.pulseClock * this.wrongPulseSpeed);
-        const s = 1 + this.wrongPulseAmount * k;
-        this.node.setScale(this.selectedScale.x * s, this.selectedScale.y * s, this.selectedScale.z);
-        const sprite = this.spriteComponent || this.getComponent(Sprite);
-        if (sprite) sprite.color = new Color(255, Math.round(255 - 130 * k), Math.round(255 - 130 * k), 255);
     }
 }

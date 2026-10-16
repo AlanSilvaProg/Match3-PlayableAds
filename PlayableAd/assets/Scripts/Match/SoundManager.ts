@@ -113,6 +113,12 @@ export class SoundManager extends Component {
     @property({ range: [0, 1, 0.05], tooltip: 'Volume do som de troca alimento <-> moeda.' })
     public coinSwitchVolume: number = 0.9;
 
+    @property({ type: AudioClip, tooltip: 'Toque em um alimento que nenhum pedido pede (feedback negativo).' })
+    public wrongClickClip: AudioClip | null = null;
+
+    @property({ range: [0, 1, 0.05], tooltip: 'Volume do som de clique errado.' })
+    public wrongClickVolume: number = 0.9;
+
     @property({ type: AudioClip, tooltip: 'Raio aparece no tabuleiro (ativo).' })
     public rayEnabledClip: AudioClip | null = null;
 
@@ -264,6 +270,11 @@ export class SoundManager extends Component {
     public static playGoldenTime() {
         const sm = SoundManager.instance;
         if (sm) sm.play('goldenTime', sm.goldenTimeClip, sm.goldenTimeVolume, 1);
+    }
+
+    public static playWrongClick() {
+        const sm = SoundManager.instance;
+        if (sm) sm.play('wrongClick', sm.wrongClickClip, sm.wrongClickVolume, 0.12);
     }
 
     public static playRayEnabled() {

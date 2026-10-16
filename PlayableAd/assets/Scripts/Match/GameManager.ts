@@ -83,6 +83,8 @@ export class GameManager extends Component {
     public static readonly EVENT_ORDER_DELIVERED = 'order_delivered';
     /** Todas as linhas de um pedido estao prontas na bandeja: falta tocar em ENTREGAR. */
     public static readonly EVENT_ORDER_READY = 'order_ready';
+    /** Todos os alimentos de uma linha de pedido chegaram ao cartao (carrega o OrderClaim). */
+    public static readonly EVENT_LINE_FULL = 'line_full';
     /** Emitido pelo MatchController quando a selecao muda (payload: Map<ElementType, number> com a contagem na prateleira). */
     public static readonly EVENT_SELECTION_CHANGED = 'selection_changed';
     /** Emitido pelo MatchController quando um item que nenhum pedido aberto pede chega a prateleira (payload: MatchElement). */
@@ -449,8 +451,7 @@ export class GameManager extends Component {
         const searchRoot = find("Canvas") || director.getScene();
         if (searchRoot) {
             searchRoot.getComponentsInChildren(MatchElement).forEach(el => {
-                if (!el.isAvailable && el.currentSlot) el.SetSortingOrder(3);
-                else el.SetSortingOrder(el.defaultSortingOrder);
+                el.SetSortingOrder(el.defaultSortingOrder);
             });
         }
 

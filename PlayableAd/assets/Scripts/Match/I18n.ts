@@ -8,11 +8,10 @@ import { Label, Node } from 'cc';
 export type Lang = 'en' | 'pt' | 'es' | 'de';
 
 const PT: Record<string, string> = {
+    "Tap {0} to add\nthem to the order!": "Toque em {0} para\nadicioná-los ao pedido!",
     "Pick the foods for your orders here!": "Escolha aqui as comidas dos pedidos!",
     "DELIVER": "ENTREGAR",
-    "TRAY": "BANDEJA",
     "The customer wants:\n{0}\nLet's prepare the order!": "O cliente quer:\n{0}\nVamos preparar o pedido!",
-    "Tap {0} to put\nthem on the TRAY!": "Toque em {0} para\ncolocá-los na BANDEJA!",
     "Order complete!\nTap DELIVER to get your coins.": "Pedido completo!\nToque em ENTREGAR para ganhar suas moedas.",
     'Orders': 'Pedidos',
     // Combos
@@ -94,16 +93,13 @@ const PT: Record<string, string> = {
     'This order is LATE!\nWhen you deliver it, the delay is\nSUBTRACTED from your total time.': 'Este pedido está ATRASADO!\nAo entregá-lo, o atraso é\nDESCONTADO do seu tempo total.',
     'Tap the highlighted power-up!': 'Toque no power-up destacado!',
     'GOLDEN TIME!\nEvery food is a COIN now!\nTap as many as you can!': 'GOLDEN TIME!\nToda comida virou MOEDA!\nToque em quantas puder!',
-    'Those foods are not in your orders!\nYour first order needs {0}x {1}.\nPick the highlighted ones.': 'Essas comidas não estão nos seus pedidos!\nSeu primeiro pedido precisa de {0}x {1}.\nEscolha as destacadas.',
-    'Wrong food?\nTap it in the tray to put it back!': 'Comida errada?\nToque nela na bandeja para devolvê-la!',
 };
 
 const ES: Record<string, string> = {
+    "Tap {0} to add\nthem to the order!": "¡Toca {0} para\nañadirlos al pedido!",
     "Pick the foods for your orders here!": "¡Elige aquí las comidas de los pedidos!",
     "DELIVER": "ENTREGAR",
-    "TRAY": "BANDEJA",
     "The customer wants:\n{0}\nLet's prepare the order!": "El cliente quiere:\n{0}\n¡Vamos a preparar el pedido!",
-    "Tap {0} to put\nthem on the TRAY!": "¡Toca {0} para\nponerlos en la BANDEJA!",
     "Order complete!\nTap DELIVER to get your coins.": "¡Pedido completo!\nToca ENTREGAR para ganar tus monedas.",
     'Orders': 'Pedidos',
     'NICE!': '¡BIEN!', 'GREAT!': '¡GENIAL!', 'AWESOME!': '¡INCREÍBLE!', 'AMAZING!': '¡ASOMBROSO!',
@@ -175,16 +171,13 @@ const ES: Record<string, string> = {
     'This order is LATE!\nWhen you deliver it, the delay is\nSUBTRACTED from your total time.': '¡Este pedido va TARDE!\nAl entregarlo, el retraso se\nRESTA de tu tiempo total.',
     'Tap the highlighted power-up!': '¡Toca el potenciador resaltado!',
     'GOLDEN TIME!\nEvery food is a COIN now!\nTap as many as you can!': '¡GOLDEN TIME!\n¡Toda comida es una MONEDA!\n¡Toca todas las que puedas!',
-    'Those foods are not in your orders!\nYour first order needs {0}x {1}.\nPick the highlighted ones.': '¡Esas comidas no están en tus pedidos!\nTu primer pedido necesita {0}x {1}.\nElige las resaltadas.',
-    'Wrong food?\nTap it in the tray to put it back!': '¿Comida equivocada?\n¡Tócala en la bandeja para devolverla!',
 };
 
 const DE: Record<string, string> = {
+    "Tap {0} to add\nthem to the order!": "Tippe auf {0}, um sie\nzur Bestellung zu legen!",
     "Pick the foods for your orders here!": "Wähle hier die Speisen für die Bestellungen!",
     "DELIVER": "LIEFERN",
-    "TRAY": "TABLETT",
     "The customer wants:\n{0}\nLet's prepare the order!": "Der Kunde möchte:\n{0}\nBereiten wir die Bestellung vor!",
-    "Tap {0} to put\nthem on the TRAY!": "Tippe auf {0}, um sie\naufs TABLETT zu legen!",
     "Order complete!\nTap DELIVER to get your coins.": "Bestellung fertig!\nTippe auf LIEFERN, um deine Münzen zu bekommen.",
     'Orders': 'Bestellungen',
     'NICE!': 'NETT!', 'GREAT!': 'SUPER!', 'AWESOME!': 'GENIAL!', 'AMAZING!': 'WAHNSINN!',
@@ -256,8 +249,6 @@ const DE: Record<string, string> = {
     'This order is LATE!\nWhen you deliver it, the delay is\nSUBTRACTED from your total time.': 'Diese Bestellung ist SPÄT!\nBei Lieferung wird die Verspätung\nvon deiner Gesamtzeit ABGEZOGEN.',
     'Tap the highlighted power-up!': 'Tippe auf das markierte Power-up!',
     'GOLDEN TIME!\nEvery food is a COIN now!\nTap as many as you can!': 'GOLDEN TIME!\nJede Speise ist jetzt eine MÜNZE!\nTippe so viele du kannst!',
-    'Those foods are not in your orders!\nYour first order needs {0}x {1}.\nPick the highlighted ones.': 'Diese Speisen sind nicht in deinen Bestellungen!\nDeine erste Bestellung braucht {0}x {1}.\nWähle die markierten.',
-    'Wrong food?\nTap it in the tray to put it back!': 'Falsche Speise?\nTippe sie im Tablett an, um sie zurückzulegen!',
 };
 
 const DICTS: Record<string, Record<string, string>> = { pt: PT, es: ES, de: DE };

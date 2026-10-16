@@ -118,23 +118,16 @@ export class RayPickup {
         const orders = OrderManager.instance;
         const scene = gm ? gm.node.parent : null;
         const board = scene ? scene.getChildByName('MatchSpace') : null;
-        const mc: any = gm && scene ? scene.getComponentInChildren('MatchController') : null;
-        if (!gm || !orders || !board || !mc) return [];
+        if (!gm || !orders || !board) return [];
 
         const lines = orders.GetPriorityOrderLines();
         if (lines.length === 0) return [];
 
-        const selectedByType = new Map<ElementType, number>();
-        (mc.selectedElements as MatchElement[])
-            .filter(e => e.isValid && !mc.isInPendingMerge(e))
-            .forEach(e => selectedByType.set(e.type, (selectedByType.get(e.type) || 0) + 1));
         const candidates = board.getComponentsInChildren(MatchElement).filter(e => e.isAvailable && e.isValid);
 
         const picks: MatchElement[] = [];
         for (const line of lines) {
-            const have = Math.min(selectedByType.get(line.type) || 0, line.quantity);
-            const need = line.quantity - have;
-            selectedByType.set(line.type, Math.max(0, (selectedByType.get(line.type) || 0) - have));
+            const need = line.quantity; // ja e o que falta (quantidade menos o que o pedido recebeu)
             if (need <= 0) continue;
             picks.push(...candidates.filter(e => e.type === line.type && picks.indexOf(e) === -1).slice(0, need));
         }
@@ -154,12 +147,9 @@ export class RayPickup {
         this.burst(board, from, 2.6);
         tween(root).to(0.18, { scale: new Vec3(1.6, 1.6, 1) }).start();
 
-        const scene = gm.node.parent;
-        const slots: any = scene ? scene.getComponentInChildren('MatchSlots') : null;
         const queue = picks.slice();
-        let waited = 0;
 
-        // Seleciona um por um (linha a linha). Prateleira cheia: espera os merges abrirem vaga; item que sumiu: troca por outro igual.
+        // Seleciona um por um (linha a linha); item que sumiu e trocado por outro igual.
         const step = () => {
             if (!board.isValid || !gm.isValid || !gm.IsRunning() || queue.length === 0) return finish();
             let el = queue[0];
@@ -168,10 +158,6 @@ export class RayPickup {
                     .find(e => e.isAvailable && e.isValid && e.type === el.type && queue.indexOf(e) === -1);
                 if (!swap) { queue.shift(); return next(0.02); }
                 queue[0] = el = swap;
-            }
-            if (slots && slots.FreeCount() <= 0 && waited < 4) {
-                waited += 0.12;
-                return next(0.12);
             }
             queue.shift();
             const to = el.node.position.clone();

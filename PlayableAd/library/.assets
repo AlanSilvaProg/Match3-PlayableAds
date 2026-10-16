@@ -31,7 +31,6 @@
             "Scripts/Match/MatchController.ts",
             "Scripts/Match/MatchElement.ts",
             "Scripts/Match/MatchInitializer.ts",
-            "Scripts/Match/MatchSlots.ts",
             "Scripts/Match/OrderManager.ts",
             "Scripts/Match/ParticleTrigger.ts",
             "Scripts/Match/PlayerData.ts",
@@ -95,7 +94,6 @@
             "UI/achivements-icon-sheet.png",
             "UI/energybar.png",
             "UI/energycontainer.png",
-            "UI/gameplay_collect_area.png",
             "UI/moeda-de-dolar-group.png",
             "UI/moeda-de-dolar.png",
             "UI/play.png",
@@ -187,7 +185,8 @@
             "Sounds/Voices/pt/NICE.mp3",
             "Sounds/Voices/pt/UNSTOPPABLE.mp3",
             "Sounds/coin-switch.mp3",
-            "Sounds/golden-time.mp3"
+            "Sounds/golden-time.mp3",
+            "Sounds/wrong-click-feedback.mp3"
         ]
     }
 }

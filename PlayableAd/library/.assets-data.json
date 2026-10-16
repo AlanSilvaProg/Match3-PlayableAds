@@ -126,9 +126,7 @@
   },
   "1584ad8b-6473-4a13-a6c1-d9ec39d463e1": {
     "url": "db://assets/UI/gameplay_collect_area.png",
-    "value": {
-      "depends": []
-    },
+    "value": {},
     "versionCode": 1
   },
   "bf89e619-eb3c-46be-b89f-d0d618e6d05e@6c48a": {
@@ -834,7 +832,6 @@
         "74021592-f88e-491d-9762-5b04fda796c1@f9941",
         "002d8685-dbe7-4fff-a8e5-ac080ec35277@f9941",
         "2cd97e8d-a9c7-454c-a5a5-ee38376852ac@f9941",
-        "1584ad8b-6473-4a13-a6c1-d9ec39d463e1@f9941",
         "a6601604-e134-4432-a5a8-376ed789a8ef@f9941",
         "c8b8dc50-6d6f-4c92-86de-c5d99ca9a5fb@f9941",
         "8de13d00-acd8-4178-8c37-d8f876c458d7@f9941",
@@ -894,6 +891,7 @@
         "bad6caa7-39ba-4a5a-ac24-b2006639b503",
         "9e3c10a9-8e2a-484e-9348-454268295900",
         "93662788-4c25-4e2d-b578-9b7897bf7719",
+        "f9adbb9c-114c-408a-9734-c50a159e9f6c",
         "c5e5ae96-b6fc-42f7-9243-fb4ce389e0b4",
         "dd8db944-8f35-4d86-880d-d0c44fbb5cc0",
         "a162b1d0-2630-47d9-bb34-4c41e578b96f",
@@ -934,7 +932,6 @@
         "7f157597-9213-4a48-842c-722380101aa3",
         "7066c457-7c2b-417b-8779-338dab7721ee",
         "6e105072-af44-4db7-86a0-e934805b3005",
-        "38af9b55-b6e0-4600-a305-7f16f772b343",
         "384c7804-779d-4753-b75c-d3e75d9f53b1",
         "8042363e-37b2-4f04-a2d1-a3b1f45cd610",
         "8eafd6ba-3593-471c-a694-c4534adaeb40",
@@ -2590,6 +2587,13 @@
   },
   "b45ddc86-36c3-45f6-b767-cf13f6a5a4d0": {
     "url": "db://assets/Sounds/Voices/pt/GREAT.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "f9adbb9c-114c-408a-9734-c50a159e9f6c": {
+    "url": "db://assets/Sounds/wrong-click-feedback.mp3",
     "value": {
       "depends": []
     },

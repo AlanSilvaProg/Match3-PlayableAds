@@ -65,7 +65,6 @@ export class TutorialManager extends Component {
     private static readonly UI_ORDER = 300;
     private static readonly FLAG_TIME = 'match3_tut_low_time';
     private static readonly FLAG_LATE = 'match3_tut_late_order';
-    private static readonly FLAG_WRONG = 'match3_tut_wrong_many';
     private static readonly FLAG_GOLDEN = 'match3_tut_golden';
 
     private canTap: boolean = false;
@@ -78,15 +77,10 @@ export class TutorialManager extends Component {
     private continueLabel: Node | null = null;
 
     /** Aviso de fade em andamento (tempo baixo / pedido atrasado) e o power-up que vem em seguida. */
-    private focusKind: 'time' | 'late' | 'wrong' | 'golden' | null = null;
+    private focusKind: 'time' | 'late' | 'golden' | null = null;
     private goldenDone: (() => void) | null = null;
     private focusChain: PowerupType | null = null;
 
-    /** Dica "toque no item da prateleira para remove-lo": mostrada uma unica vez, na primeira selecao errada. */
-    private static readonly REMOVE_HINT_KEY = 'match3_remove_hint_seen';
-    private static readonly REMOVE_HINT_MS = 9000;
-    private hintElement: MatchElement | null = null;
-    private hintUntil: number = 0;
     private handRaised: boolean = false;
 
     // ---------- Tutoriais contextuais de power-up ----------
@@ -107,7 +101,6 @@ export class TutorialManager extends Component {
         ev?.on(GameManager.EVENT_COMBO_LEVEL_UP, this.onComboLevelUp, this);
         ev?.on(GameManager.EVENT_POWERUP_USED, this.onPowerupUsed, this);
         ev?.on(GameManager.EVENT_SELECTION_CHANGED, this.onSelectionChanged, this);
-        ev?.on(GameManager.EVENT_WRONG_SELECTED, this.onWrongSelected, this);
         ev?.on(GameManager.EVENT_PLAY, this.onPlay, this);
         ev?.on(GameManager.EVENT_ORDER_READY, this.onOrderReady, this);
         if (this.fadeNode) this.fadeNode.active = false;
@@ -118,7 +111,6 @@ export class TutorialManager extends Component {
         const events = GameManager.instance?.events;
         events?.off(GameManager.EVENT_PLAY, this.onPlay, this);
         events?.off(GameManager.EVENT_ORDER_READY, this.onOrderReady, this);
-        events?.off(GameManager.EVENT_WRONG_SELECTED, this.onWrongSelected, this);
         events?.off(GameManager.EVENT_COMBO_LOST, this.onComboLost, this);
         events?.off(GameManager.EVENT_COMBO_LEVEL_UP, this.onComboLevelUp, this);
         events?.off(GameManager.EVENT_POWERUP_USED, this.onPowerupUsed, this);
@@ -195,7 +187,7 @@ export class TutorialManager extends Component {
             });
         }
         // A legenda fica numa faixa SEM alimentos: em retrato, na linha do combo; em paisagem, acima do tabuleiro.
-        this.showCaption(tr('Tap {0} to put\nthem on the TRAY!', this.orderListText()), this.capPos('click', new Vec3(100, Responsive.top - 55, 0)), false, Responsive.portrait ? 0.8 : 0.62);
+        this.showCaption(tr('Tap {0} to add\nthem to the order!', this.orderListText()), this.capPos('click', new Vec3(100, Responsive.top - 55, 0)), false, Responsive.portrait ? 0.8 : 0.62);
     }
 
     /** "2x Fries, 3x Ice Cream": o conteudo do 1o pedido, nos textos da introducao. */
@@ -233,8 +225,7 @@ export class TutorialManager extends Component {
             return;
         }
         if (this.introStep !== 2) return;
-        const selected = this.matchController ? this.matchController.selectedElements : [];
-        const next = this.whitelist.find(el => el.isValid && el.node && el.isAvailable && selected.indexOf(el) === -1);
+        const next = this.whitelist.find(el => el.isValid && el.node && el.isAvailable);
         if (next) {
             this.tutorialIndicator.active = true;
             this.tutorialIndicator.setWorldPosition(next.node.worldPosition);
@@ -312,7 +303,7 @@ export class TutorialManager extends Component {
     /** O tutorial deste power-up pode comecar agora? (nivel <= 10, nunca comprou/usou, nada mais em andamento) */
     private canStartGuide(type: PowerupType, ignoreCooldown: boolean = false): boolean {
         const gm = GameManager.instance;
-        if (!gm || !gm.IsRunning() || this.guideType !== null || this.hintElement || this.focusKind || GoldenTime.active) return false;
+        if (!gm || !gm.IsRunning() || this.guideType !== null || this.focusKind || GoldenTime.active) return false;
         if (GameManager.currentLevel >= TutorialManager.GUIDE_MAX_LEVEL) return false;
         if (PowerupInventory.hasSeen(type)) return false;
         return ignoreCooldown || performance.now() - this.lastGuideEnd >= TutorialManager.GUIDE_COOLDOWN_MS;
@@ -346,7 +337,6 @@ export class TutorialManager extends Component {
         this.guideCheck -= dt;
         if (this.guideCheck > 0) return;
         this.guideCheck = 0.3;
-        if (this.hintElement) return;
 
         const orders = OrderManager.instance;
         const left = gm.timeLeft;
@@ -487,12 +477,6 @@ export class TutorialManager extends Component {
         if (this.tutorialIndicator) this.tutorialIndicator.active = false;
     }
 
-    // ---------- Dica: remover um item selecionado ----------
-
-    private hintSeen(): boolean {
-        try { return !!sys.localStorage.getItem(TutorialManager.REMOVE_HINT_KEY); } catch (e) { return false; }
-    }
-
     /**
      * Primeiro Golden Time: aviso de que todo alimento virou moeda e que e para pegar o maximo possivel.
      * Para o tempo ate o toque e entao chama `done` (que comeca a contagem do Golden Time). Aparece 1x.
@@ -501,7 +485,6 @@ export class TutorialManager extends Component {
         const gm = GameManager.instance;
         if (!gm || this.flagSet(TutorialManager.FLAG_GOLDEN) || this.focusKind) { done(); return; }
         this.setFlag(TutorialManager.FLAG_GOLDEN);
-        if (this.hintElement) this.endHint();
         this.focusKind = 'golden';
         this.focusChain = null;
         this.goldenDone = done;
@@ -517,106 +500,10 @@ export class TutorialManager extends Component {
 
     /** Algum tutorial/dica esta na tela agora? (o Golden Time nao comeca por cima dele) */
     public isBusy(): boolean {
-        return !!this.focusKind || this.guideType !== null || !!this.hintElement || this.introStep !== 0;
-    }
-
-    /** Itens errados (que nenhum pedido pede) parados na prateleira agora. */
-    private wrongInTray(): MatchElement[] {
-        const orders = OrderManager.instance, mc = this.matchController;
-        if (!orders || !mc) return [];
-        return mc.selectedElements.filter(e => e.isValid && e.hasReachedSlot && !mc.isInPendingMerge(e) && orders.NextQuantityFor(e.type) === 0);
-    }
-
-    /** Mais de 1 item errado na prateleira (primeira vez): reforca o pedido atual e destaca os alimentos certos. */
-    private tryWrongManyTutorial(): boolean {
-        const gm = GameManager.instance, orders = OrderManager.instance;
-        if (!gm || !orders || !gm.IsRunning() || this.focusKind || this.guideType !== null || GoldenTime.active) return false;
-        if (this.flagSet(TutorialManager.FLAG_WRONG) || this.wrongInTray().length < 2) return false;
-        const line = orders.GetNextPendingLine();
-        if (!line) return false;
-
-        const mc = this.matchController;
-        const board = this.initializer ? this.initializer.node.getComponentsInChildren(MatchElement) : [];
-        const picks = board.filter(e => e.isValid && e.isAvailable && e.type === line.type && (!mc || mc.selectedElements.indexOf(e) === -1))
-            .slice(0, line.quantity);
-        if (picks.length === 0) return false;
-
-        this.setFlag(TutorialManager.FLAG_WRONG);
-        if (this.hintElement) this.endHint();
-        this.focusKind = 'wrong';
-        this.focusChain = null;
-        gm.timeHeld = true;
-        SoundManager.playTutorialStep();
-        this.showFade(true);
-        this.fadeNode?.targetOff(this);
-        this.fadeNode?.on(Node.EventType.TOUCH_END, this.onFocusTap, this);
-        this.highlight([orders.node, ...picks.map(e => e.node)]);
-        const name = ElementCatalog.getDef(line.type).name;
-        this.showCaption(tr('Those foods are not in your orders!\nYour first order needs {0}x {1}.\nPick the highlighted ones.', line.quantity, tr(name)),
-            this.capPos('orders', new Vec3(95, 120, 0)), true);
-        if (this.tutorialIndicator) {
-            if (!this.handRaised) {
-                this.handRaised = true;
-                this.tutorialIndicator.getComponentsInChildren(Sorting2D).forEach(sp => {
-                    sp.sortingOrder = TutorialManager.UI_ORDER + 50 + sp.sortingOrder;
-                });
-            }
-            this.tutorialIndicator.active = true;
-            this.tutorialIndicator.setWorldPosition(picks[0].node.worldPosition);
-        }
-        this.canTap = false;
-        this.scheduleOnce(() => { this.canTap = true; }, this.tapDelay);
-        return true;
-    }
-
-    private onWrongSelected(element: MatchElement) {
-        if (this.tryWrongManyTutorial()) return;
-        // So uma vez na vida, fora do tutorial guiado, e sem outra dica em andamento.
-        if (this.hintElement || this.focusKind || this.guideType !== null || GoldenTime.active || this.hintSeen()) return;
-        if (!element || !element.isValid || element.isAvailable || !element.hasReachedSlot) return;
-        try { sys.localStorage.setItem(TutorialManager.REMOVE_HINT_KEY, '1'); } catch (e) { }
-
-        this.hintElement = element;
-        this.hintUntil = performance.now() + TutorialManager.REMOVE_HINT_MS;
-        SoundManager.playTutorialStep();
-
-        // Legenda ao lado do item (paisagem: a esquerda da coluna da prateleira; retrato: acima da fileira).
-        const local = new Vec3();
-        this.node.inverseTransformPoint(local, element.node.worldPosition);
-        const pos = Responsive.portrait
-            ? new Vec3(0, local.y + 170, 0)
-            : new Vec3(Math.max(-420, local.x - 330), Math.max(-130, Math.min(230, local.y)), 0);
-        this.showCaption('Wrong food?\nTap it in the tray to put it back!', pos, false);
-
-        if (this.tutorialIndicator) {
-            if (!this.handRaised) {
-                this.handRaised = true;
-                this.tutorialIndicator.getComponentsInChildren(Sorting2D).forEach(s => {
-                    s.sortingOrder = TutorialManager.UI_ORDER + 50 + s.sortingOrder;
-                });
-            }
-            this.tutorialIndicator.active = true;
-            this.tutorialIndicator.setWorldPosition(element.node.worldPosition);
-        }
-    }
-
-    private updateHint() {
-        const el = this.hintElement;
-        const gm = GameManager.instance;
-        const over = !el || !el.isValid || !el.node || !el.node.isValid || el.isAvailable
-            || !gm || !gm.IsRunning() || performance.now() > this.hintUntil;
-        if (over) { this.endHint(); return; }
-        if (this.tutorialIndicator) this.tutorialIndicator.setWorldPosition(el!.node.worldPosition);
-    }
-
-    private endHint() {
-        this.hintElement = null;
-        if (this.captionRoot) this.captionRoot.active = false;
-        if (this.tutorialIndicator) this.tutorialIndicator.active = false;
+        return !!this.focusKind || this.guideType !== null || this.introStep !== 0;
     }
 
     protected update(dt: number) {
-        if (this.hintElement) this.updateHint();
         this.updateGuides(dt);
         this.updateIntro();
     }

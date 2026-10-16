@@ -44,7 +44,7 @@ export class EndScreenLayout {
             const anim: any = c.getComponent('LogoAnimation');
             if (anim) anim.enabled = false;
             if (!portrait) c.setPosition(o.x, o.y, c.position.z);
-            else if (c.name === 'Logo') c.setPosition(0, 330, c.position.z);
+            else if (c.name === 'Logo') c.setPosition(0, 445, c.position.z);
             else c.setPosition(o.x + this.SHIFT, o.y, c.position.z); // coluna de botoes/estrelas vai para o centro
             if (anim) anim.enabled = true;
         });

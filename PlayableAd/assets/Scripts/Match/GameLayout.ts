@@ -2,6 +2,7 @@ import { Node, UITransform, Vec3, Label, Color, Sorting2D } from 'cc';
 import { Responsive } from './Responsive';
 import { tr } from './I18n';
 import { OrderManager } from './OrderManager';
+import { PowerupManager } from './PowerupManager';
 
 interface Saved { pos: Vec3; scale: Vec3; euler: Vec3; size: { w: number, h: number } | null; }
 
@@ -52,8 +53,6 @@ export class GameLayout {
             timerBg: find('GameManager/TimerBG'),
             combo: find('GameManager/Combo'),
             warning: find('GameManager/WarningEffect'),
-            slots: find('SelectedSlots'),
-            anchors: find('SelectedSlots/SelectedSlotAnchors'),
             board: find('MatchSpace'),
             orders: find('RemainingElementsArea'),
             logo: find('Logo'),
@@ -85,7 +84,6 @@ export class GameLayout {
                 });
             }
             this.stretchLandscape(nodes);
-            this.refreshShelf(canvas);
             return;
         }
 
@@ -131,14 +129,7 @@ export class GameLayout {
             this.placeBoardHint(canvas, 0, fullTop - band / 2, 700 * m.boardScale - 40);
         }
 
-        // Prateleira na horizontal, abaixo do tabuleiro.
-        if (nodes.slots) nodes.slots.setPosition(0, m.shelfY, 0);
-        if (nodes.anchors) {
-            nodes.anchors.setRotationFromEuler(0, 0, 0);
-            nodes.anchors.setScale(m.shelfScale, m.shelfScale, 1);
-        }
         void gm;
-        this.refreshShelf(canvas);
     }
 
     /**
@@ -151,16 +142,17 @@ export class GameLayout {
         const shift = (n: Node | null | undefined, dx: number) => { if (n) n.setPosition(n.position.x + dx, n.position.y, n.position.z); };
         const left = -extraW / 2;
         [nodes.timer, nodes.timerBg, nodes.combo, nodes.logo, nodes.orders].forEach(n => shift(n, left));
-        shift(nodes.slots, extraW / 2);
         if (nodes.board) {
             const saved = this.saved.get(nodes.board);
-            const w = (saved?.size?.w ?? 700) + Math.min(extraW * 0.8, 600);
+            const w = (saved?.size?.w ?? 700) + 140 + Math.min(extraW * 0.8, 600); // +140: espaco da antiga bandeja
             const h = (saved?.size?.h ?? 510) + Math.min(extraH * 0.8, 400);
             const band = this.HINT_BAND;
             this.setBoardSize(nodes.board, w, h - band);
-            const bp = nodes.board.position;
-            nodes.board.setPosition(bp.x, bp.y - band / 2, bp.z);
-            this.placeBoardHint(nodes.board.parent!, bp.x, bp.y + h / 2 - band / 2, w - 40);
+            const bx = nodes.board.position.x, by = nodes.board.position.y, bz = nodes.board.position.z;
+            nodes.board.setPosition(bx + 70, by - band / 2, bz);
+            // O texto-guia e a barra de power-ups ficam centralizados no espaco de selecao (o tabuleiro).
+            this.placeBoardHint(nodes.board.parent!, bx + 70, by + h / 2 - band / 2, w - 40);
+            PowerupManager.instance?.layoutBar();
         }
         // Coluna de pedidos: o fundo (sprite girado 90 graus) acompanha a altura visivel.
         const bg = nodes.ordersBg?.getComponent(UITransform);
@@ -179,12 +171,6 @@ export class GameLayout {
         const kx = w / ut.width, ky = h / ut.height;
         board.children.forEach(c => c.setPosition(c.position.x * kx, c.position.y * ky, c.position.z));
         ut.setContentSize(w, h);
-    }
-
-    /** Itens na prateleira voltam a seguir os encaixes (que mudaram de lugar com a orientacao). */
-    private static refreshShelf(canvas: Node) {
-        const slots: any = canvas.scene?.getComponentInChildren('MatchSlots');
-        if (slots && slots.CompactSlots) slots.CompactSlots();
     }
 
     private static save(n: Node) {

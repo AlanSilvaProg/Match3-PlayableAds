@@ -149,7 +149,10 @@ export class PowerupManager extends Component {
             this.bar.setPosition(0, Responsive.portraitMetrics().barY, 0);
         } else {
             // Paisagem: a barra fica ancorada na base visivel (barY foi definido para a altura 720).
-            this.bar.setPosition(this.barX, this.barY - Math.max(0, Responsive.height - Responsive.LAND_H) / 2, 0);
+            // Centralizada no tabuleiro (espaco de selecao de alimentos).
+            const board = this.node.parent ? this.node.parent.getChildByName('MatchSpace') : null;
+            const x = board ? board.worldPosition.x - this.node.worldPosition.x : this.barX;
+            this.bar.setPosition(x, this.barY - Math.max(0, Responsive.height - Responsive.LAND_H) / 2, 0);
         }
     }
 
@@ -278,8 +281,7 @@ export class PowerupManager extends Component {
         const space = this.matchSpace;
         if (!line || !space || !this.matchController) return false;
 
-        const have = this.matchController.selectedElements.filter(e => e.type === line.type).length;
-        const need = Math.max(0, line.quantity - have);
+        const need = Math.max(0, line.quantity); // (ja e o que falta: quantidade menos o que o pedido recebeu)
         const candidates = space.getComponentsInChildren(MatchElement).filter(e => e.isAvailable && e.type === line.type);
         const picks = candidates.slice(0, need);
         if (picks.length === 0) return false;

@@ -16,7 +16,10 @@ interface OrderLineView {
     type: ElementType;
     /** Quantidade exata pedida (um unico merge com esse numero de itens iguais). */
     quantity: number;
-    /** Um merge ja foi iniciado para esta linha (aguardando os itens chegarem a prateleira). */
+    /** Itens ja escolhidos (voando ou entregues ao cartao): a linha ja esta totalmente reservada quando chega a `quantity`. */
+    assigned: number;
+    /** Itens que ja chegaram ao cartao (e contam no progresso 1/3). */
+    arrived: number;
     reserved: boolean;
     done: boolean;
     row: Node;
@@ -129,7 +132,6 @@ export class OrderManager extends Component {
     /** Escala uniforme dos cartoes: diminui quando ha pedidos demais para a altura do painel. */
     private cardScale: number = 1;
     private titleNode: Node | null = null;
-    private selection: Map<ElementType, number> = new Map();
 
     private readonly goldenCard = new Color(255, 185, 30, 255);
     private readonly goldenCardLight = new Color(255, 232, 110, 255);
@@ -167,13 +169,11 @@ export class OrderManager extends Component {
         if (OrderManager.instance === this) OrderManager.instance = null!;
         const events = GameManager.instance?.events;
         events?.off(GameManager.EVENT_LEVEL_READY, this.onLevelReady, this);
-        events?.off(GameManager.EVENT_SELECTION_CHANGED, this.onSelectionChanged, this);
     }
 
     protected start() {
         const events = GameManager.instance?.events;
         events?.on(GameManager.EVENT_LEVEL_READY, this.onLevelReady, this);
-        events?.on(GameManager.EVENT_SELECTION_CHANGED, this.onSelectionChanged, this);
     }
 
     private onLevelReady(plan: LevelPlan) {
@@ -285,25 +285,53 @@ export class OrderManager extends Component {
     // ---------- Pedidos x merges ----------
 
     /**
-     * Procura o pedido que deve receber o merge de `type`, respeitando a ORDEM EM QUE OS PEDIDOS APARECEM NA TELA
-     * (de cima para baixo): vale o primeiro pedido com uma linha desse alimento ainda pendente. Se a quantidade
-     * dele ainda nao esta na prateleira, o merge espera (nao e entregue a um pedido de baixo).
-     * Reserva a linha e devolve a reserva, ou null.
+     * Escolhe o pedido que recebe um alimento de `type`, na ORDEM EM QUE OS PEDIDOS APARECEM NA TELA (de cima para
+     * baixo): o primeiro com uma linha desse alimento ainda incompleta. Reserva a vaga e devolve a reserva; null =
+     * nenhum pedido pede o alimento (o item nao pode ser selecionado).
      */
-    public TryClaim(type: ElementType, available: number): OrderClaim | null {
+    public TryAssign(type: ElementType): OrderClaim | null {
         if (!this.plan || this.allDelivered) return null;
-
         for (const order of this.active) {
             if (order.delivered) continue;
-            const line = order.lines.find(l => l.type === type && !l.done && !l.reserved);
+            const line = order.lines.find(l => l.type === type && !l.done && l.assigned < l.quantity);
             if (!line) continue;
-
-            // Primeiro pedido (na ordem da tela) que quer este alimento: ele tem a prioridade.
-            if (line.quantity > available) return null;
-            line.reserved = true;
+            line.assigned++;
+            if (line.assigned >= line.quantity) line.reserved = true;
             return { order, line, quantity: line.quantity, type };
         }
         return null;
+    }
+
+    /** Um ponto (mundo) esta sobre algum cartao de pedido ainda aberto? (soltar um alimento ali o seleciona) */
+    public isOverCard(world: Vec3): boolean {
+        for (const o of this.active) {
+            if (o.delivered || !o.node.isValid) continue;
+            const ut = o.node.getComponent(UITransform);
+            if (!ut) continue;
+            const r = ut.getBoundingBoxToWorld();
+            if (world.x >= r.x && world.x <= r.x + r.width && world.y >= r.y && world.y <= r.y + r.height) return true;
+        }
+        return false;
+    }
+
+    /** Ponto (mundo) onde o alimento escolhido deve pousar: o icone da linha no cartao. */
+    public GetLineTarget(claim: OrderClaim): Vec3 | null {
+        const row = claim.line.row;
+        if (!row || !row.isValid || claim.order.delivered) return null;
+        const icon = row.getChildByName('Icon');
+        return (icon || row).worldPosition.clone();
+    }
+
+    /** O alimento chegou ao cartao: o progresso da linha sobe; ao completar, o MatchController registra o combo/moedas. */
+    public OnItemArrived(claim: OrderClaim) {
+        const { order, line } = claim;
+        if (order.delivered || line.done || this.active.indexOf(order) === -1) return;
+        line.arrived++;
+        this.refreshLine(line);
+        Tween.stopAllByTarget(line.row);
+        line.row.setScale(1, 1, 1);
+        tween(line.row).to(0.06, { scale: new Vec3(1.15, 1.15, 1) }).to(0.1, { scale: Vec3.ONE }).start();
+        if (line.arrived >= line.quantity) GameManager.instance?.events.emit(GameManager.EVENT_LINE_FULL, claim);
     }
 
     // ---------- Power-ups ----------
@@ -314,23 +342,27 @@ export class OrderManager extends Component {
 
     public get frozenSecondsLeft(): number { return this.frozenFor; }
 
-    /** Power-up: todo produto de todo pedido passa a pedir apenas 1. Retorna false se nada mudou. */
+    /** Power-up: todo produto de todo pedido passa a pedir apenas 1 (ou o que ja foi escolhido). Retorna false se nada mudou. */
     public ReduceQuantities(): boolean {
         let changed = false;
+        const completed: OrderClaim[] = [];
         for (const order of this.active) {
             if (order.delivered) continue;
             for (const line of order.lines) {
-                if (line.done || line.reserved || line.quantity <= 1) continue;
-                line.quantity = 1;
+                if (line.done) continue;
+                const target = Math.max(1, line.assigned);
+                if (line.quantity <= target) continue;
+                line.quantity = target;
+                if (line.assigned >= line.quantity) line.reserved = true;
                 this.refreshLine(line);
                 Tween.stopAllByTarget(line.row);
                 line.row.setScale(1, 1, 1);
                 tween(line.row).to(0.1, { scale: new Vec3(1.25, 1.25, 1) }).to(0.15, { scale: Vec3.ONE }).start();
                 changed = true;
+                if (line.arrived >= line.quantity) completed.push({ order, line, quantity: line.quantity, type: line.type });
             }
         }
-        // Com menos itens exigidos, o que ja esta na prateleira pode completar pedidos na hora.
-        if (changed) GameManager.instance?.events.emit(GameManager.EVENT_DEMAND_CHANGED);
+        completed.forEach(c => GameManager.instance?.events.emit(GameManager.EVENT_LINE_FULL, c));
         return changed;
     }
 
@@ -362,7 +394,7 @@ export class OrderManager extends Component {
         for (const order of this.active) {
             if (order.delivered) continue;
             const line = order.lines.find(l => !l.done && !l.reserved);
-            if (line) return { type: line.type, quantity: line.quantity };
+            if (line) return { type: line.type, quantity: line.quantity - line.assigned };
         }
         return null;
     }
@@ -373,7 +405,7 @@ export class OrderManager extends Component {
         const add = (t: ElementType, n: number) => { if (n > 0) demand.set(t, (demand.get(t) || 0) + n); };
         for (const o of this.active) {
             if (o.delivered) continue;
-            o.lines.forEach(l => { if (!l.done && !l.reserved) add(l.type, l.quantity); });
+            o.lines.forEach(l => { if (!l.done && !l.reserved) add(l.type, l.quantity - l.assigned); });
         }
         if (this.plan) {
             for (let i = this.nextIndex; i < this.plan.orders.length; i++) this.plan.orders[i].lines.forEach(l => add(l.type, l.quantity));
@@ -385,7 +417,7 @@ export class OrderManager extends Component {
     public GetPriorityOrderLines(): { type: ElementType, quantity: number }[] {
         for (const order of this.active) {
             if (order.delivered) continue;
-            const lines = order.lines.filter(l => !l.done && !l.reserved).map(l => ({ type: l.type, quantity: l.quantity }));
+            const lines = order.lines.filter(l => !l.done && !l.reserved).map(l => ({ type: l.type, quantity: l.quantity - l.assigned }));
             if (lines.length > 0) return lines;
         }
         return [];
@@ -402,7 +434,7 @@ export class OrderManager extends Component {
         for (const order of this.active) {
             if (order.delivered) continue;
             const line = order.lines.find(l => l.type === type && !l.done && !l.reserved);
-            if (line) return line.quantity;
+            if (line) return line.quantity - line.assigned;
         }
         return 0;
     }
@@ -484,11 +516,6 @@ export class OrderManager extends Component {
         order.footerBg.color = ready ? new Color(50, 235, 85, 255) : new Color(70, 78, 110, 255);
         order.footerLabel.color = ready ? Color.WHITE : new Color(160, 170, 200, 255);
         if (!ready) order.footer.setScale(1, 1, 1);
-    }
-
-    private onSelectionChanged(counts: Map<ElementType, number>) {
-        this.selection = counts;
-        this.active.forEach(o => o.lines.forEach(l => this.refreshLine(l)));
     }
 
     // ---------- Pedidos ----------
@@ -656,7 +683,7 @@ export class OrderManager extends Component {
             const countLabel = this.makeLabel(countNode, 30, 3, Color.WHITE, new Color(10, 10, 20, 255));
             countLabel.isBold = true;
 
-            const line: OrderLineView = { type: l.type, quantity: l.quantity, reserved: false, done: false, row, countLabel };
+            const line: OrderLineView = { type: l.type, quantity: l.quantity, assigned: 0, arrived: 0, reserved: false, done: false, row, countLabel };
             this.refreshLine(line);
             return line;
         });
@@ -691,37 +718,21 @@ export class OrderManager extends Component {
         return view;
     }
 
-    /** Esta linha e a que recebe os itens selecionados do tipo (primeira linha pendente na ordem da tela)? */
-    private isPriorityLine(line: OrderLineView): boolean {
-        for (const order of this.active) {
-            if (order.delivered) continue;
-            const first = order.lines.find(l => l.type === line.type && !l.done && !l.reserved);
-            if (first) return first === line;
-        }
-        return false;
-    }
-
     private refreshAllLines() {
         this.active.forEach(o => o.lines.forEach(l => this.refreshLine(l)));
     }
 
-    /** "x3" = quantidade pedida; com itens ja na prateleira vira "1/3", "2/3"... */
+    /** Progresso da linha: "0/3", "1/3"... (amarelo enquanto parcial, verde ao completar). */
     private refreshLine(line: OrderLineView) {
         if (line.done) {
             line.countLabel.string = `${line.quantity}/${line.quantity}`;
             line.countLabel.color = this.okColor;
-            line.countLabel.fontSize = 26;
-        } else if (line.reserved) {
-            line.countLabel.string = `${line.quantity}/${line.quantity}`;
-            line.countLabel.color = this.okColor;
-            line.countLabel.fontSize = 26;
         } else {
-            // A selecao conta so para o pedido prioritario (o 1o na tela que ainda quer este alimento): e ele que vai completar.
-            const have = this.isPriorityLine(line) ? Math.min(this.selection.get(line.type) || 0, line.quantity) : 0;
+            const have = Math.min(line.arrived, line.quantity);
             line.countLabel.string = `${have}/${line.quantity}`;
             line.countLabel.color = have > 0 ? this.warnColor : Color.WHITE;
-            line.countLabel.fontSize = 26;
         }
+        line.countLabel.fontSize = 26;
         line.countLabel.lineHeight = line.countLabel.fontSize;
     }
 
