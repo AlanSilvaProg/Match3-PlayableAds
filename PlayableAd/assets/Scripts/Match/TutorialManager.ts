@@ -135,6 +135,7 @@ export class TutorialManager extends Component {
     // ---------- Introducao da primeira partida ----------
 
     private introOrders() {
+        this.clearDeliverHint();
         if (!OrderManager.instance) { this.finishIntro(); return; }
         this.introStep = 1;
         SoundManager.playTutorialStep();
@@ -199,6 +200,7 @@ export class TutorialManager extends Component {
     /** Passo 3 da introducao: o pedido ficou pronto na bandeja; so o botao ENTREGAR responde. */
     private onOrderReady() {
         if (this.introStep !== 2) return;
+        this.clearDeliverHint();
         this.introStep = 3;
         SoundManager.playTutorialStep();
         const gm = GameManager.instance;
@@ -385,7 +387,47 @@ export class TutorialManager extends Component {
     }
 
     /** Para o tempo, escurece a tela com foco em `nodes` e explica. O toque seguinte entrega o power-up `chain`. */
+    // ---------- Mao-guia de entrega (sem fade) ----------
+
+    private deliverHintOn: boolean = false;
+
+    private raiseHand() {
+        if (!this.tutorialIndicator || this.handRaised) return;
+        this.handRaised = true;
+        this.tutorialIndicator.getComponentsInChildren(Sorting2D).forEach(sp => {
+            sp.sortingOrder = TutorialManager.UI_ORDER + 50 + sp.sortingOrder;
+        });
+    }
+
+    /** Outro tutorial vai usar a mao: a mao-guia de entrega sai de cena antes (nunca 2 maos ao mesmo tempo). */
+    private clearDeliverHint() {
+        if (!this.deliverHintOn) return;
+        this.deliverHintOn = false;
+        if (this.tutorialIndicator) this.tutorialIndicator.active = false;
+    }
+
+    /**
+     * Pedido pronto e o jogador demora a entregar: a mao toca no pedido (sem fade, sem texto). So com o prazo do pedido
+     * abaixo de 10s e depois de 2s do pedido pronto; some assim que ele e entregue ou outro tutorial comeca.
+     */
+    private updateDeliverHint() {
+        const ind = this.tutorialIndicator, orders = OrderManager.instance, gm = GameManager.instance;
+        if (!ind) return;
+        const blocked = this.isBusy() || GoldenTime.active || !gm || !gm.IsRunning() || gm.timeHeld;
+        const target = !blocked && orders ? orders.GetDeliverHintTarget(2, 10) : null;
+        if (target) {
+            this.raiseHand();
+            ind.active = true;
+            ind.setWorldPosition(target.worldPosition);
+            this.deliverHintOn = true;
+        } else if (this.deliverHintOn) {
+            this.deliverHintOn = false;
+            ind.active = false;
+        }
+    }
+
     private startFocus(kind: 'time' | 'late', nodes: Node[], text: string, position: Vec3, chain: PowerupType) {
+        this.clearDeliverHint();
         const gm = GameManager.instance;
         if (!gm) return;
         this.focusKind = kind;
@@ -428,6 +470,7 @@ export class TutorialManager extends Component {
 
     /** Presenteia 1 unidade, para o tempo, escurece a tela e aponta o botao: o jogador precisa usa-lo agora. */
     private startGuide(type: PowerupType) {
+        this.clearDeliverHint();
         const gm = GameManager.instance, pm = PowerupManager.instance;
         const slot = pm?.slotNode(type);
         if (!gm || !pm || !slot) return;
@@ -482,6 +525,7 @@ export class TutorialManager extends Component {
      * Para o tempo ate o toque e entao chama `done` (que comeca a contagem do Golden Time). Aparece 1x.
      */
     public showGoldenIntro(done: () => void) {
+        this.clearDeliverHint();
         const gm = GameManager.instance;
         if (!gm || this.flagSet(TutorialManager.FLAG_GOLDEN) || this.focusKind) { done(); return; }
         this.setFlag(TutorialManager.FLAG_GOLDEN);
@@ -506,6 +550,7 @@ export class TutorialManager extends Component {
     protected update(dt: number) {
         this.updateGuides(dt);
         this.updateIntro();
+        this.updateDeliverHint();
     }
 
     // ---------- Posicao da legenda ----------

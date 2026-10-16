@@ -37,6 +37,8 @@ interface OrderView {
     delivered: boolean;
     /** Todas as linhas prontas: o botao ENTREGAR do cartao esta liberado. */
     ready: boolean;
+    /** Relogio (this.clock) do momento em que o pedido ficou pronto. */
+    readyAt: number;
     footer: Node;
     footerBg: Sprite;
     footerLabel: Label;
@@ -460,6 +462,7 @@ export class OrderManager extends Component {
     private markReady(order: OrderView) {
         if (order.ready || order.delivered) return;
         order.ready = true;
+        order.readyAt = this.clock;
         this.refreshFooter(order);
         this.addReadyGlow(order);
         SoundManager.playNotification();
@@ -503,6 +506,14 @@ export class OrderManager extends Component {
             ComboManager.instance?.ReleaseDisplay(order.heldPoints);
         }
         this.deliver(order);
+    }
+
+    /** Cartao ENTREGAR para a mao-guia: pedido pronto ha `minReady`s e com o prazo abaixo de `maxTime`s (ou ja atrasado), ou null. */
+    public GetDeliverHintTarget(minReady: number, maxTime: number): Node | null {
+        for (const o of this.active) {
+            if (o.ready && !o.delivered && o.footer.isValid && this.clock - o.readyAt >= minReady && o.timeLeft < maxTime) return o.footer;
+        }
+        return null;
     }
 
     /** O no do botao ENTREGAR do 1o pedido pronto (usado pelo tutorial), ou null. */
@@ -706,7 +717,7 @@ export class OrderManager extends Component {
 
         const view: OrderView = {
             plan, node, height: h, bg, timerLabel, lines, timeLeft: plan.deliverTime, delivered: false,
-            ready: false, footer, footerBg, footerLabel, heldPoints: 0, coinCount: 0,
+            ready: false, readyAt: 0, footer, footerBg, footerLabel, heldPoints: 0, coinCount: 0,
         };
         // O cartao inteiro entrega (nao so o botao): qualquer toque nele, com o pedido pronto, faz a entrega.
         node.on(Node.EventType.TOUCH_END, () => this.DeliverOrder(view));

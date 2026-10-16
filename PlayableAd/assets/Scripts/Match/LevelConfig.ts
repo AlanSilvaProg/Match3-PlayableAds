@@ -60,6 +60,8 @@ export interface LevelPlan extends PhasePlan {
  * Ajuste os numeros em TUNING para mudar a curva de dificuldade.
  */
 export class LevelConfig {
+    /** O jogador ja concluiu este nivel? (ligado ao LevelProgress pelo GameManager; sem ele conta como concluido) */
+    public static isCompleted: (level: number) => boolean = () => true;
 
     public static readonly TUNING = {
         /** A cada N niveis ha um nivel especial (mais dificil, botao especial). */
@@ -143,6 +145,8 @@ export class LevelConfig {
         minDeliverTime: 16,
         /** Chance de cada pedido (a partir do 3o da fase) ser de ouro e o quanto o prazo dele e menor. */
         goldenChance: 0.05,
+        /** Chance de o 1o pedido do almoco ser de ouro em niveis que o jogador nunca concluiu. */
+        goldenFirstLunchChance: 0.5,
         goldenTimeFactor: 0.7,
         /** Os pedidos aparecem espalhados ate esta fracao da duracao do nivel. */
         spawnSpreadRatio: 0.55,
@@ -282,8 +286,10 @@ export class LevelConfig {
         const orders: OrderPlan[] = draft.map((lines, i) => {
             let deliver = itemsOf(lines) * perItem * T.deliverFactor + T.deliverPadding;
             if (special) deliver *= T.specialTimeFactor;
-            // Pedido de ouro (raro): prazo menor; nunca um dos 2 primeiros da fase.
-            const golden = i >= 2 && rng() < T.goldenChance;
+            // Pedido de ouro: prazo menor. Em nivel nunca concluido, o 1o pedido do almoco tem 50% de chance (sorteio a cada
+            // tentativa); nos demais, 5%, nunca um dos 2 primeiros da fase.
+            const firstLunch = i === 0 && meal === Meal.Lunch && !this.isCompleted(realLevel);
+            const golden = firstLunch ? Math.random() < T.goldenFirstLunchChance : (i >= 2 && rng() < T.goldenChance);
             if (golden) deliver *= T.goldenTimeFactor;
             return {
                 spawnTime: orderTotal > 1 ? Math.round((spread * i) / (orderTotal - 1)) : 0,

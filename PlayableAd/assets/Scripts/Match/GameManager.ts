@@ -223,6 +223,7 @@ export class GameManager extends Component {
 
     onLoad() {
         GameManager.instance = this;
+        LevelConfig.isCompleted = (lvl: number) => LevelProgress.getStars(lvl) > 0; // Golden Time garantido so em nivel nunca concluido
         if (this.node.parent) {
             Responsive.attach(this.node.parent);
             GameLayout.apply(this.node.parent);
