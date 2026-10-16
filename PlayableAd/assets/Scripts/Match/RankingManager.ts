@@ -1,5 +1,6 @@
 import { WindowAnim } from './WindowAnim';
 import { tr } from './I18n';
+import { Fonts } from './Fonts';
 import { SoundManager } from './SoundManager';
 import { Responsive } from './Responsive';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, UITransform, Vec3, Color, Sorting2D, UIOpacity, tween, Tween, sys, game } from 'cc';
@@ -295,7 +296,7 @@ export class RankingManager extends Component {
         label.fontSize = size;
         label.lineHeight = size + 4;
         label.color = color;
-        label.isBold = true;
+        label.isBold = false;
         label.horizontalAlign = align;
         label.verticalAlign = Label.VerticalAlign.CENTER;
         label.enableOutline = true;
@@ -528,8 +529,10 @@ export class RankingManager extends Component {
         const hint = this.makeLabel(win, tr('Shown in the ranking'), 20, 460, 28, 0, 20, base + 3, new Color(200, 210, 235, 255));
         hint.node.name = 'Hint';
         this.profileHint = hint;
+        Fonts.regularize(hint);
 
         this.profileInfo = this.makeLabel(win, '', 24, 560, 34, 0, -50, base + 3, Color.WHITE);
+        Fonts.regularize(this.profileInfo);
 
         const login = this.makeNode('Login', win, 0, -110, 360, 62);
         this.makeSprite(login, pm.buttonFrame, base + 3, true).color = new Color(255, 190, 70, 255);

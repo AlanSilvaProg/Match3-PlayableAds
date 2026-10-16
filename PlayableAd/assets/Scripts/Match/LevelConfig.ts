@@ -75,6 +75,8 @@ export class LevelConfig {
         /** Tempo extra nos primeiros niveis: o tempo por item/pedido e multiplicado por 1 + earlyTimeBonus, caindo a 1 ate o nivel earlyTimeLevels. */
         earlyTimeBonus: 0.5,
         earlyTimeLevels: 20,
+        /** Primeiro nivel de todos: ainda mais folga (o 1o minuto do jogador precisa terminar em vitoria tranquila). */
+        firstLevelEase: 1.25,
         /** Cada fase seguinte do nivel tem este tanto a menos de tempo (a 1a fase e a mais folgada). */
         phaseTimeDrop: 0.08,
 
@@ -267,7 +269,7 @@ export class LevelConfig {
 
         // Tempo por item: cai com a dificuldade, mas os primeiros niveis ganham folga extra (que some ate o nivel
         // earlyTimeLevels) e a 1a fase de cada nivel e mais folgada que as seguintes.
-        const earlyFactor = 1 + T.earlyTimeBonus * Math.max(0, 1 - realLevel / T.earlyTimeLevels);
+        const earlyFactor = (1 + T.earlyTimeBonus * Math.max(0, 1 - realLevel / T.earlyTimeLevels)) * (realLevel === 0 ? T.firstLevelEase : 1);
         const phaseFactor = Math.max(0.5, 1 - T.phaseTimeDrop * phaseIdx);
         const perItem = Math.max(T.minSecondsPerItem,
             T.baseSecondsPerItem - T.secondsPerItemDropPerLevel * level - T.secondsPerItemDropPerTier * tier) * earlyFactor * phaseFactor;

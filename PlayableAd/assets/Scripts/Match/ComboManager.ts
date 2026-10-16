@@ -1,3 +1,4 @@
+import { Haptics } from './Haptics';
 import { SoundManager } from './SoundManager';
 import { CelebrationFx, CelebrationTier } from './CelebrationFx';
 import { _decorator, director, Component, Node, Sprite, SpriteFrame, Label, Prefab, instantiate, tween, Tween, Vec3, math, Color } from 'cc';
@@ -168,6 +169,9 @@ export class ComboManager extends Component {
         if (ComboManager.instance === this) ComboManager.instance = null!;
     }
 
+    /** Nivel atual do combo (0 = sem combo). */
+    public get comboLevel(): number { return this.comboActive ? this.levelIndex + 1 : 0; }
+
     public get currentMultiplier(): number {
         return this.levels.length > 0 ? this.levels[this.levelIndex].multiplier : 1;
     }
@@ -320,6 +324,8 @@ export class ComboManager extends Component {
         if (!tier && this.fastStreak > top.streak && (this.fastStreak - top.streak) % 2 === 0) { tier = top; tierIndex = tiers.length - 1; }
         if (!tier) return;
         SoundManager.playCelebration(tierIndex);
+        Haptics.celebration(tierIndex);
+        PlayerStats.increment(AchievementMetric.FastCombos);
         const canvas = director.getScene()?.getChildByName('GameCanvas') ?? null;
         if (!canvas) return;
         const board = canvas.getChildByName('MatchSpace');

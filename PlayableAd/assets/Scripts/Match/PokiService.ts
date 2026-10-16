@@ -20,6 +20,8 @@ export class PokiService {
     private static initTimedOut: boolean = false;
     private static playing: boolean = false;
     private static savedVolumes: Map<AudioSource, number> = new Map();
+    /** Audio silenciado por um anuncio: outros sistemas (musica dinamica) nao devem mexer nos volumes. */
+    public static audioMuted: boolean = false;
 
     private static get sdk(): any {
         return (globalThis as any).PokiSDK || null;
@@ -271,6 +273,7 @@ export class PokiService {
 
     /** Silencia / restaura todos os AudioSource da cena durante os anuncios. */
     private static setMuted(muted: boolean) {
+        this.audioMuted = muted;
         const scene = director.getScene();
         if (!scene) return;
         if (muted) {

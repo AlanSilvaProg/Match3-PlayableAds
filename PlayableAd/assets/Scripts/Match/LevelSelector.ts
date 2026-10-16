@@ -6,6 +6,8 @@ import { GameManager } from './GameManager';
 import { LevelProgress } from './LevelProgress';
 import { LevelConfig } from './LevelConfig';
 import { PowerupManager } from './PowerupManager';
+import { DailyWindow } from './DailyWindow';
+import { CollectionWindow } from './CollectionWindow';
 import { AchievementManager } from './AchievementManager';
 import { PokiService } from './PokiService';
 import { RankingManager } from './RankingManager';
@@ -154,7 +156,7 @@ export class LevelSelector extends Component {
     private pressedCurrentButton: boolean = false;
     private velocity: number = 0;
     private width: number = 1280;
-    private widgets: { powerups?: Node | null, achievements?: Node | null, ranking?: Node | null, coins?: Node | null, coinAd?: Node | null, starsY: number } = { starsY: 310 };
+    private widgets: { powerups?: Node | null, achievements?: Node | null, ranking?: Node | null, coins?: Node | null, coinAd?: Node | null, daily?: Node | null, collection?: Node | null, starsY: number } = { starsY: 310 };
 
     private dragging: boolean = false;
     private lastX: number = 0;
@@ -209,9 +211,11 @@ export class LevelSelector extends Component {
             set(w.coins, L + 145, T - 170);
             set(stars, R - 145, T - 170);
             set(w.coinAd, L + 145, T - 240);
-            set(w.powerups, -230, B + 150);
-            set(w.achievements, 0, B + 150);
-            set(w.ranking, 230, B + 150);
+            set(w.powerups, -288, B + 150, 0.9);
+            set(w.achievements, -144, B + 150, 0.9);
+            set(w.daily, 0, B + 150, 0.9);
+            set(w.collection, 144, B + 150, 0.9);
+            set(w.ranking, 288, B + 150, 0.9);
             this.currentButton?.setPosition(0, B + 300, 0);
         } else {
             set(title, 0, T - 50);
@@ -220,7 +224,9 @@ export class LevelSelector extends Component {
             set(w.coinAd, L + 150, T - 120);
             set(w.powerups, L + 100, B + 105);
             set(w.achievements, L + 230, B + 105);
-            set(w.ranking, L + 360, B + 105);
+            set(w.daily, L + 360, B + 105);
+            set(w.collection, L + 490, B + 105);
+            set(w.ranking, L + 620, B + 105);
             this.currentButton?.setPosition(0, B + (360 + this.currentButtonY), 0);
         }
     }
@@ -234,6 +240,9 @@ export class LevelSelector extends Component {
         this.widgets.achievements = AchievementManager.instance?.createOpenButton(this.node, -410, -255, this.sortingBase + 14);
         // Ranking por estrelas totais (AUDS da Poki).
         this.widgets.ranking = RankingManager.instance?.createOpenButton(this.node, -280, -255, this.sortingBase + 14);
+        // Diario (presente + desafios do dia) e Colecao de pratos.
+        this.widgets.daily = DailyWindow.createOpenButton(this.node, -150, -255, this.sortingBase + 14);
+        this.widgets.collection = CollectionWindow.createOpenButton(this.node, -20, -255, this.sortingBase + 14);
         // Alinhado no eixo Y com o holder de estrelas (TotalStars), onde quer que ele esteja.
         const starsY = this.node.getChildByName('TotalStars')?.position.y ?? 310;
         const holder = pm.createPointsBadgeView(this.node, -490, starsY, this.sortingBase + 10);
@@ -246,6 +255,7 @@ export class LevelSelector extends Component {
     protected onEnable() {
         PowerupManager.instance?.refreshBadges();
         AchievementManager.instance?.refreshOpenButtons();
+        DailyWindow.refreshDots();
         this.width = Responsive.width;
         this.applyLayout();
         this.choosing = false;
@@ -485,7 +495,7 @@ export class LevelSelector extends Component {
         const tw = w * this.currentTextRatio, th = h * this.currentTextRatio;
         const label = this.makeLabel(this.makeNode('Text', btn, 0, 4, tw, th), Math.round(th), 13, new Color(30, 150, 30, 255));
         label.string = tr(this.currentButtonText);
-        label.isBold = true;
+        label.isBold = false;
         label.overflow = Label.Overflow.SHRINK;
         label.enableWrapText = false; // uma linha so: o SHRINK reduz a fonte para caber no botao
         this.currentButton = btn;

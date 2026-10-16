@@ -2,6 +2,7 @@ import { Node, UITransform, Vec3, Label, Color, Sorting2D } from 'cc';
 import { Responsive } from './Responsive';
 import { tr } from './I18n';
 import { OrderManager } from './OrderManager';
+import { Fonts } from './Fonts';
 import { PowerupManager } from './PowerupManager';
 
 interface Saved { pos: Vec3; scale: Vec3; euler: Vec3; size: { w: number, h: number } | null; }
@@ -15,6 +16,13 @@ export class GameLayout {
     private static saved: Map<Node, Saved> = new Map();
     /** Faixa no topo do tabuleiro reservada ao texto-guia (os alimentos nao entram nela). */
     private static readonly HINT_BAND = 40;
+
+    /** Indicador "Pedidos 3/5": logo abaixo da barra de tempo. */
+    private static placeProgressUnder(timerBar: Node | null | undefined, below: number) {
+        if (!timerBar || !OrderManager.instance) return;
+        const w = timerBar.worldPosition;
+        OrderManager.instance.placeProgress(new Vec3(w.x, w.y - below, 0));
+    }
 
     /** Texto-guia na faixa reservada: "escolha aqui as comidas dos pedidos". Cria uma vez e so reposiciona depois. */
     private static placeBoardHint(canvas: Node, x: number, y: number, width: number) {
@@ -30,7 +38,7 @@ export class GameLayout {
             label.string = tr('Pick the foods for your orders here!');
             label.fontSize = 24;
             label.lineHeight = 26;
-            label.isBold = true;
+            label.isBold = false;
             label.color = new Color(255, 236, 170, 235);
             label.horizontalAlign = Label.HorizontalAlign.CENTER;
             label.verticalAlign = Label.VerticalAlign.CENTER;
@@ -43,6 +51,8 @@ export class GameLayout {
         }
         n.getComponent(UITransform)!.setContentSize(width, 34);
         n.setPosition(x, y, 0);
+        const lb = n.getComponent(Label);
+        if (lb && Fonts.bold && lb.font !== Fonts.bold) { lb.useSystemFont = false; lb.font = Fonts.bold; } // a fonte so existe depois do OrderManager.onLoad
     }
 
     public static apply(canvas: Node) {
@@ -84,6 +94,7 @@ export class GameLayout {
                 });
             }
             this.stretchLandscape(nodes);
+            this.placeProgressUnder(nodes.timerBg, 40);
             return;
         }
 
@@ -128,6 +139,7 @@ export class GameLayout {
             const fullTop = m.boardY + (m.boardH * m.boardScale) / 2;
             this.placeBoardHint(canvas, 0, fullTop - band / 2, 700 * m.boardScale - 40);
         }
+        this.placeProgressUnder(nodes.timerBg, 38);
 
         void gm;
     }

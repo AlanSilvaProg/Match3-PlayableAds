@@ -1,4 +1,7 @@
 import { I18n } from './I18n';
+import { PokiService } from './PokiService';
+import { GameManager } from './GameManager';
+import { ComboManager } from './ComboManager';
 import { _decorator, Component, AudioClip, AudioSource, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -119,6 +122,29 @@ export class SoundManager extends Component {
     @property({ range: [0, 1, 0.05], tooltip: 'Volume do som de clique errado.' })
     public wrongClickVolume: number = 0.9;
 
+    // ---------- Escada de notas, entrega e musica dinamica ----------
+    @property({ type: [AudioClip], tooltip: 'Escada de notas: a cada alimento escolhido em sequencia toca a nota seguinte (cada vez mais aguda). 8 notas.' })
+    public ladderClips: AudioClip[] = [];
+    @property({ type: AudioClip, tooltip: 'Fecha uma linha do pedido (acorde ascendente).' })
+    public lineCompleteClip: AudioClip | null = null;
+    @property({ type: AudioClip, tooltip: 'Entrega do pedido (ka-ching).' })
+    public cashinClip: AudioClip | null = null;
+    @property({ type: AudioClip, tooltip: 'Entrega perfeita (rapida).' })
+    public perfectClip: AudioClip | null = null;
+    @property({ range: [0, 1, 0.05], tooltip: 'Volume das notas da escada.' })
+    public ladderVolume: number = 0.7;
+    @property({ range: [0, 1, 0.05], tooltip: 'Volume do ka-ching / perfeito.' })
+    public deliveryVolume: number = 0.9;
+    @property({ range: [1, 6, 0.5], tooltip: 'Segundos sem escolher alimento para a escada voltar a primeira nota.' })
+    public ladderResetSeconds: number = 2.2;
+
+    @property({ type: AudioSource, tooltip: 'AudioSource da musica de fundo (no Music): as camadas tocam em sincronia com ele.' })
+    public musicSource: AudioSource | null = null;
+    @property({ type: [AudioClip], tooltip: 'Camadas da musica (loop do mesmo tamanho da musica): [0] pad, [1] pulso, [2] cintilante. Entram conforme o combo sobe.' })
+    public musicLayerClips: AudioClip[] = [];
+    @property({ range: [0, 1, 0.05], tooltip: 'Volume maximo de cada camada de musica.' })
+    public musicLayerVolume: number = 0.22;
+
     @property({ type: AudioClip, tooltip: 'Raio aparece no tabuleiro (ativo).' })
     public rayEnabledClip: AudioClip | null = null;
 
@@ -210,6 +236,15 @@ export class SoundManager extends Component {
     public dropToOneVolume: number = 0.9;
 
     private source: AudioSource | null = null;
+    private layerSources: AudioSource[] = [];
+    private layerLevel: number[] = [];
+    private musicBaseVolume: number = -1;
+    private duckUntil: number = 0;
+    private duckFactor: number = 1;
+    private duckCurrent: number = 1;
+    private syncCheck: number = 0;
+    private ladderStep: number = 0;
+    private ladderLast: number = -1e9;
     private alarmSource: AudioSource | null = null;
     private heartSource: AudioSource | null = null;
     private lastPlayed: Map<string, number> = new Map();
@@ -233,8 +268,112 @@ export class SoundManager extends Component {
         this.heartSource.loop = false;
     }
 
+    start() {
+        // Camadas da musica: AudioSource proprio por camada, em loop, comecando em volume 0 e sincronizadas com a musica.
+        this.musicLayerClips.forEach((clip, i) => {
+            if (!clip) return;
+            const n = new Node('MusicLayer' + i);
+            n.parent = this.node;
+            const a = n.addComponent(AudioSource);
+            a.playOnAwake = false;
+            a.loop = true;
+            a.clip = clip;
+            a.volume = 0;
+            this.layerSources[i] = a;
+            this.layerLevel[i] = 0;
+        });
+    }
+
     onDestroy() {
         if (SoundManager.instance === this) SoundManager.instance = null;
+    }
+
+    /** Abaixa a musica por um instante (respiro depois de um Golden Time ou de uma fase). */
+    public static duck(seconds: number, factor: number = 0.3) {
+        const sm = SoundManager.instance;
+        if (!sm) return;
+        sm.duckUntil = performance.now() / 1000 + seconds;
+        sm.duckFactor = factor;
+    }
+
+    update(dt: number) {
+        const music = this.musicSource;
+        if (!music || !music.isValid) return;
+        if (PokiService.audioMuted) return; // anuncio: nao mexe nos volumes (o PokiService restaura os originais)
+        if (this.musicBaseVolume < 0) this.musicBaseVolume = music.volume;
+        const now = performance.now() / 1000;
+        const target = now < this.duckUntil ? this.duckFactor : 1;
+        this.duckCurrent += (target - this.duckCurrent) * Math.min(1, dt * (target < this.duckCurrent ? 6 : 1.8));
+        music.volume = this.musicBaseVolume * this.duckCurrent;
+
+        // Camada i entra com o combo >= i+1 (pad no combo 1, pulso no 2, cintilante no 3); sem combo, sai suave.
+        const gm = GameManager.instance;
+        const combo = gm && gm.IsRunning() && ComboManager.instance ? ComboManager.instance.comboLevel : 0;
+        this.layerSources.forEach((a, i) => {
+            if (!a || !a.isValid) return;
+            const want = combo >= i + 1 ? 1 : 0;
+            this.layerLevel[i] += (want - this.layerLevel[i]) * Math.min(1, dt * (want > this.layerLevel[i] ? 2.2 : 1.2));
+            const vol = this.musicLayerVolume * this.layerLevel[i] * this.duckCurrent;
+            try {
+                if (this.layerLevel[i] > 0.01 && !a.playing && music.playing) {
+                    a.play();
+                    a.currentTime = music.currentTime; // entra no mesmo ponto do loop da musica
+                } else if (this.layerLevel[i] <= 0.01 && a.playing) {
+                    a.pause();
+                }
+                a.volume = vol;
+            } catch (e) { /* sem som */ }
+        });
+        // Corrige deriva entre as camadas e a musica a cada poucos segundos.
+        this.syncCheck -= dt;
+        if (this.syncCheck <= 0) {
+            this.syncCheck = 6;
+            try {
+                if (music.playing) {
+                    const len = music.duration || 0;
+                    this.layerSources.forEach(a => {
+                        if (!a || !a.playing) return;
+                        let d = Math.abs(a.currentTime - music.currentTime);
+                        if (len > 0) d = Math.min(d, len - d);
+                        if (d > 0.07) a.currentTime = music.currentTime;
+                    });
+                }
+            } catch (e) { /* sem som */ }
+        }
+    }
+
+    /** Escada: cada alimento escolhido em sequencia toca a proxima nota; parou por um tempo, volta a primeira. */
+    public static playLadder() {
+        const sm = SoundManager.instance;
+        if (!sm) return;
+        const now = performance.now() / 1000;
+        if (now - sm.ladderLast > sm.ladderResetSeconds) sm.ladderStep = 0;
+        sm.ladderLast = now;
+        const clips = sm.ladderClips.filter(c => !!c);
+        if (clips.length === 0) { SoundManager.playAttach(); return; }
+        const i = Math.min(sm.ladderStep, clips.length - 1);
+        sm.ladderStep++;
+        sm.play('ladder' + i, clips[i], sm.ladderVolume, 0.02);
+    }
+
+    public static resetLadder() {
+        const sm = SoundManager.instance;
+        if (sm) sm.ladderStep = 0;
+    }
+
+    public static playLineComplete() {
+        const sm = SoundManager.instance;
+        if (sm) sm.play('lineComplete', sm.lineCompleteClip, sm.ladderVolume, 0.08);
+    }
+
+    public static playCashin() {
+        const sm = SoundManager.instance;
+        if (sm) sm.play('cashin', sm.cashinClip, sm.deliveryVolume, 0.1);
+    }
+
+    public static playPerfect() {
+        const sm = SoundManager.instance;
+        if (sm) sm.play('perfect', sm.perfectClip, sm.deliveryVolume, 0.1);
     }
 
     public static playCoin() {

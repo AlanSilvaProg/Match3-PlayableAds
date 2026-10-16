@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, EventTarget, Prefab, instantiate, AudioSource } from 'cc';
+import { _decorator, Component, Node, EventTarget, Prefab, instantiate, AudioSource, Vec3, Color } from 'cc';
 const { ccclass, property } = _decorator;
 import { MatchElement } from './MatchElement';
 import { ElementType } from './ElementType';
@@ -9,6 +9,9 @@ import { OrderManager, OrderClaim } from './OrderManager';
 import { PowerupManager } from './PowerupManager';
 import { PlayerStats, AchievementMetric } from './PlayerStats';
 import { RayPickup } from './RayPickup';
+import { SoundManager } from './SoundManager';
+import { Haptics } from './Haptics';
+import { Vfx } from './Vfx';
 
 @ccclass('MatchController')
 export class MatchController extends Component {
@@ -73,8 +76,15 @@ export class MatchController extends Component {
         }
 
         // Brilho no icone da linha.
+        SoundManager.playLineComplete();
+        Haptics.line();
         const at = orders ? orders.GetLineTarget(claim) : null;
         const canvas = orders ? orders.node.parent : null;
+        if (at && canvas) {
+            const local = new Vec3();
+            canvas.inverseTransformPoint(local, at);
+            Vfx.burst(canvas, local, 1.2, new Color(120, 255, 130, 255), new Color(255, 255, 160, 255));
+        }
         if (this.mergeEffectPrefab && at && canvas) {
             const effect = instantiate(this.mergeEffectPrefab);
             effect.parent = canvas;

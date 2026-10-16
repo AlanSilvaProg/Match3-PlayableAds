@@ -679,7 +679,7 @@
         "a6601604-e134-4432-a5a8-376ed789a8ef@f9941",
         "3cba3c82-1266-4e93-92a2-7140f5d616f9@f9941",
         "f79ad02f-9071-4b3d-8087-96ff9e496e76",
-        "d3920345-785a-45ea-92ca-1db5c48be785",
+        "f8263d25-a00b-4ed2-afe1-95e5c9ad9935",
         "05526288-f5d5-4bac-a657-9fac5dbb00a3@f9941",
         "67957730-67cc-488c-a721-76ec928842b7@f9941",
         "1653f5f2-8003-45a8-b468-8f2a008f3c80",
@@ -704,7 +704,7 @@
         "a6601604-e134-4432-a5a8-376ed789a8ef@f9941",
         "77689eb8-98fb-4251-9913-cf095e2ea9d8@f9941",
         "f79ad02f-9071-4b3d-8087-96ff9e496e76",
-        "d3920345-785a-45ea-92ca-1db5c48be785",
+        "f8263d25-a00b-4ed2-afe1-95e5c9ad9935",
         "c8b8dc50-6d6f-4c92-86de-c5d99ca9a5fb@f9941",
         "20835ba4-6145-4fbc-a58a-051ce700aa3e@f9941",
         "544e49d6-3f05-4fa8-9a9e-091f98fc2ce8@f9941",
@@ -815,7 +815,7 @@
     "value": {
       "depends": [
         "cb66dd6e-9bdd-4db6-9fa9-3f40df397156@f9941",
-        "d3920345-785a-45ea-92ca-1db5c48be785",
+        "f8263d25-a00b-4ed2-afe1-95e5c9ad9935",
         "bf89e619-eb3c-46be-b89f-d0d618e6d05e@f9941",
         "10404a0e-017b-4c9a-81a1-dc07d1fc80f6@f9941",
         "743399d8-74a1-42e3-b2a5-6c8db6e2f05c@f9941",
@@ -831,6 +831,11 @@
         "1d4919d3-9280-4dbd-b571-87c8061e7938@f9941",
         "74021592-f88e-491d-9762-5b04fda796c1@f9941",
         "002d8685-dbe7-4fff-a8e5-ac080ec35277@f9941",
+        "d66a5515-39fc-4632-8f7c-1d50a00f126d",
+        "9c1372ee-8326-48df-90ed-d7dec56d4738@f9941",
+        "86ebfc6c-a802-4f0b-938c-4c664f00d4b0@f9941",
+        "5c264c68-28ca-4cb8-97aa-f3f8ddb085d2@f9941",
+        "69e65339-0b79-4940-a32b-c32aca85046d@f9941",
         "2cd97e8d-a9c7-454c-a5a5-ee38376852ac@f9941",
         "a6601604-e134-4432-a5a8-376ed789a8ef@f9941",
         "c8b8dc50-6d6f-4c92-86de-c5d99ca9a5fb@f9941",
@@ -892,6 +897,20 @@
         "9e3c10a9-8e2a-484e-9348-454268295900",
         "93662788-4c25-4e2d-b578-9b7897bf7719",
         "f9adbb9c-114c-408a-9734-c50a159e9f6c",
+        "33dda492-7159-44ae-9a88-2544a6a04145",
+        "a77074f7-c6e4-429c-8122-7b953f76095c",
+        "719c7f9c-bcab-411d-a70e-16df1f3e5bc7",
+        "74c66e3c-1f52-4196-9e1d-cb2879b92f87",
+        "83212975-f7fc-4c19-9e09-b192d0c37a7b",
+        "5a988fd0-7198-4506-a76a-a3e1da3fbfb4",
+        "16d7d928-c159-43e3-b13d-5ef619beb8af",
+        "4f39f551-c491-4db8-aebe-20d1081fa0c2",
+        "d85bfc44-25ee-4fc3-90b1-7e39d0925220",
+        "0015ae6e-afae-4a58-8d31-a08cf6e47c7a",
+        "5e9328ef-3bb7-47a8-b309-34f0c2c98e88",
+        "a3ae2cb6-c61e-4846-985e-e145fbc87cb2",
+        "28d610d6-4637-4701-b8ad-0907a1e565e7",
+        "9394c4b1-5eee-4434-8120-3e075787ceaf",
         "c5e5ae96-b6fc-42f7-9243-fb4ce389e0b4",
         "dd8db944-8f35-4d86-880d-d0c44fbb5cc0",
         "a162b1d0-2630-47d9-bb34-4c41e578b96f",
@@ -904,6 +923,7 @@
         "3ff3a70b-028b-4ae4-bd33-f355202c2383",
         "0d3b6adc-4954-4d0f-bd52-e6ae2f4880ef",
         "c113cfa6-d52a-4fd9-ab95-99b356f1630d",
+        "3ac87572-4ee1-4542-a7a7-a2a662cfc447",
         "5da64fda-4ae0-493a-8d44-7b9c3b45a6ad",
         "75c38933-bbfa-49a2-ab56-923ebe40f4a6",
         "8b9f04d1-6745-4f0f-904d-5b601000b164@f9941",
@@ -912,20 +932,22 @@
         "5271621c-cd0b-45fb-8f17-785c44f0618e@f9941",
         "9cd6d6b3-ef76-411d-9357-d7e642757d1b",
         "417ccaa3-21f5-4e76-82a3-c5e79a11cd91@f9941",
+        "75fea472-6c13-4fb0-964c-7b495f6ae55e@f9941",
+        "d5a31347-81df-4d2f-a5f3-aef98b2f128d@f9941",
+        "1cffc635-443a-40cf-ac22-415489ba4d3f@f9941",
         "87a5a1c0-f9d9-45b0-b603-0dad9dac1700@f9941",
         "465d0b26-6709-45cd-809c-11c57990436a@f9941",
         "a95e903c-cd5e-4da0-ac16-830485b636ff@f9941",
         "8815ebbb-8f6b-4138-b460-53a14d07ce8c@f9941",
         "5c0029b2-4dff-445d-8a4e-84964f8524c4@f9941",
         "4d5fda1b-6cf1-4f77-b88f-e3cdc944c72f@f9941",
-        "3c410085-a95a-4240-aaac-53a215759650@f9941",
+        "ac30ee0b-2508-42db-96e5-e662527f2f02@f9941",
         "feddbd93-0a87-41d6-8046-1865dea53494",
         "05526288-f5d5-4bac-a657-9fac5dbb00a3@f9941",
         "9a918a94-bd23-4080-918a-de266d7e2f63@f9941",
-        "03daf477-202f-436a-9e58-e3cb66a0b936@f9941",
+        "a30c1984-7b0c-460b-94ae-80eefbb6a94e@f9941",
         "b18d546d-465f-46d0-8e04-b261ed816d79",
-        "04999d73-ac2a-4a19-ae9c-3e6725094cad@f9941",
-        "3ac87572-4ee1-4542-a7a7-a2a662cfc447",
+        "7bbe83eb-2b6f-4355-898b-f6a9f5b9b5cc@f9941",
         "c90776ae-d364-4ea8-ae82-04f6e4a74965"
       ],
       "dependScripts": [
@@ -1761,7 +1783,7 @@
     "value": {
       "depends": [
         "8815ebbb-8f6b-4138-b460-53a14d07ce8c@f9941",
-        "d3920345-785a-45ea-92ca-1db5c48be785",
+        "f8263d25-a00b-4ed2-afe1-95e5c9ad9935",
         "a95e903c-cd5e-4da0-ac16-830485b636ff@f9941"
       ],
       "dependScripts": [
@@ -2596,6 +2618,423 @@
     "url": "db://assets/Sounds/wrong-click-feedback.mp3",
     "value": {
       "depends": []
+    },
+    "versionCode": 1
+  },
+  "f8263d25-a00b-4ed2-afe1-95e5c9ad9935": {
+    "url": "db://assets/Font/Fredoka-Bold.ttf",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "d66a5515-39fc-4632-8f7c-1d50a00f126d": {
+    "url": "db://assets/Font/Fredoka-Regular.ttf",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "c243b9db-28ad-4779-9485-47018d929a39": {
+    "url": "db://assets/Scripts/Match/Fonts.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "4114fe13-c19d-44f3-a716-24d86714bc0d": {
+    "url": "db://assets/UI/Customers",
+    "value": {},
+    "versionCode": 1
+  },
+  "ee3f799f-e134-40ad-890e-05c1daa13f52": {
+    "url": "db://assets/UI/Menu",
+    "value": {},
+    "versionCode": 1
+  },
+  "a4d907f5-6cc8-4515-a3ec-d5b18a6e2a4d": {
+    "url": "db://assets/Scripts/Match/Haptics.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "36832fce-a819-4898-b928-0b1fbe79bec7": {
+    "url": "db://assets/Scripts/Match/Vfx.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "69e65339-0b79-4940-a32b-c32aca85046d": {
+    "url": "db://assets/UI/Customers/face-angry.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "9c1372ee-8326-48df-90ed-d7dec56d4738": {
+    "url": "db://assets/UI/Customers/face-happy.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "86ebfc6c-a802-4f0b-938c-4c664f00d4b0": {
+    "url": "db://assets/UI/Customers/face-neutral.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "5c264c68-28ca-4cb8-97aa-f3f8ddb085d2": {
+    "url": "db://assets/UI/Customers/face-worried.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "1cffc635-443a-40cf-ac22-415489ba4d3f": {
+    "url": "db://assets/UI/Menu/collection-dish.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "9c1372ee-8326-48df-90ed-d7dec56d4738@6c48a": {
+    "url": "db://assets/UI/Customers/face-happy.png@6c48a",
+    "value": {
+      "depends": [
+        "9c1372ee-8326-48df-90ed-d7dec56d4738"
+      ]
+    },
+    "versionCode": 1
+  },
+  "5c264c68-28ca-4cb8-97aa-f3f8ddb085d2@6c48a": {
+    "url": "db://assets/UI/Customers/face-worried.png@6c48a",
+    "value": {
+      "depends": [
+        "5c264c68-28ca-4cb8-97aa-f3f8ddb085d2"
+      ]
+    },
+    "versionCode": 1
+  },
+  "69e65339-0b79-4940-a32b-c32aca85046d@6c48a": {
+    "url": "db://assets/UI/Customers/face-angry.png@6c48a",
+    "value": {
+      "depends": [
+        "69e65339-0b79-4940-a32b-c32aca85046d"
+      ]
+    },
+    "versionCode": 1
+  },
+  "86ebfc6c-a802-4f0b-938c-4c664f00d4b0@6c48a": {
+    "url": "db://assets/UI/Customers/face-neutral.png@6c48a",
+    "value": {
+      "depends": [
+        "86ebfc6c-a802-4f0b-938c-4c664f00d4b0"
+      ]
+    },
+    "versionCode": 1
+  },
+  "1cffc635-443a-40cf-ac22-415489ba4d3f@6c48a": {
+    "url": "db://assets/UI/Menu/collection-dish.png@6c48a",
+    "value": {
+      "depends": [
+        "1cffc635-443a-40cf-ac22-415489ba4d3f"
+      ]
+    },
+    "versionCode": 1
+  },
+  "5c264c68-28ca-4cb8-97aa-f3f8ddb085d2@f9941": {
+    "url": "db://assets/UI/Customers/face-worried.png@f9941",
+    "value": {
+      "depends": [
+        "5c264c68-28ca-4cb8-97aa-f3f8ddb085d2@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "75fea472-6c13-4fb0-964c-7b495f6ae55e": {
+    "url": "db://assets/UI/Menu/daily-gift.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "86ebfc6c-a802-4f0b-938c-4c664f00d4b0@f9941": {
+    "url": "db://assets/UI/Customers/face-neutral.png@f9941",
+    "value": {
+      "depends": [
+        "86ebfc6c-a802-4f0b-938c-4c664f00d4b0@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "d5a31347-81df-4d2f-a5f3-aef98b2f128d": {
+    "url": "db://assets/UI/Menu/daily-target.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "69e65339-0b79-4940-a32b-c32aca85046d@f9941": {
+    "url": "db://assets/UI/Customers/face-angry.png@f9941",
+    "value": {
+      "depends": [
+        "69e65339-0b79-4940-a32b-c32aca85046d@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "9c1372ee-8326-48df-90ed-d7dec56d4738@f9941": {
+    "url": "db://assets/UI/Customers/face-happy.png@f9941",
+    "value": {
+      "depends": [
+        "9c1372ee-8326-48df-90ed-d7dec56d4738@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "1cffc635-443a-40cf-ac22-415489ba4d3f@f9941": {
+    "url": "db://assets/UI/Menu/collection-dish.png@f9941",
+    "value": {
+      "depends": [
+        "1cffc635-443a-40cf-ac22-415489ba4d3f@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "d5a31347-81df-4d2f-a5f3-aef98b2f128d@6c48a": {
+    "url": "db://assets/UI/Menu/daily-target.png@6c48a",
+    "value": {
+      "depends": [
+        "d5a31347-81df-4d2f-a5f3-aef98b2f128d"
+      ]
+    },
+    "versionCode": 1
+  },
+  "75fea472-6c13-4fb0-964c-7b495f6ae55e@6c48a": {
+    "url": "db://assets/UI/Menu/daily-gift.png@6c48a",
+    "value": {
+      "depends": [
+        "75fea472-6c13-4fb0-964c-7b495f6ae55e"
+      ]
+    },
+    "versionCode": 1
+  },
+  "75fea472-6c13-4fb0-964c-7b495f6ae55e@f9941": {
+    "url": "db://assets/UI/Menu/daily-gift.png@f9941",
+    "value": {
+      "depends": [
+        "75fea472-6c13-4fb0-964c-7b495f6ae55e@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "d5a31347-81df-4d2f-a5f3-aef98b2f128d@f9941": {
+    "url": "db://assets/UI/Menu/daily-target.png@f9941",
+    "value": {
+      "depends": [
+        "d5a31347-81df-4d2f-a5f3-aef98b2f128d@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "0015ae6e-afae-4a58-8d31-a08cf6e47c7a": {
+    "url": "db://assets/Sounds/delivery-cashin.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "5e9328ef-3bb7-47a8-b309-34f0c2c98e88": {
+    "url": "db://assets/Sounds/delivery-perfect.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "d85bfc44-25ee-4fc3-90b1-7e39d0925220": {
+    "url": "db://assets/Sounds/Ladder/line-complete.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "d99fda35-2fbf-44c1-b717-2d051ba7b51c": {
+    "url": "db://assets/Sounds/Ladder",
+    "value": {},
+    "versionCode": 1
+  },
+  "c2c4ccb1-692f-43af-a2a9-b9cd26264cef": {
+    "url": "db://assets/Sounds/MusicLayers",
+    "value": {},
+    "versionCode": 1
+  },
+  "33dda492-7159-44ae-9a88-2544a6a04145": {
+    "url": "db://assets/Sounds/Ladder/note-1.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "a77074f7-c6e4-429c-8122-7b953f76095c": {
+    "url": "db://assets/Sounds/Ladder/note-2.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "719c7f9c-bcab-411d-a70e-16df1f3e5bc7": {
+    "url": "db://assets/Sounds/Ladder/note-3.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "74c66e3c-1f52-4196-9e1d-cb2879b92f87": {
+    "url": "db://assets/Sounds/Ladder/note-4.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "83212975-f7fc-4c19-9e09-b192d0c37a7b": {
+    "url": "db://assets/Sounds/Ladder/note-5.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "5a988fd0-7198-4506-a76a-a3e1da3fbfb4": {
+    "url": "db://assets/Sounds/Ladder/note-6.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "16d7d928-c159-43e3-b13d-5ef619beb8af": {
+    "url": "db://assets/Sounds/Ladder/note-7.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "4f39f551-c491-4db8-aebe-20d1081fa0c2": {
+    "url": "db://assets/Sounds/Ladder/note-8.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "a3ae2cb6-c61e-4846-985e-e145fbc87cb2": {
+    "url": "db://assets/Sounds/MusicLayers/layer-1-pad.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "28d610d6-4637-4701-b8ad-0907a1e565e7": {
+    "url": "db://assets/Sounds/MusicLayers/layer-2-pulse.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "9394c4b1-5eee-4434-8120-3e075787ceaf": {
+    "url": "db://assets/Sounds/MusicLayers/layer-3-sparkle.mp3",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "65ae9602-a289-4401-bda4-02801c3b872f": {
+    "url": "db://assets/Scripts/Match/CollectionWindow.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "be8f29fa-ad8f-47d6-b2c0-25e68128041c": {
+    "url": "db://assets/Scripts/Match/DailyData.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "d712285d-5b4a-419e-ba24-cd5e44670d87": {
+    "url": "db://assets/Scripts/Match/DailyWindow.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "050ae726-f49a-421c-99f6-b58975241e59": {
+    "url": "db://assets/Scripts/Match/UiKit.ts",
+    "value": {},
+    "versionCode": 1
+  },
+  "a30c1984-7b0c-460b-94ae-80eefbb6a94e": {
+    "url": "db://assets/UI/Menu/achievements-trophy.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "ac30ee0b-2508-42db-96e5-e662527f2f02": {
+    "url": "db://assets/UI/Menu/powerups-bolt.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "7bbe83eb-2b6f-4355-898b-f6a9f5b9b5cc": {
+    "url": "db://assets/UI/Menu/ranking-podium.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "a30c1984-7b0c-460b-94ae-80eefbb6a94e@6c48a": {
+    "url": "db://assets/UI/Menu/achievements-trophy.png@6c48a",
+    "value": {
+      "depends": [
+        "a30c1984-7b0c-460b-94ae-80eefbb6a94e"
+      ]
+    },
+    "versionCode": 1
+  },
+  "ac30ee0b-2508-42db-96e5-e662527f2f02@6c48a": {
+    "url": "db://assets/UI/Menu/powerups-bolt.png@6c48a",
+    "value": {
+      "depends": [
+        "ac30ee0b-2508-42db-96e5-e662527f2f02"
+      ]
+    },
+    "versionCode": 1
+  },
+  "7bbe83eb-2b6f-4355-898b-f6a9f5b9b5cc@6c48a": {
+    "url": "db://assets/UI/Menu/ranking-podium.png@6c48a",
+    "value": {
+      "depends": [
+        "7bbe83eb-2b6f-4355-898b-f6a9f5b9b5cc"
+      ]
+    },
+    "versionCode": 1
+  },
+  "7bbe83eb-2b6f-4355-898b-f6a9f5b9b5cc@f9941": {
+    "url": "db://assets/UI/Menu/ranking-podium.png@f9941",
+    "value": {
+      "depends": [
+        "7bbe83eb-2b6f-4355-898b-f6a9f5b9b5cc@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "a30c1984-7b0c-460b-94ae-80eefbb6a94e@f9941": {
+    "url": "db://assets/UI/Menu/achievements-trophy.png@f9941",
+    "value": {
+      "depends": [
+        "a30c1984-7b0c-460b-94ae-80eefbb6a94e@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "ac30ee0b-2508-42db-96e5-e662527f2f02@f9941": {
+    "url": "db://assets/UI/Menu/powerups-bolt.png@f9941",
+    "value": {
+      "depends": [
+        "ac30ee0b-2508-42db-96e5-e662527f2f02@6c48a"
+      ]
     },
     "versionCode": 1
   }

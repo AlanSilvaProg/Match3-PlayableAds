@@ -1,5 +1,7 @@
 import { _decorator, Component, Label, Prefab, instantiate, Node, Sprite, SpriteFrame, find, director, sys, EventTarget, Color, Vec3, tween, Tween, game, Game, UIOpacity, UITransform, Sorting2D, ParticleSystem2D, view, ResolutionPolicy } from 'cc';
 import { I18n, tr } from './I18n';
+import { Haptics } from './Haptics';
+import { Vfx } from './Vfx';
 import { MatchElement } from './MatchElement';
 import { LevelProgress } from './LevelProgress';
 import { LevelPlan, LevelConfig, Meal } from './LevelConfig';
@@ -121,6 +123,8 @@ export class GameManager extends Component {
 
     /** Estrelas ganhas na ultima vitoria (lidas pela tela de vitoria). */
     public static lastStars: number = 0;
+    /** Resumo do nivel que acabou de terminar (tela de vitoria explica as estrelas). */
+    public static lastOrderStats = { total: 0, late: 0, maxLateFor3: 0 };
 
     /** Moedas ganhas na ultima partida vencida (mostradas na tela de vitoria, que oferece dobrar com anuncio). */
     public static lastRoundCoins: number = 0;
@@ -285,6 +289,7 @@ export class GameManager extends Component {
 
     start() {
         I18n.localizeTree(this.node.parent);
+        if (this.node.parent) GameLayout.apply(this.node.parent); // de novo: agora as fontes (OrderManager.onLoad) ja existem
         // Tudo o que precisa do carregamento ja esta pronto: avisa a Poki (uma vez por sessao).
         PokiService.gameLoadingFinished();
 
@@ -597,7 +602,7 @@ export class GameManager extends Component {
         if (timerLabel.font) label.font = timerLabel.font;
         label.fontSize = this.timeFxFontSize;
         label.lineHeight = this.timeFxFontSize;
-        label.isBold = true;
+        label.isBold = false;
         label.string = `${positive ? '+' : '-'}${this.formatTime(Math.abs(delta))}`;
         label.color = color;
         label.enableOutline = true;
@@ -692,7 +697,12 @@ export class GameManager extends Component {
         }
 
         if (state === GameState.Victory) {
+            Haptics.big();
             GameManager.lastStars = this.calculateStars();
+            PlayerStats.increment(AchievementMetric.LevelWins);
+            if (GameManager.lastStars >= 3) PlayerStats.increment(AchievementMetric.ThreeStarWins);
+            const os = OrderManager.instance;
+            if (os) GameManager.lastOrderStats = { total: os.levelTotalOrders, late: os.levelLateOrders, maxLateFor3: Math.floor(os.levelTotalOrders * this.threeStarLateRatio) };
             GameManager.lastRoundCoins = ComboManager.instance ? ComboManager.instance.score : 0;
             LevelProgress.setStars(GameManager.currentLevel, GameManager.lastStars);
             // Conquistas liberadas por esta vitoria aparecem como avisos por cima da tela de vitoria.
@@ -705,8 +715,10 @@ export class GameManager extends Component {
                 this.applyEndScreenBackground(instance);
                 WinRewards.setup(instance); // NEXT, moedas ganhas e botao de dobrar (antes do layout)
                 EndScreenLayout.apply(instance);
+                this.firstWinCelebration();
             }
         } else if (state === GameState.Defeat) {
+            Haptics.defeat();
             if (this.defeatPrefab) {
                 const instance = instantiate(this.defeatPrefab);
                 instance.parent = this.node.parent;
@@ -776,6 +788,25 @@ export class GameManager extends Component {
     }
 
     /** 3 estrelas = terminar com bastante tempo sobrando; 1 estrela = qualquer vitoria. */
+    /** Primeira vitoria de todas: festa (confete, voz, vibracao) e frase de incentivo. Uma vez so. */
+    private firstWinCelebration() {
+        const KEY = 'match3_first_win_done';
+        try { if (sys.localStorage.getItem(KEY)) return; sys.localStorage.setItem(KEY, '1'); } catch (e) { return; }
+        const canvas = this.node.parent;
+        if (!canvas) return;
+        SoundManager.playCelebration(3);
+        Haptics.big();
+        const colors = [new Color(255, 214, 60, 255), new Color(255, 90, 210, 255), new Color(90, 225, 255, 255), new Color(120, 255, 110, 255), new Color(255, 120, 70, 255)];
+        for (let i = 0; i < 9; i++) {
+            this.scheduleOnce(() => {
+                if (!canvas.isValid) return;
+                const x = (Math.random() - 0.5) * 520, y = -120 + Math.random() * 520;
+                Vfx.burst(canvas, new Vec3(x, y, 0), 2.2, colors[i % colors.length], colors[(i + 2) % colors.length]);
+            }, i * 0.22);
+        }
+        Vfx.floatText(canvas, new Vec3(0, 140, 0), tr('GREAT START!'), 84, new Color(255, 226, 80, 255), new Color(120, 60, 0, 255), 40, 2.4);
+    }
+
     private calculateStars(): number {
         const orders = OrderManager.instance;
         if (!orders || orders.levelTotalOrders === 0) return 1;

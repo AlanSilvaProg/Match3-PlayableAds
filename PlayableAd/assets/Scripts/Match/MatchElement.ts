@@ -9,6 +9,8 @@ import { MatchController } from './MatchController';
 import { GameManager } from './GameManager';
 import { OrderManager, OrderClaim } from './OrderManager';
 import { PowerupManager } from './PowerupManager';
+import { Haptics } from './Haptics';
+import { Vfx } from './Vfx';
 
 @ccclass('MatchElement')
 export class MatchElement extends Component {
@@ -326,6 +328,7 @@ export class MatchElement extends Component {
         this.wiggleNeighbors(this.wiggleOrigin || origin);
         this.SetSortingOrder(40); // voa por cima dos cartoes
 
+        Haptics.tick();
         if (this.selectionAudio) this.selectionAudio.play();
         if (this.matchController) this.matchController.onElementClicked(this);
         this.flyToOrder(claim);
@@ -344,6 +347,7 @@ export class MatchElement extends Component {
         const dur = Math.max(0.28, Math.min(0.55, dist / (this.moveSpeed * 1.6)));
         const state = { t: 0 };
         const cur = new Vec3();
+        let sparkClock = 0;
         tween(state)
             .to(dur, { t: 1 }, {
                 easing: 'quadIn',
@@ -353,11 +357,13 @@ export class MatchElement extends Component {
                     if (live) target = live;
                     Vec3.lerp(cur, startPos, target!, state.t);
                     node.setWorldPosition(cur);
+                    sparkClock += 1;
+                    if (sparkClock % 2 === 0 && node.parent) Vfx.trail(node.parent, node.position);
                     node.setScale(startScale.x + (endScale.x - startScale.x) * state.t, startScale.y + (endScale.y - startScale.y) * state.t, 1);
                 },
             })
             .call(() => {
-                SoundManager.playAttach();
+                SoundManager.playLadder();
                 orders?.OnItemArrived(claim);
                 if (node.isValid) node.destroy();
             })
@@ -370,6 +376,8 @@ export class MatchElement extends Component {
         this.cancelWiggle();
         this.isRejecting = true;
         SoundManager.playWrongClick();
+        SoundManager.resetLadder();
+        Haptics.wrong();
         const origin = this.node.position.clone();
         const sprite = this.spriteComponent || this.getComponent(Sprite);
         if (sprite) sprite.color = new Color(255, 70, 70, 255);

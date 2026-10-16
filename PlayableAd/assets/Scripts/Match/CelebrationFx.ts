@@ -90,7 +90,7 @@ export class CelebrationFx {
         label.string = text;
         label.fontSize = size;
         label.lineHeight = Math.round(size * 1.15);
-        label.isBold = true;
+        label.isBold = false;
         label.color = color;
         label.horizontalAlign = Label.HorizontalAlign.CENTER;
         label.verticalAlign = Label.VerticalAlign.CENTER;

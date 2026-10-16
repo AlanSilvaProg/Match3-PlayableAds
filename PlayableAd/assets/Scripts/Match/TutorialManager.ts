@@ -642,7 +642,7 @@ export class TutorialManager extends Component {
         label.fontSize = size;
         label.lineHeight = size + 6;
         label.color = color;
-        label.isBold = true;
+        label.isBold = false;
         label.horizontalAlign = Label.HorizontalAlign.CENTER;
         label.verticalAlign = Label.VerticalAlign.CENTER;
         label.enableOutline = true;

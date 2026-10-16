@@ -1,5 +1,6 @@
 import { WindowAnim } from './WindowAnim';
 import { tr } from './I18n';
+import { Fonts } from './Fonts';
 import { SoundManager } from './SoundManager';
 import { Responsive } from './Responsive';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, UITransform, Vec3, Color, Sorting2D, UIOpacity, tween, Tween, Enum, Rect, Size, Vec2 } from 'cc';
@@ -466,7 +467,7 @@ export class AchievementManager extends Component {
         label.fontSize = size;
         label.lineHeight = size + 4;
         label.color = color;
-        label.isBold = true;
+        label.isBold = false;
         label.horizontalAlign = left ? Label.HorizontalAlign.LEFT : Label.HorizontalAlign.CENTER;
         label.verticalAlign = Label.VerticalAlign.CENTER;
         label.enableOutline = true;
@@ -628,7 +629,7 @@ export class AchievementManager extends Component {
         // Textos (alinhados a esquerda).
         const textLeft = -rw / 2 + 120;
         this.makeLabel(row, tr(d.title), 28, 360, 32, textLeft, 17, base + 4, new Color(255, 230, 140, 255), new Color(40, 25, 0, 255), true);
-        this.makeLabel(row, tr(d.description), 20, 380, 28, textLeft, -17, base + 4, Color.WHITE, new Color(10, 20, 40, 255), true);
+        Fonts.regularize(this.makeLabel(row, tr(d.description), 20, 380, 28, textLeft, -17, base + 4, Color.WHITE, new Color(10, 20, 40, 255), true));
         const progress = this.makeLabel(row, '', 24, 110, 34, 90, 0, base + 4);
 
         // Premio: icone da moeda ou do power-up + quantidade.

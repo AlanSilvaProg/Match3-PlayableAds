@@ -11,6 +11,7 @@ import { ReturnToLevels } from './ReturnToLevels';
 import { ScaleSequence } from './ScaleSequence';
 import { Responsive } from './Responsive';
 import { RankingManager } from './RankingManager';
+import { Fonts } from './Fonts';
 
 /**
  * Tela de vitoria: o botao RESTART vira NEXT (proximo nivel direto), as moedas da rodada aparecem abaixo das estrelas
@@ -63,6 +64,20 @@ export class WinRewards {
             const so = icon.addComponent(Sorting2D);
             so.sortingLayer = 1;
             so.sortingOrder = 2;
+        }
+
+        // ---- Por que esta nota de estrelas? ----
+        const st = GameManager.lastOrderStats;
+        if (st.total > 0) {
+            const info = this.makeLabel(screen, levelsBtn, screen, '', 24, 400, 64, 0, 0);
+            info.node.name = 'StarInfo';
+            info.enableWrapText = true;
+            info.overflow = Label.Overflow.SHRINK;
+            info.color = Color.WHITE;
+            const onTime = Math.max(0, st.total - st.late);
+            info.string = tr('{0} of {1} orders on time', onTime, st.total)
+                + '\n' + (GameManager.lastStars >= 3 ? tr('Maximum stars!') : tr('3 stars: at most {0} late', st.maxLateFor3));
+            Fonts.regularize(info);
         }
 
         // Apos o tutorial so resta o botao LEVELS: o jogador vai ao menu de selecao de fases.
@@ -181,13 +196,16 @@ export class WinRewards {
             if (n) n.setPosition(x, y, n.position.z);
         };
         place('CoinsRow', 15);
+        place('StarInfo', -50);
+        const hasInfo = !!screen.getChildByName('StarInfo');
+        const dy = hasInfo ? -50 : 0; // os botoes descem para abrir espaco para o resumo das estrelas
         if (!screen.getChildByName('RestartBtn')?.active) {
-            place('LevelsBtn', -100); // so o LEVELS (apos o tutorial)
+            place('LevelsBtn', -100 + dy); // so o LEVELS (apos o tutorial)
             return;
         }
-        place('RestartBtn', -80);
-        place('DoubleBtn', -180);
-        place('LevelsBtn', -280);
+        place('RestartBtn', -80 + dy);
+        place('DoubleBtn', -180 + dy);
+        place('LevelsBtn', -280 + dy);
     }
 
     /** Clona o texto de um botao existente (mesma fonte e contorno do prefab) como rotulo solto. */

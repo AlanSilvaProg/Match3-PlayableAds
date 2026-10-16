@@ -1,3 +1,4 @@
+import { DailyData, FoodStats } from './DailyData';
 import { LevelProgress } from './LevelProgress';
 import { PowerupInventory, PlayerWallet } from './PlayerInventory';
 import { PlayerStats } from './PlayerStats';
@@ -17,6 +18,8 @@ export class PlayerData {
         PowerupInventory.reload();
         PlayerWallet.reload();
         PlayerStats.reload();
+        DailyData.reload();
+        FoodStats.reload();
         AchievementManager.instance?.reloadState();
         RankingManager.instance?.reloadState();
         PowerupManager.instance?.refreshBadges();

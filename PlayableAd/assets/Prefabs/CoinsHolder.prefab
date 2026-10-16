@@ -344,13 +344,13 @@
     "_overflow": 2,
     "_enableWrapText": false,
     "_font": {
-      "__uuid__": "d3920345-785a-45ea-92ca-1db5c48be785",
+      "__uuid__": "f8263d25-a00b-4ed2-afe1-95e5c9ad9935",
       "__expectedType__": "cc.TTFFont"
     },
     "_isSystemFontUsed": false,
     "_spacingX": 0,
     "_isItalic": false,
-    "_isBold": true,
+    "_isBold": false,
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,

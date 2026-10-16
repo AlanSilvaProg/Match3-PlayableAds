@@ -1,5 +1,9 @@
 import { SoundManager } from './SoundManager';
 import { tr } from './I18n';
+import { Fonts } from './Fonts';
+import { Haptics } from './Haptics';
+import { FoodStats } from './DailyData';
+import { Vfx } from './Vfx';
 import { GoldenTime } from './GoldenTime';
 import { Responsive } from './Responsive';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, tween, Tween, UIOpacity } from 'cc';
@@ -42,6 +46,8 @@ interface OrderView {
     footer: Node;
     footerBg: Sprite;
     footerLabel: Label;
+    face: Sprite | null;
+    mood: number;
     /** Moedas dos merges deste pedido, seguras ate o jogador entregar. */
     heldPoints: number;
     coinCount: number;
@@ -67,8 +73,17 @@ export class OrderManager extends Component {
     public static instance: OrderManager = null!;
     private static readonly FOOTER_H = 40;
 
-    @property({ type: Font, tooltip: 'Fonte dos textos do painel (vazio = fonte do sistema).' })
+    @property({ type: Font, tooltip: 'Fonte dos textos do painel (Fredoka Bold; vazio = fonte do sistema).' })
     public font: Font | null = null;
+
+    @property({ type: Font, tooltip: 'Fonte dos textos secundarios (Fredoka Regular).' })
+    public fontRegular: Font | null = null;
+
+    @property({ type: [SpriteFrame], tooltip: 'Rostos do cliente por humor: [0] feliz, [1] neutro, [2] preocupado, [3] bravo (atrasado).' })
+    public moodFrames: SpriteFrame[] = [];
+
+    @property({ range: [0.3, 0.95, 0.05], tooltip: 'Entrega com esta fracao do prazo ainda sobrando = PERFEITA.' })
+    public perfectRatio: number = 0.6;
 
     @property({ type: SpriteFrame, tooltip: 'Fundo arredondado dos cartoes de pedido.' })
     public cardBackground: SpriteFrame | null = null;
@@ -148,6 +163,8 @@ export class OrderManager extends Component {
 
     protected onLoad() {
         OrderManager.instance = this;
+        Fonts.bold = this.font;
+        Fonts.regular = this.fontRegular;
         this.createTitle();
         Responsive.onChange(this.onResponsive);
     }
@@ -173,7 +190,64 @@ export class OrderManager extends Component {
         events?.off(GameManager.EVENT_LEVEL_READY, this.onLevelReady, this);
     }
 
+    // ---------- Progresso da fase: "Pedidos 3/5" + barra ----------
+
+    private progressRoot: Node | null = null;
+    private progressLabel: Label | null = null;
+    private progressFill: Node | null = null;
+    private static readonly PROGRESS_W = 150;
+
+    private createProgress() {
+        const canvas = this.node.parent;
+        if (!canvas || this.progressRoot) return;
+        const root = new Node('OrderProgress');
+        root.layer = this.node.layer;
+        root.parent = canvas;
+        root.addComponent(UITransform).setContentSize(190, 40);
+        const ln = this.makeNode('Label', root, 0, 10, 190, 22);
+        this.progressLabel = this.makeLabel(ln, 21, 3, Color.WHITE, new Color(10, 20, 40, 255));
+        this.progressLabel.overflow = Label.Overflow.SHRINK;
+        this.progressLabel.enableWrapText = false;
+        const mk = (name: string, w: number, color: Color, left: boolean, order: number) => {
+            const n = this.makeNode(name, root, left ? -OrderManager.PROGRESS_W / 2 : 0, -11, w, 14);
+            if (left) n.getComponent(UITransform)!.anchorX = 0;
+            const sp = n.addComponent(Sprite);
+            sp.sizeMode = Sprite.SizeMode.CUSTOM;
+            sp.type = Sprite.Type.SLICED;
+            if (this.cardBackground) {
+                const f = this.cardBackground;
+                if (f.insetLeft === 0) { f.insetLeft = f.insetRight = f.insetTop = f.insetBottom = 24; }
+                sp.spriteFrame = f;
+            }
+            sp.color = color;
+            n.addComponent(Sorting2D).sortingOrder = this.sortingBase + order;
+            return n;
+        };
+        mk('Bar', OrderManager.PROGRESS_W, new Color(60, 70, 110, 235), false, 1);
+        this.progressFill = mk('Fill', 1, new Color(90, 235, 120, 255), true, 2);
+        this.progressRoot = root;
+        this.refreshProgress();
+    }
+
+    /** Posiciona o indicador de progresso (mundo) logo abaixo da barra de tempo; chamado pelo GameLayout. */
+    public placeProgress(world: Vec3) {
+        if (!this.progressRoot) this.createProgress();
+        if (this.progressRoot && this.progressRoot.isValid) this.progressRoot.setWorldPosition(world);
+    }
+
+    private refreshProgress() {
+        if (!this.progressRoot || !this.progressLabel || !this.progressFill) return;
+        const total = Math.max(1, this.totalOrders), done = Math.min(this.deliveredOrders, total);
+        this.progressLabel.string = tr('Orders {0}/{1}', done, total);
+        const w = Math.max(1, OrderManager.PROGRESS_W * done / total);
+        const ut = this.progressFill.getComponent(UITransform)!;
+        const st = { w: ut.width };
+        Tween.stopAllByTarget(st);
+        tween(st).to(0.35, { w }, { easing: 'quadOut', onUpdate: () => { if (ut.isValid) ut.width = st.w; } }).start();
+    }
+
     protected start() {
+        this.createProgress();
         const events = GameManager.instance?.events;
         events?.on(GameManager.EVENT_LEVEL_READY, this.onLevelReady, this);
     }
@@ -202,6 +276,7 @@ export class OrderManager extends Component {
         this.deliveredOrders = 0;
         this.lateOrders = 0;
         this.allDelivered = false;
+        this.refreshProgress();
         this.spawnDueOrders();
     }
 
@@ -329,6 +404,8 @@ export class OrderManager extends Component {
         const { order, line } = claim;
         if (order.delivered || line.done || this.active.indexOf(order) === -1) return;
         line.arrived++;
+        PlayerStats.increment(AchievementMetric.FoodsPicked);
+        FoodStats.add(claim.type, 1);
         this.refreshLine(line);
         Tween.stopAllByTarget(line.row);
         line.row.setScale(1, 1, 1);
@@ -581,13 +658,41 @@ export class OrderManager extends Component {
         }
 
         const late = order.timeLeft < 0;
-        if (!late) SoundManager.playSuccessOrder();
+        const playing = !!gm && gm.IsRunning();
+        const perfect = !late && playing && order.timeLeft / Math.max(1, order.plan.deliverTime) >= this.perfectRatio;
+        if (!late) {
+            const sm = SoundManager.instance;
+            if (sm && sm.cashinClip) {
+                if (perfect) SoundManager.playPerfect(); else SoundManager.playCashin();
+            } else {
+                SoundManager.playSuccessOrder();
+            }
+            if (perfect) { Haptics.perfect(); PlayerStats.increment(AchievementMetric.PerfectDeliveries); } else Haptics.delivery();
+        } else {
+            Haptics.late();
+        }
+
+        // Texto flutuante: moedas ganhas e, se foi rapido, PERFEITO!
+        const canvas = this.node.parent;
+        if (canvas && playing) {
+            const p = worldPos.clone();
+            if (order.heldPoints > 0) Vfx.floatText(canvas, new Vec3(p.x, p.y + 10, 0), `+${order.heldPoints}`, 54, new Color(255, 226, 80, 255), new Color(110, 60, 0, 255), 80);
+            if (perfect) Vfx.floatText(canvas, new Vec3(p.x, p.y + 70, 0), tr('PERFECT!'), 62, new Color(120, 255, 140, 255), new Color(10, 80, 30, 255), 100, 1.1);
+            Vfx.burst(canvas, canvas.inverseTransformPoint(new Vec3(), p), perfect ? 2.4 : 1.6, perfect ? new Color(120, 255, 140, 255) : new Color(255, 232, 80, 255));
+        }
+
         order.bg.color = late ? this.badColor : this.okColor;
         Tween.stopAllByTarget(order.node);
+        order.node.setRotationFromEuler(0, 0, 0);
         const cs = this.cardScale;
-        tween(order.node)
-            .to(0.12, { scale: new Vec3(1.12 * cs, 1.12 * cs, 1) })
-            .to(0.22, { scale: new Vec3(0, 0, 1) }, { easing: 'backIn' })
+        // O cartao voa ate o placar de moedas (se existir) encolhendo.
+        const target = PowerupManager.instance ? PowerupManager.instance.scoreTarget : null;
+        const flight = target && playing
+            ? tween(order.node).to(0.12, { scale: new Vec3(1.15 * cs, 1.15 * cs, 1) })
+                .to(0.5, { worldPosition: target.worldPosition.clone(), scale: new Vec3(0.15 * cs, 0.15 * cs, 1) }, { easing: 'quadIn' })
+            : tween(order.node).to(0.12, { scale: new Vec3(1.12 * cs, 1.12 * cs, 1) })
+                .to(0.22, { scale: new Vec3(0, 0, 1) }, { easing: 'backIn' });
+        flight
             .call(() => {
                 const i = this.active.indexOf(order);
                 if (i !== -1) this.active.splice(i, 1);
@@ -597,6 +702,7 @@ export class OrderManager extends Component {
                 this.refreshAllLines(); // a prioridade passa para o proximo pedido
             })
             .start();
+        this.refreshProgress();
 
         this.sinceDelivery = 0;
         this.stopHint();
@@ -656,7 +762,8 @@ export class OrderManager extends Component {
         this.titleNode = n;
         const label = this.makeLabel(n, 38, 3, Color.WHITE, new Color(20, 70, 120, 255));
         label.string = tr(this.titleText);
-        label.isBold = true;
+        label.isBold = false;
+        label.enableWrapText = false; // "Bestellungen" encolhe em vez de quebrar em 2 linhas
         label.overflow = Label.Overflow.SHRINK;
     }
 
@@ -677,9 +784,9 @@ export class OrderManager extends Component {
         bg.color = plan.golden ? this.goldenCard : this.cardColor;
         bgNode.addComponent(Sorting2D).sortingOrder = this.sortingBase;
 
-        const timerNode = this.makeNode('Timer', node, 0, h / 2 - 20, w - 12, 30);
+        const timerNode = this.makeNode('Timer', node, 12, h / 2 - 20, w - 36, 30);
         const timerLabel = this.makeLabel(timerNode, 28, 2, Color.WHITE, new Color(10, 10, 20, 255));
-        timerLabel.isBold = true;
+        timerLabel.isBold = false;
 
         const lines: OrderLineView[] = plan.lines.map((l, i) => {
             const y = h / 2 - 36 - 22 - i * 44;
@@ -692,12 +799,22 @@ export class OrderManager extends Component {
 
             const countNode = this.makeNode('Count', row, 22, 0, 64, 36);
             const countLabel = this.makeLabel(countNode, 30, 3, Color.WHITE, new Color(10, 10, 20, 255));
-            countLabel.isBold = true;
+            countLabel.isBold = false;
 
             const line: OrderLineView = { type: l.type, quantity: l.quantity, assigned: 0, arrived: 0, reserved: false, done: false, row, countLabel };
             this.refreshLine(line);
             return line;
         });
+
+        // Rosto do cliente: o humor muda conforme o prazo acaba.
+        let face: Sprite | null = null;
+        if (this.moodFrames.length > 0 && this.moodFrames[0]) {
+            const fn = this.makeNode('Face', node, -w / 2 + 24, h / 2 - 20, 34, 34);
+            face = fn.addComponent(Sprite);
+            face.sizeMode = Sprite.SizeMode.CUSTOM;
+            face.spriteFrame = this.moodFrames[0];
+            fn.addComponent(Sorting2D).sortingOrder = this.sortingBase + 3;
+        }
 
         // Botao ENTREGAR (cinza ate o pedido ficar pronto, verde e pulsando depois).
         const footer = this.makeNode('Deliver', node, 0, -h / 2 + OrderManager.FOOTER_H / 2 + 4, w - 14, OrderManager.FOOTER_H - 4);
@@ -708,7 +825,7 @@ export class OrderManager extends Component {
         footer.addComponent(Sorting2D).sortingOrder = this.sortingBase + 1;
         const footerTextNode = this.makeNode('Text', footer, 0, 0, w - 24, OrderManager.FOOTER_H - 8);
         const footerLabel = this.makeLabel(footerTextNode, 20, 3, Color.WHITE, new Color(10, 40, 20, 255));
-        footerLabel.isBold = true;
+        footerLabel.isBold = false;
         footerLabel.enableWrapText = false;
         footerLabel.overflow = Label.Overflow.SHRINK;
         footerLabel.fontSize = 19;
@@ -717,7 +834,7 @@ export class OrderManager extends Component {
 
         const view: OrderView = {
             plan, node, height: h, bg, timerLabel, lines, timeLeft: plan.deliverTime, delivered: false,
-            ready: false, readyAt: 0, footer, footerBg, footerLabel, heldPoints: 0, coinCount: 0,
+            ready: false, readyAt: 0, face, mood: 0, footer, footerBg, footerLabel, heldPoints: 0, coinCount: 0,
         };
         // O cartao inteiro entrega (nao so o botao): qualquer toque nele, com o pedido pronto, faz a entrega.
         node.on(Node.EventType.TOUCH_END, () => this.DeliverOrder(view));
@@ -755,8 +872,23 @@ export class OrderManager extends Component {
         return Color.lerp(new Color(), this.goldenCard, this.goldenCardLight, k);
     }
 
+    /** Humor do cliente pelo prazo: 0 feliz, 1 neutro, 2 preocupado, 3 bravo (atrasado). */
+    private updateMood(order: OrderView) {
+        if (!order.face) return;
+        const t = order.timeLeft, r = t / Math.max(1, order.plan.deliverTime);
+        const mood = t < 0 ? 3 : r < 0.25 ? 2 : r < 0.55 ? 1 : 0;
+        if (mood === order.mood) return;
+        order.mood = mood;
+        const f = this.moodFrames[Math.min(mood, this.moodFrames.length - 1)];
+        if (f) order.face.spriteFrame = f;
+        Tween.stopAllByTarget(order.face.node);
+        order.face.node.setScale(1.5, 1.5, 1);
+        tween(order.face.node).to(0.25, { scale: Vec3.ONE }, { easing: 'backOut' }).start();
+    }
+
     private refreshTimer(order: OrderView) {
         if (order.delivered) return;
+        this.updateMood(order);
         const t = order.timeLeft;
         const late = t < 0;
         const abs = Math.ceil(Math.abs(t));

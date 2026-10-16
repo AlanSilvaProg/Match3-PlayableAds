@@ -62,6 +62,7 @@ export class PhaseFlow {
 
         RayPickup.clear();
         GoldenTime.abort();
+        SoundManager.duck(2.6, 0.4); // respiro na troca de fase
         const sweepTime = opts.sweep ? this.sweep(gm, canvas) : 0;
         tween(canvas).delay(sweepTime).call(() => {
             this.resetBoardState(scene);

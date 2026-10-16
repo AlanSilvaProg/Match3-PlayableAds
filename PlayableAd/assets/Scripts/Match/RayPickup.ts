@@ -4,6 +4,7 @@ import { MatchElement } from './MatchElement';
 import { OrderManager } from './OrderManager';
 import { PowerupManager } from './PowerupManager';
 import { SoundManager } from './SoundManager';
+import { Haptics } from './Haptics';
 import { ElementType } from './ElementType';
 
 /**
@@ -68,6 +69,7 @@ export class RayPickup {
         this.bolt(board, top, new Vec3(x, y, 0), Color.WHITE, 6, 0.28);
         this.burst(board, new Vec3(x, y, 0), 2.2);
         SoundManager.playRayEnabled();
+        Haptics.vibrate([20, 30, 20]);
         root.setScale(0, 0, 1);
         tween(root).to(0.3, { scale: new Vec3(1.15, 1.15, 1) }, { easing: 'backOut' }).to(0.1, { scale: Vec3.ONE }).start();
 
@@ -145,6 +147,7 @@ export class RayPickup {
 
         const from = root.position.clone();
         this.burst(board, from, 2.6);
+        Haptics.big();
         tween(root).to(0.18, { scale: new Vec3(1.6, 1.6, 1) }).start();
 
         const queue = picks.slice();

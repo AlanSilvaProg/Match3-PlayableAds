@@ -30,6 +30,19 @@ export enum AchievementMetric {
     MaxComboReached,
     /** Vezes que o jogador continuou depois de falhar (anuncio). */
     Revives,
+    // ---- Metricas dos desafios diarios (sempre no FIM: os valores numericos ja salvos nas cenas nao mudam) ----
+    /** Vitorias (qualquer nivel, mesmo repetido). */
+    LevelWins,
+    /** Vitorias com 3 estrelas (qualquer nivel, mesmo repetido). */
+    ThreeStarWins,
+    /** Entregas perfeitas (rapidas). */
+    PerfectDeliveries,
+    /** Golden Times acionados. */
+    GoldenTimes,
+    /** Alimentos escolhidos. */
+    FoodsPicked,
+    /** Comemoracoes de combo rapido. */
+    FastCombos,
 }
 Enum(AchievementMetric);
 

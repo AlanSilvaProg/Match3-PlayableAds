@@ -6,6 +6,8 @@ import { OrderManager } from './OrderManager';
 import { ComboManager } from './ComboManager';
 import { PowerupManager } from './PowerupManager';
 import { SoundManager } from './SoundManager';
+import { Haptics } from './Haptics';
+import { PlayerStats, AchievementMetric } from './PlayerStats';
 import { ElementCatalog } from './ElementCatalog';
 import { ElementType } from './ElementType';
 import { CelebrationFx } from './CelebrationFx';
@@ -49,6 +51,8 @@ export class GoldenTime {
         gm.timeHeld = true; // tempo parado desde o anuncio ate o fim (reafirmado a cada quadro em tick)
 
         SoundManager.playGoldenTime();
+        Haptics.big();
+        PlayerStats.increment(AchievementMetric.GoldenTimes);
         this.explosion(canvas);
         this.banner(canvas);
         this.transformToCoins();
@@ -106,8 +110,9 @@ export class GoldenTime {
         const created = this.redistribute(els, mc, initializer);
         this.transformBack(els, created);
         // Pedidos e cronometro voltam logo depois da volta suave.
-        tween(gm!.node).delay(0.55).call(() => {
-            this.active = false;
+        // Respiro: a musica abaixa e o tempo continua parado por mais um instante antes de tudo voltar.
+        SoundManager.duck(2.2, 0.3);
+        tween(gm!.node).delay(0.55).call(() => { this.active = false; }).delay(1.05).call(() => {
             if (GameManager.instance) GameManager.instance.timeHeld = false; // pedidos, cronometro e fase seguem
         }).start();
     }

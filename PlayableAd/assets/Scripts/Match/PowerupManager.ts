@@ -2,6 +2,8 @@ import { WindowAnim } from './WindowAnim';
 import { tr } from './I18n';
 import { SoundManager } from './SoundManager';
 import { Responsive } from './Responsive';
+import { Fonts } from './Fonts';
+import { Haptics } from './Haptics';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, tween, Tween, Prefab, instantiate } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -36,6 +38,15 @@ export class PowerupManager extends Component {
     // ---------- Assets ----------
     @property({ type: SpriteFrame, tooltip: 'powerups-sheet.png inteiro (os icones sao recortados dele).' })
     public sheetFrame: SpriteFrame | null = null;
+
+    @property({ type: SpriteFrame, tooltip: 'Icone do botao Diario (presente).' })
+    public dailyGiftIcon: SpriteFrame | null = null;
+
+    @property({ type: SpriteFrame, tooltip: 'Icone dos desafios diarios (alvo).' })
+    public dailyTargetIcon: SpriteFrame | null = null;
+
+    @property({ type: SpriteFrame, tooltip: 'Icone do botao Colecao (prato).' })
+    public collectionIcon: SpriteFrame | null = null;
 
     @property({ type: SpriteFrame, tooltip: 'powerup-button-holder.' })
     public holderFrame: SpriteFrame | null = null;
@@ -131,6 +142,8 @@ export class PowerupManager extends Component {
     }
     private scoreHolder: Node | null = null;
     private coinTarget: Node | null = null;
+    /** No do placar de moedas (destino das moedas voadoras e dos cartoes entregues). */
+    public get scoreTarget(): Node | null { return this.coinTarget && this.coinTarget.isValid ? this.coinTarget : null; }
     private lastCoinPunch: number = 0;
 
     protected onLoad() {
@@ -267,6 +280,7 @@ export class PowerupManager extends Component {
         }
 
         PowerupInventory.consume(type);
+        Haptics.vibrate([14, 24, 14]);
         gm.events.emit(GameManager.EVENT_POWERUP_USED, type);
         PlayerStats.increment(AchievementMetric.PowerupsUsed);
         this.showToast(def.name);
@@ -371,7 +385,7 @@ export class PowerupManager extends Component {
         label.fontSize = size;
         label.lineHeight = size + 4;
         label.color = color;
-        label.isBold = true;
+        label.isBold = false;
         label.horizontalAlign = Label.HorizontalAlign.CENTER;
         label.verticalAlign = Label.VerticalAlign.CENTER;
         label.enableOutline = true;
@@ -823,6 +837,7 @@ export class PowerupManager extends Component {
             this.makeSprite(root, this.pointsFrame, base, true);
             this.tooltipName = this.makeLabel(root, '', 26, 290, 30, 0, 26, base + 1, new Color(255, 230, 140, 255), new Color(40, 25, 0, 255));
             this.tooltipText = this.makeLabel(root, '', 20, 290, 48, 0, -14, base + 1);
+            Fonts.regularize(this.tooltipText);
             this.tooltipText.enableWrapText = true;
             this.tooltip = root;
         }
