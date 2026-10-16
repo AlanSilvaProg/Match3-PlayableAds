@@ -457,14 +457,12 @@ export class RankingManager extends Component {
     }
 
     /**
-     * Porta dos botoes das telas de vitoria/derrota: se o jogador ainda nao tem perfil, mostra o login/apelido e SO ENTAO
-     * repete a acao (`retry`); o ranking pendente e enviado ao confirmar. Devolve true se a acao ficou adiada.
+     * (Antigo gate das telas de vitoria/derrota.) O login/apelido NAO faz mais parte do fluxo de gameplay: so aparece quando o
+     * jogador abre o RANKING (`openWindow`). Mantido como no-op (devolve false = nada adiado) para os botoes que o chamam.
      */
-    public static gate(retry: () => void): boolean {
+    public static gate(_retry: () => void): boolean {
         const r = RankingManager.instance;
-        if (!r || !r.NeedsProfile() || r.profileRoot?.active) return !!r && !!r.profileRoot?.active;
-        r.PromptProfile(() => retry());
-        return true;
+        return !!r && !!r.profileRoot?.active; // so segura a acao se a janela de perfil ja esta aberta por cima
     }
 
     /**

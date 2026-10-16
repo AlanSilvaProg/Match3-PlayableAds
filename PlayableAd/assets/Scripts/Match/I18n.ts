@@ -8,6 +8,7 @@ import { Label, Node } from 'cc';
 export type Lang = 'en' | 'pt' | 'es' | 'de';
 
 const PT: Record<string, string> = {
+    "LEVELS": "NÍVEIS",
     "QUIT": "SAIR",
     "LEAVE THE MATCH?": "SAIR DA PARTIDA?",
     "You will lose the progress of the current round.": "Você perderá o progresso da rodada atual.",
@@ -136,6 +137,7 @@ const PT: Record<string, string> = {
 };
 
 const ES: Record<string, string> = {
+    "LEVELS": "NIVELES",
     "QUIT": "SALIR",
     "LEAVE THE MATCH?": "¿SALIR DE LA PARTIDA?",
     "You will lose the progress of the current round.": "Perderás el progreso de la ronda actual.",
@@ -254,6 +256,7 @@ const ES: Record<string, string> = {
 };
 
 const DE: Record<string, string> = {
+    "LEVELS": "LEVELS",
     "QUIT": "BEENDEN",
     "LEAVE THE MATCH?": "PARTIE VERLASSEN?",
     "You will lose the progress of the current round.": "Du verlierst den Fortschritt der aktuellen Runde.",
@@ -403,6 +406,19 @@ export class I18n {
         let s = (dict && dict[en]) || en;
         if (args.length) s = s.replace(/\{(\d+)\}/g, (_m, i) => (args[+i] !== undefined ? String(args[+i]) : ''));
         return s;
+    }
+
+    /**
+     * Faz todo texto da arvore se ADAPTAR ao espaco (idiomas longos como o alemao): reduz a fonte em vez de cortar. Textos
+     * com quebra de linha propria (legendas) ficam como estao.
+     */
+    public static fitTree(root: Node | null) {
+        if (!root) return;
+        root.getComponentsInChildren(Label).forEach(l => {
+            if (l.enableWrapText && l.overflow === Label.Overflow.SHRINK) return;
+            l.overflow = Label.Overflow.SHRINK;
+            l.enableWrapText = false;
+        });
     }
 
     /** Traduz os textos fixos da cena (Labels cujo texto e uma chave do dicionario, como PLAY e SELECT LEVEL). */

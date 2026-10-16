@@ -713,7 +713,9 @@ export class GameManager extends Component {
                 const instance = instantiate(this.victoryPrefab);
                 instance.parent = this.node.parent;
                 this.applyEndScreenBackground(instance);
+                I18n.localizeTree(instance);
                 WinRewards.setup(instance); // NEXT, moedas ganhas e botao de dobrar (antes do layout)
+                I18n.fitTree(instance);
                 EndScreenLayout.apply(instance);
                 this.firstWinCelebration();
             }
@@ -723,7 +725,9 @@ export class GameManager extends Component {
                 const instance = instantiate(this.defeatPrefab);
                 instance.parent = this.node.parent;
                 this.applyEndScreenBackground(instance);
+                I18n.localizeTree(instance);
                 WinRewards.setupFail(instance);
+                I18n.fitTree(instance);
                 EndScreenLayout.apply(instance);
                 this.defeatInstance = instance;
             }

@@ -1,5 +1,6 @@
 import { Color, Font, instantiate, Label, Node, ParticleSystem2D, Prefab, Sorting2D, tween, Tween, UIOpacity, UITransform, Vec3 } from 'cc';
 import { tr } from './I18n';
+import { Responsive } from './Responsive';
 import { OrderManager } from './OrderManager';
 
 /** Um degrau de parabenizacao: a partir de `streak` merges seguidos e rapidos aparece `text`. */
@@ -83,7 +84,14 @@ export class CelebrationFx {
         n.layer = parent.layer;
         n.parent = parent;
         n.setPosition(x, y, 0);
-        n.addComponent(UITransform).setContentSize(900, size * 1.4);
+        // Palavras longas (alemao: UNAUFHALTSAM!, FRUEHSTUECKSZEIT!) encolhem a FONTE para caber na tela visivel (estimativa pela
+        // quantidade de letras; o Overflow.SHRINK do motor colapsa a fonte aqui, entao o ajuste e manual).
+        const maxW = Math.min(900, Responsive.width - 24);
+        const lines = text.split('\n');
+        const longest = lines.reduce((m, l) => Math.max(m, l.length), 1);
+        const estimate = longest * size * 0.62;
+        if (estimate > maxW) size = Math.max(14, Math.floor(size * maxW / estimate));
+        n.addComponent(UITransform).setContentSize(maxW, size * 1.4);
         const label = n.addComponent(Label);
         const font: Font | null = OrderManager.instance ? OrderManager.instance.font : null;
         if (font) { label.useSystemFont = false; label.font = font; }
