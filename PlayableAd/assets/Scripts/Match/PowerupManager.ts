@@ -4,6 +4,7 @@ import { SoundManager } from './SoundManager';
 import { Responsive } from './Responsive';
 import { Fonts } from './Fonts';
 import { Haptics } from './Haptics';
+import { AbandonUi } from './AbandonUi';
 import { _decorator, Component, Node, Sprite, SpriteFrame, Label, Font, UITransform, Vec3, Color, Sorting2D, tween, Tween, Prefab, instantiate } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -38,6 +39,9 @@ export class PowerupManager extends Component {
     // ---------- Assets ----------
     @property({ type: SpriteFrame, tooltip: 'powerups-sheet.png inteiro (os icones sao recortados dele).' })
     public sheetFrame: SpriteFrame | null = null;
+
+    @property({ type: SpriteFrame, tooltip: 'Botao X de fechar das janelas (vermelho, nine-slice).' })
+    public closeFrame: SpriteFrame | null = null;
 
     @property({ type: SpriteFrame, tooltip: 'Icone do botao Diario (presente).' })
     public dailyGiftIcon: SpriteFrame | null = null;
@@ -186,7 +190,8 @@ export class PowerupManager extends Component {
         const gm = GameManager.instance;
 
         // A barra so aparece com a partida em andamento (nao no menu, no tutorial nem nas telas de fim).
-        if (this.bar) this.bar.active = (!!gm && (gm.IsRunning() || gm.IsTransition())) || this.tutorialBarVisible;
+        if (this.bar) this.bar.active = ((!!gm && (gm.IsRunning() || gm.IsTransition())) || this.tutorialBarVisible) && !this.hudHidden;
+        AbandonUi.refresh(!!gm && gm.IsRunning() && !gm.timeHeld && !this.hudHidden);
 
         // Tempos restantes dos efeitos ativos (para o contador nos botoes).
         const r = this.remaining;
@@ -216,6 +221,33 @@ export class PowerupManager extends Component {
 
     public secondsLeft(type: PowerupType): number {
         return this.remaining[type] || 0;
+    }
+
+    /** A barra fica escondida no primeiro minuto da 1a partida (o tutorial a libera depois da 1a entrega). */
+    public hudHidden: boolean = false;
+
+    /**
+     * O power-up tem COMO ser usado agora? Os tutoriais so aparecem quando sim (nunca prendem o jogador num
+     * power-up que nao faz nada, ex.: Auto Select com todos os pedidos ja completos).
+     */
+    public canUse(type: PowerupType): boolean {
+        const gm = GameManager.instance, orders = OrderManager.instance;
+        if (!gm || !gm.IsRunning() || !orders) return false;
+        if (this.secondsLeft(type) > 0) return false;
+        const line = orders.GetNextPendingLine();
+        const space = this.matchSpace;
+        const hasFood = !!line && !!space && space.getComponentsInChildren(MatchElement).some(e => e.isAvailable && e.type === line.type);
+        switch (type) {
+            case PowerupType.FreezeTimer: return gm.timeLeft > 1;
+            case PowerupType.FreezeOrders: return orders.hasOpenOrders() && orders.frozenSecondsLeft <= 0;
+            case PowerupType.TimeBonus: return true;
+            case PowerupType.ReduceQuantity: return orders.maxPendingQuantity() >= 2;
+            case PowerupType.AutoSelect: return hasFood;
+            case PowerupType.Highlight: return hasFood;
+            case PowerupType.MaxCombo:
+            case PowerupType.DoublePoints: return !!ComboManager.instance;
+        }
+        return false;
     }
 
     /** Usa 1 unidade do power-up. Retorna true se o efeito foi aplicado. */
@@ -650,7 +682,7 @@ export class PowerupManager extends Component {
         // Na janela de power-ups o fundo (holder) fica escondido: so a moeda e o numero.
         this.createPointsBadge(win, -W / 2 + 190, H / 2 - 62, base + 3, false);
 
-        this.makeButton(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, new Color(255, 120, 120, 255), () => this.closeWindow());
+        this.makeButton(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, Color.WHITE, () => this.closeWindow(), this.closeFrame || this.adButtonFrame || this.buttonFrame);
 
 
         const cellW = 215, cellH = 205;

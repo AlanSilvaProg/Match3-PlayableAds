@@ -16,6 +16,8 @@ export class GameLayout {
     private static saved: Map<Node, Saved> = new Map();
     /** Faixa no topo do tabuleiro reservada ao texto-guia (os alimentos nao entram nela). */
     private static readonly HINT_BAND = 40;
+    /** Paisagem: o holder dos pedidos ganha esta largura a mais (a borda esquerda fica; o tabuleiro cede o espaco). */
+    private static readonly ORDERS_EXTRA_W = 50;
 
     /** Indicador "Pedidos 3/5": logo abaixo da barra de tempo. */
     private static placeProgressUnder(timerBar: Node | null | undefined, below: number) {
@@ -82,7 +84,7 @@ export class GameLayout {
             all.forEach(n => this.restore(n));
             const bgSaved = nodes.ordersBg ? this.saved.get(nodes.ordersBg) : null;
             if (nodes.ordersBg && bgSaved && bgSaved.size) {
-                nodes.ordersBg.getComponent(UITransform)?.setContentSize(bgSaved.size.w, bgSaved.size.h);
+                nodes.ordersBg.getComponent(UITransform)?.setContentSize(Math.max(bgSaved.size.w, Responsive.height) + 120, bgSaved.size.h);
             }
             if (nodes.combo) {
                 // ComboIcon/ComboBarBG/ComboScore voltam para o empilhamento vertical da paisagem.
@@ -120,11 +122,11 @@ export class GameLayout {
 
         // Fundo da faixa de pedidos: horizontal (sem a rotacao da coluna da paisagem).
         if (nodes.ordersBg) {
-            const bgH = m.ordersH + 65;
+            const bgH = m.ordersH + 70;
             nodes.ordersBg.setRotationFromEuler(0, 0, 0);
             // Largura = a tela visivel inteira (em celulares com barras do navegador ela passa de 720).
             nodes.ordersBg.getComponent(UITransform)?.setContentSize(Math.max(Responsive.PORT_W, Responsive.width) + 40, bgH);
-            nodes.ordersBg.setPosition(0, -(m.ordersH + 15) / 2, 0);
+            nodes.ordersBg.setPosition(0, -(m.ordersH + 10) / 2, 0); // topo da faixa 30 acima do titulo, base onde o tabuleiro comeca
         }
 
         // Pedidos: o no do OrderManager fica no topo da faixa (o OrderManager organiza os cartoes em linhas).
@@ -153,24 +155,28 @@ export class GameLayout {
         const extraH = Math.max(0, Responsive.height - Responsive.LAND_H);
         const shift = (n: Node | null | undefined, dx: number) => { if (n) n.setPosition(n.position.x + dx, n.position.y, n.position.z); };
         const left = -extraW / 2;
-        [nodes.timer, nodes.timerBg, nodes.combo, nodes.logo, nodes.orders].forEach(n => shift(n, left));
+        [nodes.timer, nodes.timerBg, nodes.combo, nodes.logo].forEach(n => shift(n, left));
+        // Coluna de pedidos: mais larga (cresce para a direita; o centro anda metade do acrescimo).
+        shift(nodes.orders, left + this.ORDERS_EXTRA_W / 2);
         if (nodes.board) {
             const saved = this.saved.get(nodes.board);
-            const w = (saved?.size?.w ?? 700) + 140 + Math.min(extraW * 0.8, 600); // +140: espaco da antiga bandeja
+            const w = (saved?.size?.w ?? 700) + 140 - this.ORDERS_EXTRA_W + Math.min(extraW * 0.8, 600); // +140: espaco da antiga bandeja; menos o que o holder ganhou
             const h = (saved?.size?.h ?? 510) + Math.min(extraH * 0.8, 400);
             const band = this.HINT_BAND;
             this.setBoardSize(nodes.board, w, h - band);
             const bx = nodes.board.position.x, by = nodes.board.position.y, bz = nodes.board.position.z;
-            nodes.board.setPosition(bx + 70, by - band / 2, bz);
+            const dx = 70 + this.ORDERS_EXTRA_W / 2;
+            nodes.board.setPosition(bx + dx, by - band / 2, bz);
             // O texto-guia e a barra de power-ups ficam centralizados no espaco de selecao (o tabuleiro).
-            this.placeBoardHint(nodes.board.parent!, bx + 70, by + h / 2 - band / 2, w - 40);
+            this.placeBoardHint(nodes.board.parent!, bx + dx, by + h / 2 - band / 2, w - 40);
             PowerupManager.instance?.layoutBar();
         }
         // Coluna de pedidos: o fundo (sprite girado 90 graus) acompanha a altura visivel.
         const bg = nodes.ordersBg?.getComponent(UITransform);
         if (bg && nodes.ordersBg) {
             const saved = this.saved.get(nodes.ordersBg);
-            bg.setContentSize(Math.max(saved?.size?.w ?? 720, Responsive.height), saved?.size?.h ?? 140);
+            // A coluna e MAIOR que a tela (+120): as extremidades da barra ficam fora da tela, nunca aparecem.
+            bg.setContentSize(Math.max(saved?.size?.w ?? 720, Responsive.height) + 120, (saved?.size?.h ?? 140) + this.ORDERS_EXTRA_W);
         }
     }
 

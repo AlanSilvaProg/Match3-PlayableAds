@@ -373,7 +373,7 @@ export class RankingManager extends Component {
         this.myRankLabel = this.makeLabel(win, '', 24, 600, 32, 0, H / 2 - 112, base + 3, new Color(255, 230, 140, 255), new Color(40, 25, 0, 255));
 
         const close = this.makeNode('Close', win, W / 2 - 78, H / 2 - 62, 64, 56);
-        this.makeSprite(close, pm.buttonFrame, base + 3, true).color = new Color(255, 120, 120, 255);
+        this.makeSprite(close, pm.closeFrame || pm.adButtonFrame || pm.buttonFrame, base + 3, true).color = Color.WHITE;
         this.makeLabel(close, 'X', 26, 50, 40, 0, 3, base + 4);
         close.on(Node.EventType.TOUCH_END, () => { SoundManager.playMenuClick(); this.closeWindow(); });
 

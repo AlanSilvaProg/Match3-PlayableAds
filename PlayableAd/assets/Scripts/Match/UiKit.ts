@@ -53,9 +53,9 @@ export class UiKit {
 
     /** Botao verde (mesmo do jogo) tingido, com texto; `onTap` devolve false para tocar o som de bloqueado. */
     public static button(parent: Node, text: string, x: number, y: number, w: number, h: number, order: number, tint: Color,
-        onTap: () => boolean | void): { node: Node, label: Label, bg: Sprite } {
+        onTap: () => boolean | void, frame: SpriteFrame | null = null): { node: Node, label: Label, bg: Sprite } {
         const node = UiKit.node(parent, 'Button', x, y, w, h);
-        const bg = UiKit.sprite(node, UiKit.pm?.buttonFrame || null, order, true);
+        const bg = UiKit.sprite(node, frame || UiKit.pm?.buttonFrame || null, order, true);
         bg.color = tint;
         const label = UiKit.label(node, text, Math.round(h * 0.45), w - 16, h - 10, 0, 3, order + 1);
         node.on(Node.EventType.TOUCH_START, () => node.setScale(0.93, 0.93, 1));
@@ -104,7 +104,7 @@ export class UiKit {
         UiKit.sprite(win, pm.windowFrame, base + 1, true);
         [Node.EventType.TOUCH_START, Node.EventType.TOUCH_END].forEach(t => win.on(t, () => { }));
         UiKit.label(win, title, 46, 560, 60, 0, H / 2 - 62, base + 3, Color.WHITE, new Color(20, 70, 120, 255));
-        UiKit.button(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, new Color(255, 120, 120, 255), () => close());
+        UiKit.button(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, Color.WHITE, () => close(), pm.closeFrame || pm.adButtonFrame);
         root.active = false;
         return {
             root, win, base,

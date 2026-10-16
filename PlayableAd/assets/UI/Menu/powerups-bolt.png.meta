@@ -8,30 +8,6 @@
     ".png"
   ],
   "subMetas": {
-    "6c48a": {
-      "importer": "texture",
-      "uuid": "ac30ee0b-2508-42db-96e5-e662527f2f02@6c48a",
-      "displayName": "powerups-bolt",
-      "id": "6c48a",
-      "name": "texture",
-      "userData": {
-        "wrapModeS": "repeat",
-        "wrapModeT": "repeat",
-        "minfilter": "linear",
-        "magfilter": "linear",
-        "mipfilter": "none",
-        "anisotropy": 0,
-        "isUuid": true,
-        "imageUuidOrDatabaseUri": "ac30ee0b-2508-42db-96e5-e662527f2f02",
-        "visible": false
-      },
-      "ver": "1.0.22",
-      "imported": true,
-      "files": [
-        ".json"
-      ],
-      "subMetas": {}
-    },
     "f9941": {
       "importer": "sprite-frame",
       "uuid": "ac30ee0b-2508-42db-96e5-e662527f2f02@f9941",
@@ -60,17 +36,17 @@
         "meshType": 0,
         "vertices": {
           "rawPosition": [
-            -64.0,
-            -64.0,
+            -64,
+            -64,
             0,
-            64.0,
-            -64.0,
+            64,
+            -64,
             0,
-            -64.0,
-            64.0,
+            -64,
+            64,
             0,
-            64.0,
-            64.0,
+            64,
+            64,
             0
           ],
           "indexes": [
@@ -102,13 +78,13 @@
             1
           ],
           "minPos": [
-            -64.0,
-            -64.0,
+            -64,
+            -64,
             0
           ],
           "maxPos": [
-            64.0,
-            64.0,
+            64,
+            64,
             0
           ]
         },
@@ -118,6 +94,30 @@
         "trimType": "none"
       },
       "ver": "1.0.12",
+      "imported": true,
+      "files": [
+        ".json"
+      ],
+      "subMetas": {}
+    },
+    "6c48a": {
+      "importer": "texture",
+      "uuid": "ac30ee0b-2508-42db-96e5-e662527f2f02@6c48a",
+      "displayName": "powerups-bolt",
+      "id": "6c48a",
+      "name": "texture",
+      "userData": {
+        "wrapModeS": "repeat",
+        "wrapModeT": "repeat",
+        "minfilter": "linear",
+        "magfilter": "linear",
+        "mipfilter": "none",
+        "anisotropy": 0,
+        "isUuid": true,
+        "imageUuidOrDatabaseUri": "ac30ee0b-2508-42db-96e5-e662527f2f02",
+        "visible": false
+      },
+      "ver": "1.0.22",
       "imported": true,
       "files": [
         ".json"

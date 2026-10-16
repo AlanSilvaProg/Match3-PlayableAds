@@ -1,5 +1,6 @@
 import { director, AudioSource, Node, UITransform, BlockInputEvents, find } from 'cc';
 import { PREVIEW } from 'cc/env';
+import { LevelProgress } from './LevelProgress';
 
 /**
  * Integracao com o Poki SDK (carregado pela tag <script> do index.html: build-templates/web-mobile/index.ejs).
@@ -254,6 +255,8 @@ export class PokiService {
     /** Anuncio entre niveis. Silencia o jogo durante o anuncio. Sempre resolve. */
     public static commercialBreak(): Promise<void> {
         this.gameplayStop();
+        // Primeiro minuto: nenhum intervalo comercial antes da PRIMEIRA vitoria (nem ao tentar de novo o nivel 1).
+        if (LevelProgress.getTotalStars() === 0) return Promise.resolve();
         return this.initOrTimeout().then(ready => {
             if (!ready || !this.adsEnabled) return;
             return this.runBreak(onStart => this.sdk.commercialBreak(onStart)).then(() => undefined);

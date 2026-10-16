@@ -137,15 +137,9 @@ export class TutorialManager extends Component {
     private introOrders() {
         this.clearDeliverHint();
         if (!OrderManager.instance) { this.finishIntro(); return; }
-        this.introStep = 1;
-        SoundManager.playTutorialStep();
-        this.showFade(true);
-        this.fadeNode?.targetOff(this);
-        this.fadeNode?.on(Node.EventType.TOUCH_END, this.onIntroTap, this);
-        this.highlight([OrderManager.instance.node]);
-        this.showCaption(tr("The customer wants:\n{0}\nLet's prepare the order!", this.orderListText()), this.capPos('orders', new Vec3(95, 120, 0)), true);
-        this.canTap = false;
-        this.scheduleOnce(() => { this.canTap = true; }, this.tapDelay);
+        // Sem tela de texto: a mao ja aponta o 1o alimento (menos leitura, mais jogo).
+        this.hideHud();
+        this.introClick();
     }
 
     private onIntroTap() {
@@ -188,7 +182,7 @@ export class TutorialManager extends Component {
             });
         }
         // A legenda fica numa faixa SEM alimentos: em retrato, na linha do combo; em paisagem, acima do tabuleiro.
-        this.showCaption(tr('Tap {0} to add\nthem to the order!', this.orderListText()), this.capPos('click', new Vec3(100, Responsive.top - 55, 0)), false, Responsive.portrait ? 0.8 : 0.62);
+        this.showCaption(tr('Tap {0}!', this.orderListText()), this.capPos('click', new Vec3(100, Responsive.top - 55, 0)), false, Responsive.portrait ? 0.8 : 0.62);
     }
 
     /** "2x Fries, 3x Ice Cream": o conteudo do 1o pedido, nos textos da introducao. */
@@ -209,7 +203,7 @@ export class TutorialManager extends Component {
         this.fadeNode?.targetOff(this);
         this.showFade(true);
         if (OrderManager.instance) this.highlight([OrderManager.instance.node]);
-        this.showCaption('Order complete!\nTap DELIVER to get your coins.', this.capPos('orders', new Vec3(95, 120, 0)), false);
+        this.showCaption('Done! Tap to deliver!', this.capPos('orders', new Vec3(95, 120, 0)), false);
     }
 
     private onOrderDelivered() {
@@ -239,6 +233,7 @@ export class TutorialManager extends Component {
     /** Depois da introducao: o cronometro comeca (o login/apelido so e pedido no fim da 1a rodada, veja RankingManager.gate). */
     private finishIntro() {
         this.introStep = 0;
+        this.revealHud();
         this.whitelist = [];
         this.fadeNode?.targetOff(this);
         this.showFade(false);
@@ -273,10 +268,10 @@ export class TutorialManager extends Component {
         tween(root)
             .to(0.3, { scale: new Vec3(1.2, 1.2, 1) }, { easing: 'backOut' })
             .to(0.12, { scale: Vec3.ONE })
-            .delay(1.2)
+            .delay(0.7)
             .call(() => { root.destroy(); done(); })
             .start();
-        tween(op).delay(1.35).to(0.3, { opacity: 0 }).start();
+        tween(op).delay(0.85).to(0.3, { opacity: 0 }).start();
     }
 
     // ---------- Tutoriais contextuais de power-up ----------
@@ -307,7 +302,9 @@ export class TutorialManager extends Component {
         const gm = GameManager.instance;
         if (!gm || !gm.IsRunning() || this.guideType !== null || this.focusKind || GoldenTime.active) return false;
         if (GameManager.currentLevel >= TutorialManager.GUIDE_MAX_LEVEL) return false;
+        if (!this.powerupTutorialsAllowed()) return false;
         if (PowerupInventory.hasSeen(type)) return false;
+        if (!PowerupManager.instance || !PowerupManager.instance.canUse(type)) return false; // so ensina o que da para usar agora
         return ignoreCooldown || performance.now() - this.lastGuideEnd >= TutorialManager.GUIDE_COOLDOWN_MS;
     }
 
@@ -328,8 +325,10 @@ export class TutorialManager extends Component {
         if (this.guideType !== null) {
             const slot = PowerupManager.instance?.slotNode(this.guideType);
             if (this.tutorialIndicator && slot && slot.isValid) this.tutorialIndicator.setWorldPosition(slot.worldPosition);
-            // Partida acabou ou o jogador nao conseguiu usar: encerra sem prender o jogo.
-            if (!gm.IsRunning() || performance.now() - this.guideStartedAt > TutorialManager.GUIDE_TIMEOUT_MS) this.finishGuide();
+            // Partida acabou, o power-up deixou de ter o que fazer (ex.: todos os pedidos prontos) ou o jogador nao
+            // conseguiu usar: encerra sem prender o jogo.
+            if (!gm.IsRunning() || performance.now() - this.guideStartedAt > TutorialManager.GUIDE_TIMEOUT_MS
+                || (performance.now() - this.guideStartedAt > 600 && !PowerupManager.instance?.canUse(this.guideType))) this.finishGuide();
             return;
         }
 
@@ -344,7 +343,7 @@ export class TutorialManager extends Component {
         const left = gm.timeLeft;
 
         // 1) Tempo baixo: explica o cronometro e, em seguida, entrega o power-up +15s.
-        if (left > 0 && left < this.lowTimeSeconds && !this.flagSet(TutorialManager.FLAG_TIME)) {
+        if (this.powerupTutorialsAllowed() && left > 0 && left < this.lowTimeSeconds && !this.flagSet(TutorialManager.FLAG_TIME)) {
             const nodes: Node[] = [];
             if (gm.timerLabel) nodes.push(gm.timerLabel.node);
             if (gm.timerBar?.node.parent) nodes.push(gm.timerBar.node.parent);
@@ -356,7 +355,7 @@ export class TutorialManager extends Component {
 
         // 2) Pedido atrasado (prazo negativo): explica o desconto no tempo total e entrega o Freeze Orders.
         const late = orders ? orders.firstLateOrderNode() : null;
-        if (late && !this.flagSet(TutorialManager.FLAG_LATE)) {
+        if (late && this.powerupTutorialsAllowed() && !this.flagSet(TutorialManager.FLAG_LATE)) {
             this.setFlag(TutorialManager.FLAG_LATE);
             this.startFocus('late', [late], 'This order is LATE!\nWhen you deliver it, the delay is\nSUBTRACTED from your total time.',
                 this.capPos('orders', new Vec3(95, 120, 0)), PowerupType.FreezeOrders);
@@ -414,7 +413,9 @@ export class TutorialManager extends Component {
         const ind = this.tutorialIndicator, orders = OrderManager.instance, gm = GameManager.instance;
         if (!ind) return;
         const blocked = this.isBusy() || GoldenTime.active || !gm || !gm.IsRunning() || gm.timeHeld;
-        const target = !blocked && orders ? orders.GetDeliverHintTarget(2, 10) : null;
+        // Nivel 1: a mao aparece sempre que o pedido esta pronto; a partir do nivel 2, so com o prazo do pedido <15s.
+        const first = GameManager.currentLevel === 0;
+        const target = !blocked && orders ? (first ? orders.GetDeliverHintTarget(0.5, Infinity) : orders.GetDeliverHintTarget(2, 15)) : null;
         if (target) {
             this.raiseHand();
             ind.active = true;
@@ -501,7 +502,34 @@ export class TutorialManager extends Component {
         }
     }
 
-    private swallowTouch() { /* so bloqueia o tabuleiro */ }
+    /** O fade bloqueia o tabuleiro; depois de alguns segundos um toque nele encerra o tutorial (saida de emergencia). */
+    private swallowTouch() {
+        if (this.guideType !== null && performance.now() - this.guideStartedAt > 6000) this.finishGuide();
+    }
+
+    /** Tutoriais de power-up so a partir do nivel 2 (o nivel 1 e o primeiro minuto do jogador). */
+    private powerupTutorialsAllowed(): boolean {
+        return GameManager.currentLevel >= 1;
+    }
+
+    // ---------- HUD escondido no primeiro minuto ----------
+
+    private hudOp: UIOpacity | null = null;
+
+    private hideHud() {
+        const combo = this.node.parent ? this.node.parent.getChildByPath('GameManager/Combo') : null;
+        if (combo) {
+            this.hudOp = combo.getComponent(UIOpacity) || combo.addComponent(UIOpacity);
+            this.hudOp.opacity = 0;
+        }
+        if (PowerupManager.instance) PowerupManager.instance.hudHidden = true;
+    }
+
+    private revealHud() {
+        if (PowerupManager.instance) PowerupManager.instance.hudHidden = false;
+        if (this.hudOp && this.hudOp.isValid) { Tween.stopAllByTarget(this.hudOp); tween(this.hudOp).to(0.7, { opacity: 255 }).start(); }
+        this.hudOp = null;
+    }
 
     private finishGuide() {
         const type = this.guideType;

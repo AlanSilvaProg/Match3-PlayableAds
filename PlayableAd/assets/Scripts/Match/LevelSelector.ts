@@ -564,6 +564,13 @@ export class LevelSelector extends Component {
         item.costRoot.setPosition(0, -size / 2 - 26, 0);
         item.levelLabel.string = `${level + 1}`;
         item.levelLabel.color = unlocked ? Color.WHITE : this.lockedColor;
+        // O numero fica no CENTRO da esfera rosa. No botao especial a esfera (~105 px de diametro) fica um pouco acima
+        // do centro da imagem e e menor: sobe o numero e reduz a fonte (mais ainda com 3 digitos).
+        const digits = `${level + 1}`.length;
+        const fs = special ? (digits >= 3 ? 56 : 74) : 96;
+        item.levelLabel.fontSize = fs;
+        item.levelLabel.lineHeight = fs;
+        item.levelLabel.node.setPosition(special ? -2 : 0, special ? 12 : 0, 0);
 
         item.lock.active = !unlocked;
         item.starsRoot.active = unlocked && stars > 0;

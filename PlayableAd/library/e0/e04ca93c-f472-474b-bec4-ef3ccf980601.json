@@ -2034,7 +2034,7 @@
       "__uuid__": "002d8685-dbe7-4fff-a8e5-ac080ec35277@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
-    "_type": 0,
+    "_type": 1,
     "_fillType": 0,
     "_sizeMode": 0,
     "_fillCenter": {
@@ -5342,6 +5342,10 @@
       "__uuid__": "417ccaa3-21f5-4e76-82a3-c5e79a11cd91@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
+    "closeFrame": {
+      "__uuid__": "2b58b5ae-64a3-48ea-aac7-d5abcd8ace54@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    },
     "dailyGiftIcon": {
       "__uuid__": "75fea472-6c13-4fb0-964c-7b495f6ae55e@f9941",
       "__expectedType__": "cc.SpriteFrame"
@@ -5400,7 +5404,7 @@
     },
     "coinAdReward": 5000,
     "adButtonFrame": {
-      "__uuid__": "05526288-f5d5-4bac-a657-9fac5dbb00a3@f9941",
+      "__uuid__": "a4808050-eb8b-4af6-98bb-95560d0cc326@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "activateEffectPrefab": {

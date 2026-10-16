@@ -164,7 +164,31 @@ export class LevelConfig {
         return { ...plan, ...plan.phases[i], phaseIndex: i };
     }
 
+    /**
+     * Nivel 1 (o primeiro minuto do jogador): UMA fase curta (almoco), 4 pedidos pequenos e prazos muito folgados, para a
+     * primeira vitoria chegar em ~40-60s sem chance real de derrota. As fases do dia so aparecem a partir do nivel 2.
+     */
+    private static firstLevel(): LevelPlan {
+        const rng = this.rng(13);
+        const L = (type: ElementType, quantity: number): OrderLine => ({ type, quantity });
+        const lines: OrderLine[][] = [
+            [L(ElementType.Burger, 2)],
+            [L(ElementType.Fries, 2), L(ElementType.IceCream, 1)],
+            [L(ElementType.Burger, 1), L(ElementType.IceCream, 2)],
+            [L(ElementType.Fries, 2), L(ElementType.Burger, 2)],
+        ];
+        const orders: OrderPlan[] = lines.map((l, i) => ({ spawnTime: i * 6, deliverTime: 100, lines: l }));
+        const totals = new Map<ElementType, number>();
+        orders.forEach(o => o.lines.forEach(l => totals.set(l.type, (totals.get(l.type) || 0) + l.quantity)));
+        const groups: LevelGroup[] = [ElementType.Burger, ElementType.Fries, ElementType.IceCream]
+            .map(type => ({ type, count: totals.get(type) || 0 }));
+        for (let i = 0; i < 3; i++) groups[Math.floor(rng() * groups.length)].count++; // alguns itens extras
+        const phase: PhasePlan = { meal: Meal.Lunch, duration: 150, orders, minActiveOrders: 1, groups };
+        return { level: 0, special: false, tier: 0, phaseIndex: 0, phases: [phase], ...phase };
+    }
+
     public static get(level: number): LevelPlan {
+        if (level === 0) return this.firstLevel();
         const T = this.TUNING;
         const rng = this.rng(level * 7919 + 13);
         const special = this.isSpecial(level);

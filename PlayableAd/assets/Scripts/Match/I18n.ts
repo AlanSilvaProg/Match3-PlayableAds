@@ -8,6 +8,13 @@ import { Label, Node } from 'cc';
 export type Lang = 'en' | 'pt' | 'es' | 'de';
 
 const PT: Record<string, string> = {
+    "QUIT": "SAIR",
+    "LEAVE THE MATCH?": "SAIR DA PARTIDA?",
+    "You will lose the progress of the current round.": "Você perderá o progresso da rodada atual.",
+    "STAY": "FICAR",
+    "LEAVE": "SAIR",
+    "Tap {0}!": "Toque em {0}!",
+    "Done! Tap to deliver!": "Pronto! Toque para entregar!",
     "DAILY": "DIÁRIO",
     "COLLECTION": "COLEÇÃO",
     "Daily gift - day {0}": "Presente diário - dia {0}",
@@ -129,6 +136,13 @@ const PT: Record<string, string> = {
 };
 
 const ES: Record<string, string> = {
+    "QUIT": "SALIR",
+    "LEAVE THE MATCH?": "¿SALIR DE LA PARTIDA?",
+    "You will lose the progress of the current round.": "Perderás el progreso de la ronda actual.",
+    "STAY": "QUEDARSE",
+    "LEAVE": "SALIR",
+    "Tap {0}!": "¡Toca {0}!",
+    "Done! Tap to deliver!": "¡Listo! ¡Toca para entregar!",
     "DAILY": "DIARIO",
     "COLLECTION": "COLECCIÓN",
     "Daily gift - day {0}": "Regalo diario - día {0}",
@@ -240,6 +254,13 @@ const ES: Record<string, string> = {
 };
 
 const DE: Record<string, string> = {
+    "QUIT": "BEENDEN",
+    "LEAVE THE MATCH?": "PARTIE VERLASSEN?",
+    "You will lose the progress of the current round.": "Du verlierst den Fortschritt der aktuellen Runde.",
+    "STAY": "BLEIBEN",
+    "LEAVE": "VERLASSEN",
+    "Tap {0}!": "Tippe auf {0}!",
+    "Done! Tap to deliver!": "Fertig! Tippe zum Liefern!",
     "DAILY": "TÄGLICH",
     "COLLECTION": "SAMMLUNG",
     "Daily gift - day {0}": "Tägliches Geschenk - Tag {0}",

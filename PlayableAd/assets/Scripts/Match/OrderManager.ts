@@ -180,7 +180,7 @@ export class OrderManager extends Component {
 
     private titleLocalY(): number {
         // Paisagem: titulo ancorado no topo visivel (titleY foi definido para a altura 720).
-        return Responsive.portrait ? 0 : this.titleY + Math.max(0, Responsive.height - Responsive.LAND_H) / 2;
+        return Responsive.portrait ? 60 : this.titleY + Math.max(0, Responsive.height - Responsive.LAND_H) / 2;
     }
 
     protected onDestroy() {
@@ -585,6 +585,9 @@ export class OrderManager extends Component {
         this.deliver(order);
     }
 
+    /** Ha algum pedido ainda aberto (nao entregue) na tela? */
+    public hasOpenOrders(): boolean { return this.active.some(o => !o.delivered); }
+
     /** Cartao ENTREGAR para a mao-guia: pedido pronto ha `minReady`s e com o prazo abaixo de `maxTime`s (ou ja atrasado), ou null. */
     public GetDeliverHintTarget(minReady: number, maxTime: number): Node | null {
         for (const o of this.active) {
@@ -925,7 +928,8 @@ export class OrderManager extends Component {
         if (Responsive.portrait) { this.layoutCardsFlow(animate); return; }
         const total = this.usedHeight();
         const areaH = this.cardsAreaHeight + Math.max(0, Responsive.height - Responsive.LAND_H);
-        const newScale = total > areaH ? Math.max(0.5, areaH / total) : 1;
+        // Paisagem: os cartoes ficam um pouco menores (max 0,9) para caber DENTRO da moldura dourada da coluna.
+        const newScale = Math.min(1.05, total > areaH ? Math.max(0.5, areaH / total) : 1);
         const rescaled = Math.abs(newScale - this.cardScale) > 0.001;
         this.cardScale = newScale;
         const cs = this.cardScale;
@@ -960,7 +964,7 @@ export class OrderManager extends Component {
     /** Retrato: cartoes lado a lado, quebrando em linhas; todos encolhem para caber na faixa de pedidos. */
     private layoutCardsFlow(animate: boolean) {
         const m = Responsive.portraitMetrics();
-        const areaW = 700, areaH = m.ordersH, gap = 8;
+        const areaW = 700, areaH = m.ordersH + 18, gap = 8; // o titulo fica FORA da faixa: toda a area interna e dos cartoes
         const orders = this.active;
         const w = this.cardWidth;
 
@@ -983,7 +987,7 @@ export class OrderManager extends Component {
             return { rows, total };
         };
 
-        let scale = 1;
+        let scale = 1.4; // cartoes maiores quando ha espaco (icones legiveis); encolhe so o necessario para caber
         let layout = plan(scale);
         while (layout.total > areaH && scale > 0.45) {
             scale = Math.max(0.45, scale - 0.05);
@@ -992,7 +996,9 @@ export class OrderManager extends Component {
         const rescaled = Math.abs(scale - this.cardScale) > 0.001;
         this.cardScale = scale;
 
-        let y = -30;
+        // Centralizado no holder: o bloco de cartoes (altura total) fica no meio da area interna da faixa, na vertical e (por
+        // fileira) na horizontal. O centro da faixa, relativo a este no, e -(ordersH + 10) / 2.
+        let y = -(m.ordersH + 10) / 2 + layout.total / 2;
         for (const row of layout.rows) {
             let x = -row.width / 2;
             for (const o of row.items) {

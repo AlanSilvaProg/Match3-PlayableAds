@@ -12,6 +12,7 @@ import { ScaleSequence } from './ScaleSequence';
 import { Responsive } from './Responsive';
 import { RankingManager } from './RankingManager';
 import { Fonts } from './Fonts';
+import { WinStars } from './WinStars';
 
 /**
  * Tela de vitoria: o botao RESTART vira NEXT (proximo nivel direto), as moedas da rodada aparecem abaixo das estrelas
@@ -191,10 +192,17 @@ export class WinRewards {
     private static layout(screen: Node) {
         if (!screen.isValid) return;
         const x = Responsive.portrait ? 0 : -265;
+        // Paisagem: a coluna inteira (estrelas, moedas, resumo e 3 botoes) sobe para ficar centralizada na altura da tela
+        // (sem isso os botoes passavam da borda de baixo). Retrato ja esta bom.
+        const lift = Responsive.portrait ? 0 : 88;
         const place = (name: string, y: number) => {
             const n = screen.getChildByName(name);
-            if (n) n.setPosition(x, y, n.position.z);
+            if (n) n.setPosition(x, y + lift, n.position.z);
         };
+        // Estrelas (no do prefab): sobem junto na paisagem.
+        const starsNode = screen.getChildByName('Stars') || screen.getComponentInChildren(WinStars)?.node;
+        const starsOrig = starsNode ? (starsNode as any).__endOrig : null;
+        if (starsNode && starsOrig && !Responsive.portrait) starsNode.setPosition(starsOrig.x, starsOrig.y + lift, starsNode.position.z);
         place('CoinsRow', 15);
         place('StarInfo', -50);
         const hasInfo = !!screen.getChildByName('StarInfo');

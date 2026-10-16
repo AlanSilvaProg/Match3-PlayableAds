@@ -52,7 +52,8 @@ export class Responsive {
         const bottomY = -H / 2 + 20;
         const extra = Math.max(0, H - this.PORT_H);
         const ordersH = 190 + Math.min(70, extra * 0.25);
-        const ordersTitleY = topY - 285;
+        // Retrato: o titulo dos pedidos fica ACIMA da faixa (60 acima desta referencia); a faixa desce 56 para abrir espaco sob o HUD.
+        const ordersTitleY = topY - 341;
         const ordersTop = ordersTitleY - 25;
         const ordersBottom = ordersTop - ordersH;
         const barY = bottomY + 40;

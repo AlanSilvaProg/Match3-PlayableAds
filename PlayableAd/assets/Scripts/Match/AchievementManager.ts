@@ -567,7 +567,7 @@ export class AchievementManager extends Component {
         [Node.EventType.TOUCH_START, Node.EventType.TOUCH_END].forEach(t => win.on(t, () => { }));
         this.makeLabel(win, tr('ACHIEVEMENTS'), 46, 480, 60, 0, H / 2 - 62, base + 3, Color.WHITE, new Color(20, 70, 120, 255));
         this.windowBadge = pm.createPointsBadgeView(win, -W / 2 + 190, H / 2 - 62, base + 3, false);
-        this.makeButton(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, new Color(255, 120, 120, 255), () => this.closeWindow());
+        this.makeButton(win, 'X', W / 2 - 78, H / 2 - 62, 64, 56, base + 3, Color.WHITE, () => this.closeWindow(), false, this.pm!.closeFrame || this.pm!.adButtonFrame);
 
         // Area visivel (com mascara): a lista rola dentro dela.
         const vw = this.viewportWidth, vh = this.viewportHeight;
@@ -590,9 +590,9 @@ export class AchievementManager extends Component {
     }
 
     private makeButton(parent: Node, text: string, x: number, y: number, w: number, h: number, order: number, tint: Color,
-        onTap: () => void, silent: boolean = false): { node: Node, label: Label, bg: Sprite } {
+        onTap: () => void, silent: boolean = false, frame: SpriteFrame | null = null): { node: Node, label: Label, bg: Sprite } {
         const node = this.makeNode('Button', parent, x, y, w, h);
-        const bg = this.makeSprite(node, this.pm!.buttonFrame, order, true);
+        const bg = this.makeSprite(node, frame || this.pm!.buttonFrame, order, true);
         bg.color = tint;
         const label = this.makeLabel(node, text, Math.round(h * 0.45), w - 16, h - 10, 0, 3, order + 1);
         node.on(Node.EventType.TOUCH_START, () => node.setScale(0.93, 0.93, 1));

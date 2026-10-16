@@ -932,6 +932,7 @@
         "5271621c-cd0b-45fb-8f17-785c44f0618e@f9941",
         "9cd6d6b3-ef76-411d-9357-d7e642757d1b",
         "417ccaa3-21f5-4e76-82a3-c5e79a11cd91@f9941",
+        "2b58b5ae-64a3-48ea-aac7-d5abcd8ace54@f9941",
         "75fea472-6c13-4fb0-964c-7b495f6ae55e@f9941",
         "d5a31347-81df-4d2f-a5f3-aef98b2f128d@f9941",
         "1cffc635-443a-40cf-ac22-415489ba4d3f@f9941",
@@ -943,7 +944,7 @@
         "4d5fda1b-6cf1-4f77-b88f-e3cdc944c72f@f9941",
         "ac30ee0b-2508-42db-96e5-e662527f2f02@f9941",
         "feddbd93-0a87-41d6-8046-1865dea53494",
-        "05526288-f5d5-4bac-a657-9fac5dbb00a3@f9941",
+        "a4808050-eb8b-4af6-98bb-95560d0cc326@f9941",
         "9a918a94-bd23-4080-918a-de266d7e2f63@f9941",
         "a30c1984-7b0c-460b-94ae-80eefbb6a94e@f9941",
         "b18d546d-465f-46d0-8e04-b261ed816d79",
@@ -3011,11 +3012,11 @@
     },
     "versionCode": 1
   },
-  "7bbe83eb-2b6f-4355-898b-f6a9f5b9b5cc@f9941": {
-    "url": "db://assets/UI/Menu/ranking-podium.png@f9941",
+  "ac30ee0b-2508-42db-96e5-e662527f2f02@f9941": {
+    "url": "db://assets/UI/Menu/powerups-bolt.png@f9941",
     "value": {
       "depends": [
-        "7bbe83eb-2b6f-4355-898b-f6a9f5b9b5cc@6c48a"
+        "ac30ee0b-2508-42db-96e5-e662527f2f02@6c48a"
       ]
     },
     "versionCode": 1
@@ -3029,13 +3030,68 @@
     },
     "versionCode": 1
   },
-  "ac30ee0b-2508-42db-96e5-e662527f2f02@f9941": {
-    "url": "db://assets/UI/Menu/powerups-bolt.png@f9941",
+  "7bbe83eb-2b6f-4355-898b-f6a9f5b9b5cc@f9941": {
+    "url": "db://assets/UI/Menu/ranking-podium.png@f9941",
     "value": {
       "depends": [
-        "ac30ee0b-2508-42db-96e5-e662527f2f02@6c48a"
+        "7bbe83eb-2b6f-4355-898b-f6a9f5b9b5cc@6c48a"
       ]
     },
+    "versionCode": 1
+  },
+  "a4808050-eb8b-4af6-98bb-95560d0cc326": {
+    "url": "db://assets/UI/ad-button.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "2b58b5ae-64a3-48ea-aac7-d5abcd8ace54": {
+    "url": "db://assets/UI/close-button.png",
+    "value": {
+      "depends": []
+    },
+    "versionCode": 1
+  },
+  "2b58b5ae-64a3-48ea-aac7-d5abcd8ace54@6c48a": {
+    "url": "db://assets/UI/close-button.png@6c48a",
+    "value": {
+      "depends": [
+        "2b58b5ae-64a3-48ea-aac7-d5abcd8ace54"
+      ]
+    },
+    "versionCode": 1
+  },
+  "a4808050-eb8b-4af6-98bb-95560d0cc326@6c48a": {
+    "url": "db://assets/UI/ad-button.png@6c48a",
+    "value": {
+      "depends": [
+        "a4808050-eb8b-4af6-98bb-95560d0cc326"
+      ]
+    },
+    "versionCode": 1
+  },
+  "a4808050-eb8b-4af6-98bb-95560d0cc326@f9941": {
+    "url": "db://assets/UI/ad-button.png@f9941",
+    "value": {
+      "depends": [
+        "a4808050-eb8b-4af6-98bb-95560d0cc326@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "2b58b5ae-64a3-48ea-aac7-d5abcd8ace54@f9941": {
+    "url": "db://assets/UI/close-button.png@f9941",
+    "value": {
+      "depends": [
+        "2b58b5ae-64a3-48ea-aac7-d5abcd8ace54@6c48a"
+      ]
+    },
+    "versionCode": 1
+  },
+  "d0cb3494-9402-4f9c-8f8f-be836c8c78f4": {
+    "url": "db://assets/Scripts/Match/AbandonUi.ts",
+    "value": {},
     "versionCode": 1
   }
 }
